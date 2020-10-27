@@ -1,0 +1,1 @@
+initSidebarItems({"fn":[["capabilities","Compute the server capabilities."]],"struct":[["Server","The DDlog language server instance."]]});
