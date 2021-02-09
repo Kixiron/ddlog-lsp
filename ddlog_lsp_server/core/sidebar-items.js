@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["Error",""],["Language","Languages supported by the server."],["SessionResourceKind",""]],"mod":[["language","Core functionality related to document languages."]],"struct":[["ChunkWalker",""],["Document",""],["IntoJsonRpcError",""],["Session",""],["Text",""],["TextEdit",""]],"trait":[["RopeExt",""]]});
