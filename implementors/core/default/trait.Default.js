@@ -1,0 +1,3 @@
+(function() {var implementors = {};
+implementors["ddlog_lsp_server"] = [{"text":"impl&lt;'tree&gt; <a class=\"trait\" href=\"https://doc.rust-lang.org/nightly/core/default/trait.Default.html\" title=\"trait core::default::Default\">Default</a> for <a class=\"struct\" href=\"ddlog_lsp_server/util/struct.NodeWalkerStack.html\" title=\"struct ddlog_lsp_server::util::NodeWalkerStack\">NodeWalkerStack</a>&lt;'tree&gt;","synthetic":false,"types":["ddlog_lsp_server::util::node_walker::NodeWalkerStack"]}];
+if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()
