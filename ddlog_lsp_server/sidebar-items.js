@@ -1,1 +1,1 @@
-initSidebarItems({"mod":[["core",""],["handler",""],["package",""],["provider",""],["server",""],["util",""]]});
+initSidebarItems({"mod":[["core",""],["handler",""],["package",""],["provider",""],["server",""]]});
