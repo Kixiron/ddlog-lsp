@@ -264,7 +264,7 @@
                         <span class="ident">name</span>,
                         <span class="ident">range</span>,
                         <span class="ident">selection_range</span>,
-                    } <span class="op">=</span> { <span class="ident">symbol_range</span>(<span class="ident">content</span>, <span class="ident">node</span>, <span class="ident">name_hint</span>, <span class="kw-2">*</span><span class="ident">dl</span>::<span class="ident">field</span>::<span class="ident">IDENTIFIER</span>) };
+                    } <span class="op">=</span> { <span class="ident">symbol_range</span>(<span class="ident">content</span>, <span class="ident">node</span>, <span class="ident">name_hint</span>, <span class="ident">dl</span>::<span class="ident">field</span>::<span class="ident">IDENTIFIER</span>) };
 
                     <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">deprecated</span>)]</span>
                     <span class="kw">let</span> <span class="ident">this</span> <span class="op">=</span> <span class="ident">lsp</span>::<span class="ident">DocumentSymbol</span> {
@@ -289,34 +289,34 @@
                 }
             },
 
-            <span class="ident">Work</span>::<span class="ident">Node</span>(<span class="ident">node</span>) <span class="kw">if</span> <span class="kw-2">*</span><span class="ident">dl</span>::<span class="ident">kind</span>::<span class="ident">ROOT</span> <span class="op">=</span><span class="op">=</span> <span class="ident">node</span>.<span class="ident">kind_id</span>() <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="ident">Work</span>::<span class="ident">Node</span>(<span class="ident">node</span>) <span class="kw">if</span> <span class="ident">dl</span>::<span class="ident">kind</span>::<span class="ident">ROOT</span> <span class="op">=</span><span class="op">=</span> <span class="ident">node</span>.<span class="ident">kind_id</span>() <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">cursor</span> <span class="op">=</span> <span class="ident">node</span>.<span class="ident">walk</span>();
                 <span class="kw">let</span> <span class="ident">annotated_items</span> <span class="op">=</span> <span class="ident">node</span>
                     .<span class="ident">children</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">cursor</span>)
-                    .<span class="ident">filter</span>(<span class="op">|</span><span class="ident">it</span><span class="op">|</span> [<span class="kw-2">*</span><span class="ident">dl</span>::<span class="ident">kind</span>::<span class="ident">ANNOTATED_ITEM</span>].<span class="ident">contains</span>(<span class="kw-2">&amp;</span><span class="ident">it</span>.<span class="ident">kind_id</span>()))
+                    .<span class="ident">filter</span>(<span class="op">|</span><span class="ident">it</span><span class="op">|</span> [<span class="ident">dl</span>::<span class="ident">kind</span>::<span class="ident">ANNOTATED_ITEM</span>].<span class="ident">contains</span>(<span class="kw-2">&amp;</span><span class="ident">it</span>.<span class="ident">kind_id</span>()))
                     .<span class="ident">map</span>(<span class="ident">Work</span>::<span class="ident">Node</span>);
                 <span class="ident">work</span>.<span class="ident">extend</span>(<span class="ident">annotated_items</span>);
             },
 
-            <span class="ident">Work</span>::<span class="ident">Node</span>(<span class="ident">node</span>) <span class="kw">if</span> <span class="kw-2">*</span><span class="ident">dl</span>::<span class="ident">kind</span>::<span class="ident">ANNOTATED_ITEM</span> <span class="op">=</span><span class="op">=</span> <span class="ident">node</span>.<span class="ident">kind_id</span>() <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="ident">Work</span>::<span class="ident">Node</span>(<span class="ident">node</span>) <span class="kw">if</span> <span class="ident">dl</span>::<span class="ident">kind</span>::<span class="ident">ANNOTATED_ITEM</span> <span class="op">=</span><span class="op">=</span> <span class="ident">node</span>.<span class="ident">kind_id</span>() <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">cursor</span> <span class="op">=</span> <span class="ident">node</span>.<span class="ident">walk</span>();
                 <span class="kw">let</span> <span class="ident">items</span> <span class="op">=</span> <span class="ident">node</span>
                     .<span class="ident">children</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">cursor</span>)
-                    .<span class="ident">filter</span>(<span class="op">|</span><span class="ident">it</span><span class="op">|</span> [<span class="kw-2">*</span><span class="ident">dl</span>::<span class="ident">kind</span>::<span class="ident">ITEM</span>].<span class="ident">contains</span>(<span class="kw-2">&amp;</span><span class="ident">it</span>.<span class="ident">kind_id</span>()))
+                    .<span class="ident">filter</span>(<span class="op">|</span><span class="ident">it</span><span class="op">|</span> [<span class="ident">dl</span>::<span class="ident">kind</span>::<span class="ident">ITEM</span>].<span class="ident">contains</span>(<span class="kw-2">&amp;</span><span class="ident">it</span>.<span class="ident">kind_id</span>()))
                     .<span class="ident">map</span>(<span class="ident">Work</span>::<span class="ident">Node</span>);
                 <span class="ident">work</span>.<span class="ident">extend</span>(<span class="ident">items</span>);
             },
 
-            <span class="ident">Work</span>::<span class="ident">Node</span>(<span class="ident">node</span>) <span class="kw">if</span> <span class="kw-2">*</span><span class="ident">dl</span>::<span class="ident">kind</span>::<span class="ident">FUNCTION</span> <span class="op">=</span><span class="op">=</span> <span class="ident">node</span>.<span class="ident">kind_id</span>() <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="ident">Work</span>::<span class="ident">Node</span>(<span class="ident">node</span>) <span class="kw">if</span> <span class="ident">dl</span>::<span class="ident">kind</span>::<span class="ident">FUNCTION</span> <span class="op">=</span><span class="op">=</span> <span class="ident">node</span>.<span class="ident">kind_id</span>() <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">cursor</span> <span class="op">=</span> <span class="ident">node</span>.<span class="ident">walk</span>();
                 <span class="kw">let</span> <span class="ident">items</span> <span class="op">=</span> <span class="ident">node</span>
                     .<span class="ident">children</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">cursor</span>)
-                    .<span class="ident">filter</span>(<span class="op">|</span><span class="ident">it</span><span class="op">|</span> [<span class="kw-2">*</span><span class="ident">dl</span>::<span class="ident">kind</span>::<span class="ident">FUNCTION_EXTERN</span>, <span class="kw-2">*</span><span class="ident">dl</span>::<span class="ident">kind</span>::<span class="ident">FUNCTION_NORMAL</span>].<span class="ident">contains</span>(<span class="kw-2">&amp;</span><span class="ident">it</span>.<span class="ident">kind_id</span>()))
+                    .<span class="ident">filter</span>(<span class="op">|</span><span class="ident">it</span><span class="op">|</span> [<span class="ident">dl</span>::<span class="ident">kind</span>::<span class="ident">FUNCTION_EXTERN</span>, <span class="ident">dl</span>::<span class="ident">kind</span>::<span class="ident">FUNCTION_NORMAL</span>].<span class="ident">contains</span>(<span class="kw-2">&amp;</span><span class="ident">it</span>.<span class="ident">kind_id</span>()))
                     .<span class="ident">map</span>(<span class="ident">Work</span>::<span class="ident">Node</span>);
                 <span class="ident">work</span>.<span class="ident">extend</span>(<span class="ident">items</span>);
             },
 
-            <span class="ident">Work</span>::<span class="ident">Node</span>(<span class="ident">node</span>) <span class="kw">if</span> <span class="kw-2">*</span><span class="ident">dl</span>::<span class="ident">kind</span>::<span class="ident">FUNCTION_EXTERN</span> <span class="op">=</span><span class="op">=</span> <span class="ident">node</span>.<span class="ident">kind_id</span>() <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="ident">Work</span>::<span class="ident">Node</span>(<span class="ident">node</span>) <span class="kw">if</span> <span class="ident">dl</span>::<span class="ident">kind</span>::<span class="ident">FUNCTION_EXTERN</span> <span class="op">=</span><span class="op">=</span> <span class="ident">node</span>.<span class="ident">kind_id</span>() <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="ident">work</span>.<span class="ident">push</span>(<span class="ident">Work</span>::<span class="ident">Data</span>);
                 <span class="ident">data</span>.<span class="ident">push</span>(<span class="ident">Data</span> {
                     <span class="ident">node</span>,
@@ -326,7 +326,7 @@
                 });
             },
 
-            <span class="ident">Work</span>::<span class="ident">Node</span>(<span class="ident">node</span>) <span class="kw">if</span> <span class="kw-2">*</span><span class="ident">dl</span>::<span class="ident">kind</span>::<span class="ident">FUNCTION_NORMAL</span> <span class="op">=</span><span class="op">=</span> <span class="ident">node</span>.<span class="ident">kind_id</span>() <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="ident">Work</span>::<span class="ident">Node</span>(<span class="ident">node</span>) <span class="kw">if</span> <span class="ident">dl</span>::<span class="ident">kind</span>::<span class="ident">FUNCTION_NORMAL</span> <span class="op">=</span><span class="op">=</span> <span class="ident">node</span>.<span class="ident">kind_id</span>() <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="ident">work</span>.<span class="ident">push</span>(<span class="ident">Work</span>::<span class="ident">Data</span>);
                 <span class="ident">data</span>.<span class="ident">push</span>(<span class="ident">Data</span> {
                     <span class="ident">node</span>,
@@ -336,7 +336,7 @@
                 });
             },
 
-            <span class="ident">Work</span>::<span class="ident">Node</span>(<span class="ident">node</span>) <span class="kw">if</span> <span class="kw-2">*</span><span class="ident">dl</span>::<span class="ident">kind</span>::<span class="ident">INDEX</span> <span class="op">=</span><span class="op">=</span> <span class="ident">node</span>.<span class="ident">kind_id</span>() <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="ident">Work</span>::<span class="ident">Node</span>(<span class="ident">node</span>) <span class="kw">if</span> <span class="ident">dl</span>::<span class="ident">kind</span>::<span class="ident">INDEX</span> <span class="op">=</span><span class="op">=</span> <span class="ident">node</span>.<span class="ident">kind_id</span>() <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="ident">work</span>.<span class="ident">push</span>(<span class="ident">Work</span>::<span class="ident">Data</span>);
                 <span class="ident">data</span>.<span class="ident">push</span>(<span class="ident">Data</span> {
                     <span class="ident">node</span>,
@@ -346,18 +346,18 @@
                 });
             },
 
-            <span class="ident">Work</span>::<span class="ident">Node</span>(<span class="ident">node</span>) <span class="kw">if</span> <span class="kw-2">*</span><span class="ident">dl</span>::<span class="ident">kind</span>::<span class="ident">ITEM</span> <span class="op">=</span><span class="op">=</span> <span class="ident">node</span>.<span class="ident">kind_id</span>() <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="ident">Work</span>::<span class="ident">Node</span>(<span class="ident">node</span>) <span class="kw">if</span> <span class="ident">dl</span>::<span class="ident">kind</span>::<span class="ident">ITEM</span> <span class="op">=</span><span class="op">=</span> <span class="ident">node</span>.<span class="ident">kind_id</span>() <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">cursor</span> <span class="op">=</span> <span class="ident">node</span>.<span class="ident">walk</span>();
                 <span class="kw">let</span> <span class="ident">items</span> <span class="op">=</span> <span class="ident">node</span>
                     .<span class="ident">children</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">cursor</span>)
                     .<span class="ident">filter</span>(<span class="op">|</span><span class="ident">it</span><span class="op">|</span> {
                         [
-                            <span class="kw-2">*</span><span class="ident">dl</span>::<span class="ident">kind</span>::<span class="ident">APPLY</span>,
-                            <span class="kw-2">*</span><span class="ident">dl</span>::<span class="ident">kind</span>::<span class="ident">FUNCTION</span>,
-                            <span class="kw-2">*</span><span class="ident">dl</span>::<span class="ident">kind</span>::<span class="ident">INDEX</span>,
-                            <span class="kw-2">*</span><span class="ident">dl</span>::<span class="ident">kind</span>::<span class="ident">REL</span>,
-                            <span class="kw-2">*</span><span class="ident">dl</span>::<span class="ident">kind</span>::<span class="ident">TRANSFORMER</span>,
-                            <span class="kw-2">*</span><span class="ident">dl</span>::<span class="ident">kind</span>::<span class="ident">TYPEDEF</span>,
+                            <span class="ident">dl</span>::<span class="ident">kind</span>::<span class="ident">APPLY</span>,
+                            <span class="ident">dl</span>::<span class="ident">kind</span>::<span class="ident">FUNCTION</span>,
+                            <span class="ident">dl</span>::<span class="ident">kind</span>::<span class="ident">INDEX</span>,
+                            <span class="ident">dl</span>::<span class="ident">kind</span>::<span class="ident">REL</span>,
+                            <span class="ident">dl</span>::<span class="ident">kind</span>::<span class="ident">TRANSFORMER</span>,
+                            <span class="ident">dl</span>::<span class="ident">kind</span>::<span class="ident">TYPEDEF</span>,
                         ]
                         .<span class="ident">contains</span>(<span class="kw-2">&amp;</span><span class="ident">it</span>.<span class="ident">kind_id</span>())
                     })
@@ -365,16 +365,16 @@
                 <span class="ident">work</span>.<span class="ident">extend</span>(<span class="ident">items</span>);
             },
 
-            <span class="ident">Work</span>::<span class="ident">Node</span>(<span class="ident">node</span>) <span class="kw">if</span> <span class="kw-2">*</span><span class="ident">dl</span>::<span class="ident">kind</span>::<span class="ident">REL</span> <span class="op">=</span><span class="op">=</span> <span class="ident">node</span>.<span class="ident">kind_id</span>() <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="ident">Work</span>::<span class="ident">Node</span>(<span class="ident">node</span>) <span class="kw">if</span> <span class="ident">dl</span>::<span class="ident">kind</span>::<span class="ident">REL</span> <span class="op">=</span><span class="op">=</span> <span class="ident">node</span>.<span class="ident">kind_id</span>() <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">cursor</span> <span class="op">=</span> <span class="ident">node</span>.<span class="ident">walk</span>();
                 <span class="kw">let</span> <span class="ident">items</span> <span class="op">=</span> <span class="ident">node</span>
                     .<span class="ident">children</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">cursor</span>)
-                    .<span class="ident">filter</span>(<span class="op">|</span><span class="ident">it</span><span class="op">|</span> [<span class="kw-2">*</span><span class="ident">dl</span>::<span class="ident">kind</span>::<span class="ident">REL_ARGS</span>, <span class="kw-2">*</span><span class="ident">dl</span>::<span class="ident">kind</span>::<span class="ident">REL_ELEM</span>].<span class="ident">contains</span>(<span class="kw-2">&amp;</span><span class="ident">it</span>.<span class="ident">kind_id</span>()))
+                    .<span class="ident">filter</span>(<span class="op">|</span><span class="ident">it</span><span class="op">|</span> [<span class="ident">dl</span>::<span class="ident">kind</span>::<span class="ident">REL_ARGS</span>, <span class="ident">dl</span>::<span class="ident">kind</span>::<span class="ident">REL_ELEM</span>].<span class="ident">contains</span>(<span class="kw-2">&amp;</span><span class="ident">it</span>.<span class="ident">kind_id</span>()))
                     .<span class="ident">map</span>(<span class="ident">Work</span>::<span class="ident">Node</span>);
                 <span class="ident">work</span>.<span class="ident">extend</span>(<span class="ident">items</span>);
             },
 
-            <span class="ident">Work</span>::<span class="ident">Node</span>(<span class="ident">node</span>) <span class="kw">if</span> <span class="kw-2">*</span><span class="ident">dl</span>::<span class="ident">kind</span>::<span class="ident">REL_ARGS</span> <span class="op">=</span><span class="op">=</span> <span class="ident">node</span>.<span class="ident">kind_id</span>() <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="ident">Work</span>::<span class="ident">Node</span>(<span class="ident">node</span>) <span class="kw">if</span> <span class="ident">dl</span>::<span class="ident">kind</span>::<span class="ident">REL_ARGS</span> <span class="op">=</span><span class="op">=</span> <span class="ident">node</span>.<span class="ident">kind_id</span>() <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="ident">work</span>.<span class="ident">push</span>(<span class="ident">Work</span>::<span class="ident">Data</span>);
                 <span class="ident">data</span>.<span class="ident">push</span>(<span class="ident">Data</span> {
                     <span class="ident">node</span>,
@@ -384,7 +384,7 @@
                 });
             },
 
-            <span class="ident">Work</span>::<span class="ident">Node</span>(<span class="ident">node</span>) <span class="kw">if</span> <span class="kw-2">*</span><span class="ident">dl</span>::<span class="ident">kind</span>::<span class="ident">REL_ELEM</span> <span class="op">=</span><span class="op">=</span> <span class="ident">node</span>.<span class="ident">kind_id</span>() <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="ident">Work</span>::<span class="ident">Node</span>(<span class="ident">node</span>) <span class="kw">if</span> <span class="ident">dl</span>::<span class="ident">kind</span>::<span class="ident">REL_ELEM</span> <span class="op">=</span><span class="op">=</span> <span class="ident">node</span>.<span class="ident">kind_id</span>() <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="ident">work</span>.<span class="ident">push</span>(<span class="ident">Work</span>::<span class="ident">Data</span>);
                 <span class="ident">data</span>.<span class="ident">push</span>(<span class="ident">Data</span> {
                     <span class="ident">node</span>,
@@ -394,7 +394,7 @@
                 });
             },
 
-            <span class="ident">Work</span>::<span class="ident">Node</span>(<span class="ident">node</span>) <span class="kw">if</span> <span class="kw-2">*</span><span class="ident">dl</span>::<span class="ident">kind</span>::<span class="ident">TRANSFORMER</span> <span class="op">=</span><span class="op">=</span> <span class="ident">node</span>.<span class="ident">kind_id</span>() <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="ident">Work</span>::<span class="ident">Node</span>(<span class="ident">node</span>) <span class="kw">if</span> <span class="ident">dl</span>::<span class="ident">kind</span>::<span class="ident">TRANSFORMER</span> <span class="op">=</span><span class="op">=</span> <span class="ident">node</span>.<span class="ident">kind_id</span>() <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="ident">work</span>.<span class="ident">push</span>(<span class="ident">Work</span>::<span class="ident">Data</span>);
                 <span class="ident">data</span>.<span class="ident">push</span>(<span class="ident">Data</span> {
                     <span class="ident">node</span>,
@@ -404,16 +404,16 @@
                 });
             },
 
-            <span class="ident">Work</span>::<span class="ident">Node</span>(<span class="ident">node</span>) <span class="kw">if</span> <span class="kw-2">*</span><span class="ident">dl</span>::<span class="ident">kind</span>::<span class="ident">TYPEDEF</span> <span class="op">=</span><span class="op">=</span> <span class="ident">node</span>.<span class="ident">kind_id</span>() <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="ident">Work</span>::<span class="ident">Node</span>(<span class="ident">node</span>) <span class="kw">if</span> <span class="ident">dl</span>::<span class="ident">kind</span>::<span class="ident">TYPEDEF</span> <span class="op">=</span><span class="op">=</span> <span class="ident">node</span>.<span class="ident">kind_id</span>() <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">cursor</span> <span class="op">=</span> <span class="ident">node</span>.<span class="ident">walk</span>();
                 <span class="kw">let</span> <span class="ident">items</span> <span class="op">=</span> <span class="ident">node</span>
                     .<span class="ident">children</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">cursor</span>)
-                    .<span class="ident">filter</span>(<span class="op">|</span><span class="ident">it</span><span class="op">|</span> [<span class="kw-2">*</span><span class="ident">dl</span>::<span class="ident">kind</span>::<span class="ident">TYPEDEF_EXTERN</span>, <span class="kw-2">*</span><span class="ident">dl</span>::<span class="ident">kind</span>::<span class="ident">TYPEDEF_NORMAL</span>].<span class="ident">contains</span>(<span class="kw-2">&amp;</span><span class="ident">it</span>.<span class="ident">kind_id</span>()))
+                    .<span class="ident">filter</span>(<span class="op">|</span><span class="ident">it</span><span class="op">|</span> [<span class="ident">dl</span>::<span class="ident">kind</span>::<span class="ident">TYPEDEF_EXTERN</span>, <span class="ident">dl</span>::<span class="ident">kind</span>::<span class="ident">TYPEDEF_NORMAL</span>].<span class="ident">contains</span>(<span class="kw-2">&amp;</span><span class="ident">it</span>.<span class="ident">kind_id</span>()))
                     .<span class="ident">map</span>(<span class="ident">Work</span>::<span class="ident">Node</span>);
                 <span class="ident">work</span>.<span class="ident">extend</span>(<span class="ident">items</span>);
             },
 
-            <span class="ident">Work</span>::<span class="ident">Node</span>(<span class="ident">node</span>) <span class="kw">if</span> <span class="kw-2">*</span><span class="ident">dl</span>::<span class="ident">kind</span>::<span class="ident">TYPEDEF_EXTERN</span> <span class="op">=</span><span class="op">=</span> <span class="ident">node</span>.<span class="ident">kind_id</span>() <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="ident">Work</span>::<span class="ident">Node</span>(<span class="ident">node</span>) <span class="kw">if</span> <span class="ident">dl</span>::<span class="ident">kind</span>::<span class="ident">TYPEDEF_EXTERN</span> <span class="op">=</span><span class="op">=</span> <span class="ident">node</span>.<span class="ident">kind_id</span>() <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="ident">work</span>.<span class="ident">push</span>(<span class="ident">Work</span>::<span class="ident">Data</span>);
                 <span class="ident">data</span>.<span class="ident">push</span>(<span class="ident">Data</span> {
                     <span class="ident">node</span>,
@@ -423,7 +423,7 @@
                 });
             },
 
-            <span class="ident">Work</span>::<span class="ident">Node</span>(<span class="ident">node</span>) <span class="kw">if</span> <span class="kw-2">*</span><span class="ident">dl</span>::<span class="ident">kind</span>::<span class="ident">TYPEDEF_NORMAL</span> <span class="op">=</span><span class="op">=</span> <span class="ident">node</span>.<span class="ident">kind_id</span>() <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="ident">Work</span>::<span class="ident">Node</span>(<span class="ident">node</span>) <span class="kw">if</span> <span class="ident">dl</span>::<span class="ident">kind</span>::<span class="ident">TYPEDEF_NORMAL</span> <span class="op">=</span><span class="op">=</span> <span class="ident">node</span>.<span class="ident">kind_id</span>() <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="ident">work</span>.<span class="ident">push</span>(<span class="ident">Work</span>::<span class="ident">Data</span>);
                 <span class="ident">data</span>.<span class="ident">push</span>(<span class="ident">Data</span> {
                     <span class="ident">node</span>,

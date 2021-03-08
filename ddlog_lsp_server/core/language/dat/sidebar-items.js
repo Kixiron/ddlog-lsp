@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["language","Tree-sitter language for the `.dat` grammar."]],"mod":[["field",""],["kind",""]]});
+initSidebarItems({"mod":[["field",""],["kind",""]]});
