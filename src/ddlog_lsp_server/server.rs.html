@@ -1,6 +1,6 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/server/src/server.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>server.rs - source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled ><script id="default-settings"></script><script src="../../storage.js"></script><script src="../../crates.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../../favicon.svg">
 <link rel="alternate icon" type="image/png" href="../../favicon-16x16.png">
-<link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../ddlog_lsp_server/index.html'><div class='logo-container rust-logo'><img src='../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu"><img src="../../brush.svg" width="18" height="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><script src="../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" class="help-button">?</button>
+<link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../ddlog_lsp_server/index.html'><div class='logo-container rust-logo'><img src='../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu"><img src="../../brush.svg" width="18" height="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" class="help-button">?</button>
                 <a id="settings-menu" href="../../settings.html"><img src="../../wheel.svg" width="18" height="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1"> 1</span>
 <span id="2"> 2</span>
 <span id="3"> 3</span>
@@ -83,85 +83,85 @@
 <span id="80">80</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">core</span>, <span class="ident">handler</span>};
-<span class="kw">use</span> <span class="ident">lspower</span>::<span class="ident">jsonrpc</span>;
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">Arc</span>;
+<span class="kw">use</span> <span class="ident">lspower::jsonrpc</span>;
+<span class="kw">use</span> <span class="ident">std::sync::Arc</span>;
 
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Server</span> {
-    <span class="kw">pub</span> <span class="ident">client</span>: <span class="ident">lspower</span>::<span class="ident">Client</span>,
-    <span class="kw">pub</span> <span class="ident">session</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">core</span>::<span class="ident">Session</span><span class="op">&gt;</span>,
+    <span class="kw">pub</span> <span class="ident">client</span>: <span class="ident">lspower::Client</span>,
+    <span class="kw">pub</span> <span class="ident">session</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">core::Session</span><span class="op">&gt;</span>,
 }
 
 <span class="kw">impl</span> <span class="ident">Server</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">client</span>: <span class="ident">lspower</span>::<span class="ident">Client</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">anyhow</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">session</span> <span class="op">=</span> <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">core</span>::<span class="ident">Session</span>::<span class="ident">new</span>(<span class="prelude-val">Some</span>(<span class="ident">client</span>.<span class="ident">clone</span>()))<span class="question-mark">?</span>);
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">client</span>: <span class="ident">lspower::Client</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">anyhow::Result</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
+        <span class="kw">let</span> <span class="ident">session</span> <span class="op">=</span> <span class="ident">Arc::new</span>(<span class="ident">core::Session::new</span>(<span class="prelude-val">Some</span>(<span class="ident">client</span>.<span class="ident">clone</span>()))<span class="question-mark">?</span>);
         <span class="prelude-val">Ok</span>(<span class="ident">Server</span> { <span class="ident">client</span>, <span class="ident">session</span> })
     }
 }
 
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">capabilities</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">lsp</span>::<span class="ident">ServerCapabilities</span> {
-    <span class="kw">let</span> <span class="ident">document_symbol_provider</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">lsp</span>::<span class="ident">OneOf</span>::<span class="ident">Left</span>(<span class="bool-val">true</span>));
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">capabilities</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">lsp::ServerCapabilities</span> {
+    <span class="kw">let</span> <span class="ident">document_symbol_provider</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">lsp::OneOf::Left</span>(<span class="bool-val">true</span>));
 
     <span class="kw">let</span> <span class="ident">text_document_sync</span> <span class="op">=</span> {
-        <span class="kw">let</span> <span class="ident">options</span> <span class="op">=</span> <span class="ident">lsp</span>::<span class="ident">TextDocumentSyncOptions</span> {
+        <span class="kw">let</span> <span class="ident">options</span> <span class="op">=</span> <span class="ident">lsp::TextDocumentSyncOptions</span> {
             <span class="ident">open_close</span>: <span class="prelude-val">Some</span>(<span class="bool-val">true</span>),
-            <span class="ident">change</span>: <span class="prelude-val">Some</span>(<span class="ident">lsp</span>::<span class="ident">TextDocumentSyncKind</span>::<span class="ident">Incremental</span>),
-            ..<span class="ident">Default</span>::<span class="ident">default</span>()
+            <span class="ident">change</span>: <span class="prelude-val">Some</span>(<span class="ident">lsp::TextDocumentSyncKind::Incremental</span>),
+            ..<span class="ident">Default::default</span>()
         };
-        <span class="prelude-val">Some</span>(<span class="ident">lsp</span>::<span class="ident">TextDocumentSyncCapability</span>::<span class="ident">Options</span>(<span class="ident">options</span>))
+        <span class="prelude-val">Some</span>(<span class="ident">lsp::TextDocumentSyncCapability::Options</span>(<span class="ident">options</span>))
     };
 
-    <span class="ident">lsp</span>::<span class="ident">ServerCapabilities</span> {
+    <span class="ident">lsp::ServerCapabilities</span> {
         <span class="ident">text_document_sync</span>,
         <span class="ident">document_symbol_provider</span>,
-        ..<span class="ident">Default</span>::<span class="ident">default</span>()
+        ..<span class="ident">Default::default</span>()
     }
 }
 
-<span class="attribute">#[<span class="ident">lspower</span>::<span class="ident">async_trait</span>]</span>
-<span class="kw">impl</span> <span class="ident">lspower</span>::<span class="ident">LanguageServer</span> <span class="kw">for</span> <span class="ident">Server</span> {
-    <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">initialize</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">params</span>: <span class="ident">lsp</span>::<span class="ident">InitializeParams</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">jsonrpc</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">lsp</span>::<span class="ident">InitializeResult</span><span class="op">&gt;</span> {
+<span class="attribute">#[<span class="ident">lspower::async_trait</span>]</span>
+<span class="kw">impl</span> <span class="ident">lspower::LanguageServer</span> <span class="kw">for</span> <span class="ident">Server</span> {
+    <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">initialize</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">params</span>: <span class="ident">lsp::InitializeParams</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">jsonrpc::Result</span><span class="op">&lt;</span><span class="ident">lsp::InitializeResult</span><span class="op">&gt;</span> {
         <span class="kw-2">*</span><span class="self">self</span>.<span class="ident">session</span>.<span class="ident">client_capabilities</span>.<span class="ident">write</span>().<span class="kw">await</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">params</span>.<span class="ident">capabilities</span>);
         <span class="kw">let</span> <span class="ident">capabilities</span> <span class="op">=</span> <span class="ident">capabilities</span>();
-        <span class="prelude-val">Ok</span>(<span class="ident">lsp</span>::<span class="ident">InitializeResult</span> {
+        <span class="prelude-val">Ok</span>(<span class="ident">lsp::InitializeResult</span> {
             <span class="ident">capabilities</span>,
-            ..<span class="ident">lsp</span>::<span class="ident">InitializeResult</span>::<span class="ident">default</span>()
+            ..<span class="ident">lsp::InitializeResult::default</span>()
         })
     }
 
-    <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">initialized</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw">_</span>: <span class="ident">lsp</span>::<span class="ident">InitializedParams</span>) {
-        <span class="kw">let</span> <span class="ident">typ</span> <span class="op">=</span> <span class="ident">lsp</span>::<span class="ident">MessageType</span>::<span class="ident">Info</span>;
+    <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">initialized</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw">_</span>: <span class="ident">lsp::InitializedParams</span>) {
+        <span class="kw">let</span> <span class="ident">typ</span> <span class="op">=</span> <span class="ident">lsp::MessageType::Info</span>;
         <span class="kw">let</span> <span class="ident">message</span> <span class="op">=</span> <span class="string">&quot;DDlog language server initialized!&quot;</span>;
         <span class="self">self</span>.<span class="ident">client</span>.<span class="ident">log_message</span>(<span class="ident">typ</span>, <span class="ident">message</span>).<span class="kw">await</span>;
     }
 
-    <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">shutdown</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">jsonrpc</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+    <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">shutdown</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">jsonrpc::Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
         <span class="prelude-val">Ok</span>(())
     }
 
-    <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">did_open</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">params</span>: <span class="ident">lsp</span>::<span class="ident">DidOpenTextDocumentParams</span>) {
+    <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">did_open</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">params</span>: <span class="ident">lsp::DidOpenTextDocumentParams</span>) {
         <span class="kw">let</span> <span class="ident">session</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">session</span>.<span class="ident">clone</span>();
-        <span class="ident">handler</span>::<span class="ident">text_document</span>::<span class="ident">did_open</span>(<span class="ident">session</span>, <span class="ident">params</span>).<span class="kw">await</span>.<span class="ident">unwrap</span>()
+        <span class="ident">handler::text_document::did_open</span>(<span class="ident">session</span>, <span class="ident">params</span>).<span class="kw">await</span>.<span class="ident">unwrap</span>()
     }
 
-    <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">did_change</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">params</span>: <span class="ident">lsp</span>::<span class="ident">DidChangeTextDocumentParams</span>) {
+    <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">did_change</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">params</span>: <span class="ident">lsp::DidChangeTextDocumentParams</span>) {
         <span class="kw">let</span> <span class="ident">session</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">session</span>.<span class="ident">clone</span>();
-        <span class="ident">handler</span>::<span class="ident">text_document</span>::<span class="ident">did_change</span>(<span class="ident">session</span>, <span class="ident">params</span>).<span class="kw">await</span>.<span class="ident">unwrap</span>()
+        <span class="ident">handler::text_document::did_change</span>(<span class="ident">session</span>, <span class="ident">params</span>).<span class="kw">await</span>.<span class="ident">unwrap</span>()
     }
 
-    <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">did_close</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">params</span>: <span class="ident">lsp</span>::<span class="ident">DidCloseTextDocumentParams</span>) {
+    <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">did_close</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">params</span>: <span class="ident">lsp::DidCloseTextDocumentParams</span>) {
         <span class="kw">let</span> <span class="ident">session</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">session</span>.<span class="ident">clone</span>();
-        <span class="ident">handler</span>::<span class="ident">text_document</span>::<span class="ident">did_close</span>(<span class="ident">session</span>, <span class="ident">params</span>).<span class="kw">await</span>.<span class="ident">unwrap</span>()
+        <span class="ident">handler::text_document::did_close</span>(<span class="ident">session</span>, <span class="ident">params</span>).<span class="kw">await</span>.<span class="ident">unwrap</span>()
     }
 
     <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">document_symbol</span>(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
-        <span class="ident">params</span>: <span class="ident">lsp</span>::<span class="ident">DocumentSymbolParams</span>,
-    ) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">jsonrpc</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">lsp</span>::<span class="ident">DocumentSymbolResponse</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+        <span class="ident">params</span>: <span class="ident">lsp::DocumentSymbolParams</span>,
+    ) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">jsonrpc::Result</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">lsp::DocumentSymbolResponse</span><span class="op">&gt;</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">session</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">session</span>.<span class="ident">clone</span>();
-        <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">handler</span>::<span class="ident">text_document</span>::<span class="ident">document_symbol</span>(<span class="ident">session</span>, <span class="ident">params</span>).<span class="kw">await</span>;
-        <span class="prelude-val">Ok</span>(<span class="ident">result</span>.<span class="ident">map_err</span>(<span class="ident">core</span>::<span class="ident">IntoJsonRpcError</span>)<span class="question-mark">?</span>)
+        <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">handler::text_document::document_symbol</span>(<span class="ident">session</span>, <span class="ident">params</span>).<span class="kw">await</span>;
+        <span class="prelude-val">Ok</span>(<span class="ident">result</span>.<span class="ident">map_err</span>(<span class="ident">core::IntoJsonRpcError</span>)<span class="question-mark">?</span>)
     }
 }
 </pre></div>
-</section><section id="search" class="content hidden"></section><section class="footer"></section><div id="rustdoc-vars" data-root-path="../../" data-current-crate="ddlog_lsp_server" data-search-js="../../search-index.js"></div>
+</section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../" data-current-crate="ddlog_lsp_server" data-search-index-js="../../search-index.js" data-search-js="../../search.js"></div>
     <script src="../../main.js"></script><script src="../../source-script.js"></script><script src="../../source-files.js"></script></body></html>
