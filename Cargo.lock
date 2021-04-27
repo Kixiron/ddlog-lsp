@@ -605,6 +605,7 @@ dependencies = [
  "ddlog-lsp-languages",
  "ddlog-lsp-macros",
  "futures-lite",
+ "log",
  "tree-sitter",
  "tree-sitter-facade",
  "wasm-bindgen",
