@@ -543,34 +543,39 @@ pub mod utils {
         }
     }
 
-    pub fn repeat<'tree, Ctx, Ast, Vis>(
-        fun: impl Fn(&mut Vis) -> Result<(), SyntaxErrors>,
-    ) -> impl Fn(&mut Vis) -> Result<(), SyntaxErrors>
+    pub fn repeat<'tree, T, Ctx, Ast, Vis>(
+        fun: impl Fn(&mut Vis) -> Result<T, SyntaxErrors>,
+    ) -> impl Fn(&mut Vis) -> Result<Vec<T>, SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
         Ast: AbstractSyntax<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
     {
         move |visitor| {
+            let mut results = vec![];
+
             loop {
                 let prev = visitor.node();
                 if visitor.walker().done {
                     break;
                 }
-                if fun(visitor).is_err() {
+                let item = fun(visitor);
+                if item.is_err() {
                     visitor.reset(prev);
                     break;
+                } else {
+                    results.push(item?);
                 }
             }
 
-            Ok(())
+            Ok(results)
         }
     }
 
     #[inline]
-    pub fn repeat1<'tree, Ctx, Ast, Vis>(
-        fun: impl Fn(&mut Vis) -> Result<(), SyntaxErrors>,
-    ) -> impl Fn(&mut Vis) -> Result<(), SyntaxErrors>
+    pub fn repeat1<'tree, T, Ctx, Ast, Vis>(
+        fun: impl Fn(&mut Vis) -> Result<T, SyntaxErrors>,
+    ) -> impl Fn(&mut Vis) -> Result<Vec<T>, SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
         Ast: AbstractSyntax<'tree> + 'tree,
@@ -578,28 +583,31 @@ pub mod utils {
     {
         move |visitor| {
             let mut errors = SyntaxErrors::new();
+            let mut results = vec![];
 
             if visitor.walker().done {
                 errors.push(SyntaxError::DoneEarly);
                 return Err(errors);
             }
 
-            let mut succeeded_once = false;
             loop {
                 let prev = visitor.node();
-                if let Err(mut errs) = fun(visitor) {
-                    if succeeded_once {
-                        visitor.reset(prev);
-                        break;
-                    }
-                    errors.append(&mut errs);
-                    return Err(errors);
-                } else {
-                    succeeded_once = true;
+                match fun(visitor) {
+                    Err(mut errs) => {
+                        if !results.is_empty() {
+                            visitor.reset(prev);
+                            break;
+                        }
+                        errors.append(&mut errs);
+                        return Err(errors);
+                    },
+                    Ok(item) => {
+                        results.push(item);
+                    },
                 }
             }
 
-            Ok(())
+            Ok(results)
         }
     }
 
@@ -862,6 +870,1650 @@ pub mod visit {
         visitor: &mut Vis,
         node: tree_sitter::Node<'tree>,
     ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::EscapeSequenceInterpolated>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn exp<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::EscapeSequenceInterpolated>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn exp_add<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::ExpAdd>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn exp_assign<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::ExpAssign>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn exp_binding<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::ExpBinding>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn exp_bit_and<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::ExpBitAnd>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn exp_bit_neg<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::ExpBitNeg>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn exp_bit_or<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::ExpBitOr>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn exp_bit_slice<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::ExpBitSlice>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn exp_bit_xor<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::ExpBitXor>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn exp_block<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::ExpBlock>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn exp_break<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::ExpBreak>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn exp_cast<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::ExpCast>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn exp_cat<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::ExpCat>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn exp_cond<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::ExpCond>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn exp_cons_pos<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::ExpConsPos>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn exp_cons_rec<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::ExpConsRec>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn exp_continue<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::ExpContinue>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn exp_decl_var<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::ExpDeclVar>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn exp_div<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::ExpDiv>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn exp_eq<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::ExpEq>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn exp_field<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::ExpField>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn exp_for<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::ExpFor>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn exp_fun_call<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::ExpFunCall>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn exp_fun_call_dot<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::ExpFunCallDot>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn exp_gt<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::ExpGt>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn exp_gteq<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::ExpGteq>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn exp_lambda<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::ExpLambda>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn exp_lit<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::ExpLit>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn exp_log_and<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::ExpLogAnd>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn exp_log_or<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::ExpLogOr>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn exp_lt<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::ExpLt>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn exp_lteq<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::ExpLteq>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn exp_match<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::ExpMatch>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn exp_mul<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::ExpMul>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn exp_neg<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::ExpNeg>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn exp_neq<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::ExpNeq>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn exp_proj<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::ExpProj>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn exp_ref<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::ExpRef>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn exp_rem<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::ExpRem>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn exp_return<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::ExpReturn>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn exp_seq<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::ExpSeq>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn exp_shl<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::ExpShl>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn exp_shr<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::ExpShr>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn exp_slice<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::ExpSlice>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn exp_sub<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::ExpSub>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn exp_try<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::ExpTry>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn exp_tuple<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::ExpTuple>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn exp_type<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::ExpType>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn exp_wild<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::ExpWild>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn field<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::Field>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn function<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::Function>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn function_extern<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::FunctionExtern>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn function_normal<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::FunctionNormal>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn ident<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::Ident>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn ident_lower_scoped<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::IdentLowerScoped>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn ident_upper_scoped<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::IdentUpperScoped>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn import<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::Import>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn index<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::Index>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn interpolation<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::Interpolation>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn item<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::Item>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn key_primary<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::KeyPrimary>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn lit_bool<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::LitBool>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn lit_map<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::LitMap>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn lit_num<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::LitNum>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn lit_num_bin<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::LitNumBin>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn lit_num_dec<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::LitNumDec>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn lit_num_float<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::LitNumFloat>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn lit_num_hex<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::LitNumHex>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn lit_num_oct<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::LitNumOct>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn lit_string<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::LitString>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn lit_vec<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::LitVec>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn module_alias<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::ModuleAlias>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn module_path<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::ModulePath>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn name<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::Name>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn name_arg<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::NameArg>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn name_cons<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::NameCons>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn name_func<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::NameFunc>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn name_index<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::NameIndex>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn name_rel<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::NameRel>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn name_trans<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::NameTrans>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn name_type<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::NameType>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn name_var_term<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::NameVarTerm>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn name_var_type<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::NameVarType>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn pat<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::Pat>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn pat_cons<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::PatCons>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn pat_cons_pos<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::PatConsPos>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn pat_cons_rec<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::PatConsRec>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn pat_lit<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::PatLit>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn pat_term_decl_var<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::PatTermDeclVar>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn pat_tuple<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::PatTuple>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn pat_type<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::PatType>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn pat_wild<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::PatWild>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn rel<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::Rel>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn rel_args<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::RelArgs>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn rel_elem<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::RelElem>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn rel_role<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::RelRole>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn rel_semantics<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::RelSemantics>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn rhs<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::Rhs>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn rhs_atom_neg<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::RhsAtomNeg>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn rhs_flat_map<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::RhsFlatMap>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn rhs_grouping<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::RhsGrouping>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn rhs_inspect<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::RhsInspect>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn rule<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::Rule>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn statement<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::Statement>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn statement_assign<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::StatementAssign>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn statement_block<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::StatementBlock>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn statement_empty<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::StatementEmpty>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn statement_for<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::StatementFor>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn statement_if<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::StatementIf>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn statement_insert<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::StatementInsert>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn statement_match<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::StatementMatch>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn string_quoted<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::StringQuoted>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn string_quoted_escape<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::StringQuotedEscape>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn string_raw<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::StringRaw>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn string_raw_interpolated<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::StringRawInterpolated>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn transformer<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::Transformer>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn r#type<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::Type>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn type_atom<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::TypeAtom>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn type_bigint<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::TypeBigint>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn type_bit<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::TypeBit>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn type_bool<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::TypeBool>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn type_double<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::TypeDouble>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn type_float<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::TypeFloat>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn type_fun<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::TypeFun>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn type_signed<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::TypeSigned>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn type_string<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::TypeString>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn type_trans<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::TypeTrans>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn type_trans_fun<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::TypeTransFun>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn type_trans_rel<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::TypeTransRel>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn type_tuple<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::TypeTuple>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn type_union<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::TypeUnion>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn type_user<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::TypeUser>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn type_var<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::TypeVar>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn typedef<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::Typedef>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn typedef_extern<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::Typedef>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn typedef_normal<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::Typedef>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn word<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+        node: tree_sitter::Node<'tree>,
+    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::Typedef>
     where
         Ctx: Context<'tree> + 'tree,
         Ast: AbstractSyntax<'tree> + 'tree,
