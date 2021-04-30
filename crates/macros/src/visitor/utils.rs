@@ -14,33 +14,25 @@ pub fn alphabet() -> impl Iterator<Item = String> {
     })
 }
 
-pub fn tuple_types_impl(depth: usize) -> impl Iterator<Item = Ident> {
+pub fn idents(depth: usize) -> impl Iterator<Item = Ident> {
     alphabet()
-        .take(depth)
         .take(depth)
         .map(|x| Ident::new(x.as_str(), Span::call_site()))
 }
 
-fn tuple_types_for_inner(depth: usize) -> impl Iterator<Item = Ident> {
-    alphabet()
-        .take(depth)
-        .take(depth)
-        .map(|x| Ident::new(x.as_str(), Span::call_site()))
-}
-
-pub fn tuple_types_for(depth: usize) -> TokenStream {
-    let tuple_types_for_inner = tuple_types_for_inner(depth);
+pub fn tuple_type(depth: usize) -> TokenStream {
+    let idents = idents(depth);
     match depth {
         0 => {
             quote! { () }
         },
         _ => {
-            quote! { (#(#tuple_types_for_inner),*,) }
+            quote! { (#(#idents),*,) }
         },
     }
 }
 
-pub fn tuple_types_where(depth: usize) -> impl Iterator<Item = TokenStream> {
+pub fn parsers_where(depth: usize) -> impl Iterator<Item = TokenStream> {
     alphabet().take(depth).take(depth).map(|x| {
         let ident = Ident::new(x.as_str(), Span::call_site());
         quote! {

@@ -153,12 +153,12 @@ pub fn node_kind_ids(input: TokenStream) -> TokenStream {
 #[allow(missing_docs)]
 #[proc_macro]
 pub fn impl_alt(input: TokenStream) -> TokenStream {
-    let crate::visitor::impls::MacroInput { depth } =
-        syn::parse_macro_input!(input as crate::visitor::impls::MacroInput);
+    let crate::visitor::utils::MacroInput { depth } =
+        syn::parse_macro_input!(input as crate::visitor::utils::MacroInput);
 
-    let tuple_types_impl = crate::visitor::impls::tuple_types_impl(depth);
-    let tuple_types_for = crate::visitor::impls::tuple_types_for(depth);
-    let tuple_types_where = crate::visitor::impls::tuple_types_where(depth);
+    let type_inputs = crate::visitor::utils::idents(depth);
+    let type_inputs_tuple = crate::visitor::utils::tuple_type(depth);
+    let type_inputs_where = crate::visitor::utils::parsers_where(depth);
 
     let alt_inner = match depth {
         0 => {
@@ -191,12 +191,12 @@ pub fn impl_alt(input: TokenStream) -> TokenStream {
     };
 
     let result = quote! {
-        impl<'tree, Ctx, Ast, Vis, #(#tuple_types_impl),*> Alt<'tree, Ctx, Ast, Vis> for #tuple_types_for
+        impl<'tree, Ctx, Ast, Vis, #(#type_inputs),*> Alt<'tree, Ctx, Ast, Vis> for #type_inputs_tuple
         where
             Ctx: Context<'tree> + 'tree,
             Ast: AbstractSyntax<'tree> + 'tree,
             Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
-            #(#tuple_types_where),*
+            #(#type_inputs_where),*
         {
             #[inline]
             fn alt(&self, visitor: &mut Vis) -> Result<(), SyntaxErrors> {
@@ -211,12 +211,12 @@ pub fn impl_alt(input: TokenStream) -> TokenStream {
 #[allow(missing_docs)]
 #[proc_macro]
 pub fn impl_seq(input: TokenStream) -> TokenStream {
-    let crate::visitor::impls::MacroInput { depth } =
-        syn::parse_macro_input!(input as crate::visitor::impls::MacroInput);
+    let crate::visitor::utils::MacroInput { depth } =
+        syn::parse_macro_input!(input as crate::visitor::utils::MacroInput);
 
-    let tuple_types_impl = crate::visitor::impls::tuple_types_impl(depth);
-    let tuple_types_for = crate::visitor::impls::tuple_types_for(depth);
-    let tuple_types_where = crate::visitor::impls::tuple_types_where(depth);
+    let type_inputs = crate::visitor::utils::idents(depth);
+    let type_inputs_tuple = crate::visitor::utils::tuple_type(depth);
+    let type_inputs_where = crate::visitor::utils::parsers_where(depth);
 
     let seq_inner = match depth {
         0 => {
@@ -236,12 +236,12 @@ pub fn impl_seq(input: TokenStream) -> TokenStream {
     };
 
     let result = quote! {
-        impl<'tree, Ctx, Ast, Vis, #(#tuple_types_impl),*> Seq<'tree, Ctx, Ast, Vis> for #tuple_types_for
+        impl<'tree, Ctx, Ast, Vis, #(#type_inputs),*> Seq<'tree, Ctx, Ast, Vis> for #type_inputs_tuple
         where
             Ctx: Context<'tree> + 'tree,
             Ast: AbstractSyntax<'tree> + 'tree,
             Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
-            #(#tuple_types_where),*
+            #(#type_inputs_where),*
         {
             #[inline]
             fn seq(&self, visitor: &mut Vis) -> Result<(), SyntaxErrors> {
