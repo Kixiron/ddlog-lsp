@@ -356,24 +356,24 @@ pub mod utils {
         fn alt(&self, visitor: &mut Vis) -> Result<Self::Output, SyntaxErrors>;
     }
 
-    // ddlog_lsp_macros::impl_alt!(1);
-
     ddlog_lsp_macros::enum_alt!(1);
     ddlog_lsp_macros::enum_alt!(2);
     ddlog_lsp_macros::enum_alt!(3);
 
+    ddlog_lsp_macros::impl_alt!(1);
     ddlog_lsp_macros::impl_alt!(2);
+    ddlog_lsp_macros::impl_alt!(3);
 
-    // #[inline]
-    // pub fn alt<'tree, Ctx, Ast, Vis, T>(funs: T) -> impl Fn(&mut Vis) -> Result<T::Output,
-    // SyntaxErrors> where
-    //     Ctx: Context<'tree> + 'tree,
-    //     Ast: AbstractSyntax<'tree> + 'tree,
-    //     Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
-    //     T: Alt<'tree, Ctx, Ast, Vis>,
-    // {
-    //     move |visitor| funs.alt(visitor)
-    // }
+    #[inline]
+    pub fn alt<'tree, Ctx, Ast, Vis, T, R>(funs: T) -> impl Fn(&mut Vis) -> Result<R, SyntaxErrors>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+        T: Alt<'tree, Ctx, Ast, Vis, Output = R>,
+    {
+        move |visitor| funs.alt(visitor)
+    }
 
     #[inline]
     pub fn done<'tree, Ctx, Ast, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>

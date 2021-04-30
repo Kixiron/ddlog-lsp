@@ -194,10 +194,12 @@ pub fn impl_alt(input: TokenStream) -> TokenStream {
     let return_type = Ident::new(format!("Alt{}", depth).as_str(), Span::call_site());
     let return_type_params = type_outputs_idents.clone();
 
-    let enum_conses = (0 .. depth).map(|n| {
-        let cons = Ident::new(format!("Case{}", n).as_str(), Span::call_site());
-        quote!(#return_type::#cons)
-    }).collect::<Vec<_>>();
+    let enum_conses = (0 .. depth)
+        .map(|n| {
+            let cons = Ident::new(format!("Case{}", n).as_str(), Span::call_site());
+            quote!(#return_type::#cons)
+        })
+        .collect::<Vec<_>>();
 
     let alt_inner = {
         let cases = (0 .. depth).map(|n| {
