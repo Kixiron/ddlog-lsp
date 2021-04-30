@@ -36,17 +36,21 @@ pub fn parsers_where(
     })
 }
 
-pub struct MacroInput {
-    pub depth: usize,
-}
+pub mod impls {
+    use syn::parse::{Parse, ParseStream};
 
-impl Parse for MacroInput {
-    fn parse(input: ParseStream) -> syn::parse::Result<Self> {
-        let lit = input.parse::<syn::LitInt>()?;
-        let depth = lit.base10_parse()?;
-        if depth == 0 {
-            return Err(syn::Error::new(lit.span(), "depth must be non-zero"));
+    pub struct MacroInput {
+        pub depth: usize,
+    }
+
+    impl Parse for MacroInput {
+        fn parse(input: ParseStream) -> syn::parse::Result<Self> {
+            let lit = input.parse::<syn::LitInt>()?;
+            let depth = lit.base10_parse()?;
+            if depth == 0 {
+                return Err(syn::Error::new(lit.span(), "depth must be non-zero"));
+            }
+            Ok(MacroInput { depth })
         }
-        Ok(MacroInput { depth })
     }
 }

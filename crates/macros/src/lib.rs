@@ -152,17 +152,44 @@ pub fn node_kind_ids(input: TokenStream) -> TokenStream {
 
 #[allow(missing_docs)]
 #[proc_macro]
+pub fn enum_alt(input: TokenStream) -> TokenStream {
+    use proc_macro2::{Ident, Span};
+
+    let crate::visitor::utils::impls::MacroInput { depth } =
+        syn::parse_macro_input!(input as crate::visitor::utils::impls::MacroInput);
+
+    let enum_ident = Ident::new(format!("Alt{}", depth).as_str(), Span::call_site());
+    let enum_inputs_idents = crate::visitor::utils::idents(depth, None);
+    let enum_args = enum_inputs_idents.clone().collect::<Vec<_>>();
+    let enum_cases = (0 .. depth).map(|n| {
+        let con = Ident::new(format!("Case{}", n).as_str(), Span::call_site());
+        let arg = &enum_args[n];
+        quote!(#con(#arg))
+    });
+
+    let result = quote! {
+        pub enum #enum_ident {
+            #(#enum_cases),*
+        }
+    };
+
+    result.into()
+}
+
+#[allow(missing_docs)]
+#[proc_macro]
 pub fn impl_alt(input: TokenStream) -> TokenStream {
-    let crate::visitor::utils::MacroInput { depth } =
-        syn::parse_macro_input!(input as crate::visitor::utils::MacroInput);
+    let crate::visitor::utils::impls::MacroInput { depth } =
+        syn::parse_macro_input!(input as crate::visitor::utils::impls::MacroInput);
 
-    let type_inputs = crate::visitor::utils::idents(depth, Some("I"));
-    let type_inputs_tuple = crate::visitor::utils::tuple_type(type_inputs.clone());
+    let type_inputs_idents = crate::visitor::utils::idents(depth, Some("I"));
+    let type_inputs_tuple = crate::visitor::utils::tuple_type(type_inputs_idents.clone());
 
-    let type_outputs = crate::visitor::utils::idents(depth, Some("O"));
-    let type_outputs_tuple = crate::visitor::utils::tuple_type(type_outputs.clone());
+    let type_outputs_idents = crate::visitor::utils::idents(depth, Some("O"));
+    let type_outputs_tuple = crate::visitor::utils::tuple_type(type_outputs_idents.clone());
 
-    let type_inputs_where = crate::visitor::utils::parsers_where(type_inputs.clone(), type_outputs.clone());
+    let type_generics = type_inputs_idents.clone().chain(type_outputs_idents.clone());
+    let type_inputs_where = crate::visitor::utils::parsers_where(type_inputs_idents.clone(), type_outputs_idents.clone());
 
     let alt_inner = match depth {
         0 => {
@@ -195,7 +222,7 @@ pub fn impl_alt(input: TokenStream) -> TokenStream {
     };
 
     let result = quote! {
-        impl<'tree, Ctx, Ast, Vis, #(#type_inputs),*, #(#type_outputs),*> Alt<'tree, Ctx, Ast, Vis> for #type_inputs_tuple
+        impl<'tree, Ctx, Ast, Vis, #(#type_generics),*> Alt<'tree, Ctx, Ast, Vis> for #type_inputs_tuple
         where
             Ctx: Context<'tree> + 'tree,
             Ast: AbstractSyntax<'tree> + 'tree,
@@ -219,17 +246,17 @@ pub fn impl_alt(input: TokenStream) -> TokenStream {
 pub fn impl_seq(input: TokenStream) -> TokenStream {
     use proc_macro2::{Ident, Span};
 
-    let crate::visitor::utils::MacroInput { depth } =
-        syn::parse_macro_input!(input as crate::visitor::utils::MacroInput);
+    let crate::visitor::utils::impls::MacroInput { depth } =
+        syn::parse_macro_input!(input as crate::visitor::utils::impls::MacroInput);
 
-    let type_inputs = crate::visitor::utils::idents(depth, Some("I"));
-    let type_inputs_tuple = crate::visitor::utils::tuple_type(type_inputs.clone());
+    let type_inputs_idents = crate::visitor::utils::idents(depth, Some("I"));
+    let type_inputs_tuple = crate::visitor::utils::tuple_type(type_inputs_idents.clone());
 
-    let type_outputs = crate::visitor::utils::idents(depth, Some("O"));
-    let type_outputs_tuple = crate::visitor::utils::tuple_type(type_outputs.clone());
+    let type_outputs_idents = crate::visitor::utils::idents(depth, Some("O"));
+    let type_outputs_tuple = crate::visitor::utils::tuple_type(type_outputs_idents.clone());
 
-    let type_generics = type_inputs.clone().chain(type_outputs.clone());
-    let type_inputs_where = crate::visitor::utils::parsers_where(type_inputs.clone(), type_outputs.clone());
+    let type_generics = type_inputs_idents.clone().chain(type_outputs_idents.clone());
+    let type_inputs_where = crate::visitor::utils::parsers_where(type_inputs_idents.clone(), type_outputs_idents.clone());
 
     let seq_inner = {
         let results = (0 .. depth).map(|n| Ident::new(format!("r{}", n).as_str(), Span::call_site()));
