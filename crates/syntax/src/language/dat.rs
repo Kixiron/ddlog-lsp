@@ -345,27 +345,29 @@ pub mod utils {
     use super::*;
     use crate::node::{Context, SyntaxError};
 
-    pub trait Alt<'tree, Ctx, Ast, Vis>
-    where
-        Ctx: Context<'tree> + 'tree,
-        Ast: AbstractSyntax<'tree> + 'tree,
-        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
-    {
-        fn alt(&self, visitor: &mut Vis) -> Result<(), SyntaxErrors>;
-    }
+    // pub trait Alt<'tree, Ctx, Ast, Vis>
+    // where
+    //     Ctx: Context<'tree> + 'tree,
+    //     Ast: AbstractSyntax<'tree> + 'tree,
+    //     Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    // {
+    //     type Output;
 
-    ddlog_lsp_macros::impl_alt!(0);
+    //     fn alt(&self, visitor: &mut Vis) -> Result<Self::Output, SyntaxErrors>;
+    // }
 
-    #[inline]
-    pub fn alt<'tree, Ctx, Ast, Vis, T>(funs: T) -> impl Fn(&mut Vis) -> Result<(), SyntaxErrors>
-    where
-        Ctx: Context<'tree> + 'tree,
-        Ast: AbstractSyntax<'tree> + 'tree,
-        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
-        T: Alt<'tree, Ctx, Ast, Vis>,
-    {
-        move |visitor| funs.alt(visitor)
-    }
+    // ddlog_lsp_macros::impl_alt!(1);
+
+    // #[inline]
+    // pub fn alt<'tree, Ctx, Ast, Vis, T>(funs: T) -> impl Fn(&mut Vis) -> Result<T::Output, SyntaxErrors>
+    // where
+    //     Ctx: Context<'tree> + 'tree,
+    //     Ast: AbstractSyntax<'tree> + 'tree,
+    //     Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    //     T: Alt<'tree, Ctx, Ast, Vis>,
+    // {
+    //     move |visitor| funs.alt(visitor)
+    // }
 
     #[inline]
     pub fn done<'tree, Ctx, Ast, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
@@ -468,18 +470,22 @@ pub mod utils {
         Ast: AbstractSyntax<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
     {
-        fn seq(&self, visitor: &mut Vis) -> Result<(), SyntaxErrors>;
+        type Output;
+
+        fn seq(&self, visitor: &mut Vis) -> Result<Self::Output, SyntaxErrors>;
     }
 
-    ddlog_lsp_macros::impl_seq!(0);
+    ddlog_lsp_macros::impl_seq!(1);
+    ddlog_lsp_macros::impl_seq!(2);
+    ddlog_lsp_macros::impl_seq!(3);
 
     #[inline]
-    pub fn seq<'tree, Ctx, Vis, Ast, T>(funs: T) -> impl Fn(&mut Vis) -> Result<(), SyntaxErrors>
+    pub fn seq<'tree, Ctx, Vis, Ast, T, R>(funs: T) -> impl Fn(&mut Vis) -> Result<R, SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
         Ast: AbstractSyntax<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
-        T: Seq<'tree, Ctx, Ast, Vis>,
+        T: Seq<'tree, Ctx, Ast, Vis, Output = R>,
     {
         move |visitor| funs.seq(visitor)
     }

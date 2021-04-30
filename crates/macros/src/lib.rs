@@ -156,9 +156,13 @@ pub fn impl_alt(input: TokenStream) -> TokenStream {
     let crate::visitor::utils::MacroInput { depth } =
         syn::parse_macro_input!(input as crate::visitor::utils::MacroInput);
 
-    let type_inputs = crate::visitor::utils::idents(depth);
-    let type_inputs_tuple = crate::visitor::utils::tuple_type(depth);
-    let type_inputs_where = crate::visitor::utils::parsers_where(depth);
+    let type_inputs = crate::visitor::utils::idents(depth, Some("I"));
+    let type_inputs_tuple = crate::visitor::utils::tuple_type(type_inputs.clone());
+
+    let type_outputs = crate::visitor::utils::idents(depth, Some("O"));
+    let type_outputs_tuple = crate::visitor::utils::tuple_type(type_outputs.clone());
+
+    let type_inputs_where = crate::visitor::utils::parsers_where(type_inputs.clone(), type_outputs.clone());
 
     let alt_inner = match depth {
         0 => {
@@ -191,15 +195,17 @@ pub fn impl_alt(input: TokenStream) -> TokenStream {
     };
 
     let result = quote! {
-        impl<'tree, Ctx, Ast, Vis, #(#type_inputs),*> Alt<'tree, Ctx, Ast, Vis> for #type_inputs_tuple
+        impl<'tree, Ctx, Ast, Vis, #(#type_inputs),*, #(#type_outputs),*> Alt<'tree, Ctx, Ast, Vis> for #type_inputs_tuple
         where
             Ctx: Context<'tree> + 'tree,
             Ast: AbstractSyntax<'tree> + 'tree,
             Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
             #(#type_inputs_where),*
         {
+            type Output = #type_outputs_tuple;
+
             #[inline]
-            fn alt(&self, visitor: &mut Vis) -> Result<(), SyntaxErrors> {
+            fn alt(&self, visitor: &mut Vis) -> Result<Self::Output, SyntaxErrors> {
                 #alt_inner
             }
         }
@@ -211,42 +217,43 @@ pub fn impl_alt(input: TokenStream) -> TokenStream {
 #[allow(missing_docs)]
 #[proc_macro]
 pub fn impl_seq(input: TokenStream) -> TokenStream {
+    use proc_macro2::{Ident, Span};
+
     let crate::visitor::utils::MacroInput { depth } =
         syn::parse_macro_input!(input as crate::visitor::utils::MacroInput);
 
-    let type_inputs = crate::visitor::utils::idents(depth);
-    let type_inputs_tuple = crate::visitor::utils::tuple_type(depth);
-    let type_inputs_where = crate::visitor::utils::parsers_where(depth);
+    let type_inputs = crate::visitor::utils::idents(depth, Some("I"));
+    let type_inputs_tuple = crate::visitor::utils::tuple_type(type_inputs.clone());
 
-    let seq_inner = match depth {
-        0 => {
-            quote! {}
-        },
-        _ => {
-            let cases = (0 .. depth).map(|n| {
-                let i = syn::Index::from(n);
-                quote! {
-                    self.#i(visitor)?;
-                }
-            });
-            quote! {
-                #(#cases)*
-            }
-        },
+    let type_outputs = crate::visitor::utils::idents(depth, Some("O"));
+    let type_outputs_tuple = crate::visitor::utils::tuple_type(type_outputs.clone());
+
+    let type_generics = type_inputs.clone().chain(type_outputs.clone());
+    let type_inputs_where = crate::visitor::utils::parsers_where(type_inputs.clone(), type_outputs.clone());
+
+    let seq_inner = {
+        let results = (0 .. depth).map(|n| Ident::new(format!("r{}", n).as_str(), Span::call_site()));
+        let returns = results.clone();
+        let accessors = (0 .. depth).map(|n| syn::Index::from(n));
+        quote! {
+            #(let #results = self.#accessors(visitor)?);*;
+            Ok((#(#returns),*,))
+        }
     };
 
     let result = quote! {
-        impl<'tree, Ctx, Ast, Vis, #(#type_inputs),*> Seq<'tree, Ctx, Ast, Vis> for #type_inputs_tuple
+        impl<'tree, Ctx, Ast, Vis, #(#type_generics),*> Seq<'tree, Ctx, Ast, Vis> for #type_inputs_tuple
         where
             Ctx: Context<'tree> + 'tree,
             Ast: AbstractSyntax<'tree> + 'tree,
             Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
             #(#type_inputs_where),*
         {
+            type Output = #type_outputs_tuple;
+
             #[inline]
-            fn seq(&self, visitor: &mut Vis) -> Result<(), SyntaxErrors> {
+            fn seq(&self, visitor: &mut Vis) -> Result<Self::Output, SyntaxErrors> {
                 #seq_inner
-                Ok(())
             }
         }
     };
