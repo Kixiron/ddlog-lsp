@@ -6,6 +6,7 @@
 
 use glob::glob;
 use proc_macro::TokenStream;
+use proc_macro2::{Ident, Span};
 use quote::quote;
 
 mod language;
@@ -153,13 +154,12 @@ pub fn node_kind_ids(input: TokenStream) -> TokenStream {
 #[allow(missing_docs)]
 #[proc_macro]
 pub fn enum_alt(input: TokenStream) -> TokenStream {
-    use proc_macro2::{Ident, Span};
-
     let crate::visitor::utils::impls::MacroInput { depth } =
         syn::parse_macro_input!(input as crate::visitor::utils::impls::MacroInput);
 
     let enum_ident = Ident::new(format!("Alt{}", depth).as_str(), Span::call_site());
     let enum_inputs_idents = crate::visitor::utils::idents(depth, None);
+
     let enum_args = enum_inputs_idents.clone().collect::<Vec<_>>();
     let enum_cases = (0 .. depth).map(|n| {
         let con = Ident::new(format!("Case{}", n).as_str(), Span::call_site());
@@ -168,7 +168,7 @@ pub fn enum_alt(input: TokenStream) -> TokenStream {
     });
 
     let result = quote! {
-        pub enum #enum_ident {
+        pub enum #enum_ident<#(#enum_inputs_idents),*> {
             #(#enum_cases),*
         }
     };
@@ -186,39 +186,39 @@ pub fn impl_alt(input: TokenStream) -> TokenStream {
     let type_inputs_tuple = crate::visitor::utils::tuple_type(type_inputs_idents.clone());
 
     let type_outputs_idents = crate::visitor::utils::idents(depth, Some("O"));
-    let type_outputs_tuple = crate::visitor::utils::tuple_type(type_outputs_idents.clone());
 
     let type_generics = type_inputs_idents.clone().chain(type_outputs_idents.clone());
-    let type_inputs_where = crate::visitor::utils::parsers_where(type_inputs_idents.clone(), type_outputs_idents.clone());
+    let type_inputs_where =
+        crate::visitor::utils::parsers_where(type_inputs_idents.clone(), type_outputs_idents.clone());
 
-    let alt_inner = match depth {
-        0 => {
+    let return_type = Ident::new(format!("Alt{}", depth).as_str(), Span::call_site());
+    let return_type_params = type_outputs_idents.clone();
+
+    let enum_conses = (0 .. depth).map(|n| {
+        let cons = Ident::new(format!("Case{}", n).as_str(), Span::call_site());
+        quote!(#return_type::#cons)
+    }).collect::<Vec<_>>();
+
+    let alt_inner = {
+        let cases = (0 .. depth).map(|n| {
+            let i = syn::Index::from(n);
+            let cons = &enum_conses[n];
             quote! {
-                Ok(())
-            }
-        },
-        1 => {
-            quote! {
-                self.0(visitor)
-            }
-        },
-        _ => {
-            let cases = (0 .. depth).map(|n| {
-                let i = syn::Index::from(n);
-                quote! {
-                    if let Err(mut errs) = restore(&self.#i)(visitor) {
+                match restore(&self.#i)(visitor) {
+                    Ok(result) => {
+                        return Ok(#cons(result));
+                    }
+                    Err(mut errs) => {
                         errors.append(&mut errs);
-                    } else {
-                        return Ok(());
                     }
                 }
-            });
-            quote! {
-                let mut errors = SyntaxErrors::new();
-                #(#cases)*
-                Err(errors)
             }
-        },
+        });
+        quote! {
+            let mut errors = SyntaxErrors::new();
+            #(#cases)*
+            Err(errors)
+        }
     };
 
     let result = quote! {
@@ -229,7 +229,7 @@ pub fn impl_alt(input: TokenStream) -> TokenStream {
             Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
             #(#type_inputs_where),*
         {
-            type Output = #type_outputs_tuple;
+            type Output = #return_type<#(#return_type_params),*>;
 
             #[inline]
             fn alt(&self, visitor: &mut Vis) -> Result<Self::Output, SyntaxErrors> {
@@ -244,8 +244,6 @@ pub fn impl_alt(input: TokenStream) -> TokenStream {
 #[allow(missing_docs)]
 #[proc_macro]
 pub fn impl_seq(input: TokenStream) -> TokenStream {
-    use proc_macro2::{Ident, Span};
-
     let crate::visitor::utils::impls::MacroInput { depth } =
         syn::parse_macro_input!(input as crate::visitor::utils::impls::MacroInput);
 
@@ -256,7 +254,8 @@ pub fn impl_seq(input: TokenStream) -> TokenStream {
     let type_outputs_tuple = crate::visitor::utils::tuple_type(type_outputs_idents.clone());
 
     let type_generics = type_inputs_idents.clone().chain(type_outputs_idents.clone());
-    let type_inputs_where = crate::visitor::utils::parsers_where(type_inputs_idents.clone(), type_outputs_idents.clone());
+    let type_inputs_where =
+        crate::visitor::utils::parsers_where(type_inputs_idents.clone(), type_outputs_idents.clone());
 
     let seq_inner = {
         let results = (0 .. depth).map(|n| Ident::new(format!("r{}", n).as_str(), Span::call_site()));

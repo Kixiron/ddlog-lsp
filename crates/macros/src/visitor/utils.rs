@@ -1,6 +1,5 @@
 use proc_macro2::{Ident, Span, TokenStream};
 use quote::quote;
-use syn::parse::{Parse, ParseStream};
 
 pub fn alphabet(prefix: &'static str) -> impl Iterator<Item = String> + Clone {
     ('A' ..= 'Z').cycle().zip(0 ..).map(move |(c, i)| {

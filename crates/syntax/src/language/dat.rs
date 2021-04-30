@@ -345,22 +345,28 @@ pub mod utils {
     use super::*;
     use crate::node::{Context, SyntaxError};
 
-    // pub trait Alt<'tree, Ctx, Ast, Vis>
-    // where
-    //     Ctx: Context<'tree> + 'tree,
-    //     Ast: AbstractSyntax<'tree> + 'tree,
-    //     Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
-    // {
-    //     type Output;
+    pub trait Alt<'tree, Ctx, Ast, Vis>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        type Output;
 
-    //     fn alt(&self, visitor: &mut Vis) -> Result<Self::Output, SyntaxErrors>;
-    // }
+        fn alt(&self, visitor: &mut Vis) -> Result<Self::Output, SyntaxErrors>;
+    }
 
     // ddlog_lsp_macros::impl_alt!(1);
 
+    ddlog_lsp_macros::enum_alt!(1);
+    ddlog_lsp_macros::enum_alt!(2);
+    ddlog_lsp_macros::enum_alt!(3);
+
+    ddlog_lsp_macros::impl_alt!(2);
+
     // #[inline]
-    // pub fn alt<'tree, Ctx, Ast, Vis, T>(funs: T) -> impl Fn(&mut Vis) -> Result<T::Output, SyntaxErrors>
-    // where
+    // pub fn alt<'tree, Ctx, Ast, Vis, T>(funs: T) -> impl Fn(&mut Vis) -> Result<T::Output,
+    // SyntaxErrors> where
     //     Ctx: Context<'tree> + 'tree,
     //     Ast: AbstractSyntax<'tree> + 'tree,
     //     Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
@@ -491,9 +497,9 @@ pub mod utils {
     }
 
     #[inline]
-    pub fn restore<'tree, Ctx, Ast, Vis>(
-        fun: impl Fn(&mut Vis) -> Result<(), SyntaxErrors>,
-    ) -> impl Fn(&mut Vis) -> Result<(), SyntaxErrors>
+    pub fn restore<'tree, Ctx, Ast, Vis, O>(
+        fun: impl Fn(&mut Vis) -> Result<O, SyntaxErrors>,
+    ) -> impl Fn(&mut Vis) -> Result<O, SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
         Ast: AbstractSyntax<'tree> + 'tree,
@@ -501,13 +507,16 @@ pub mod utils {
     {
         move |visitor| {
             let prev = visitor.node();
-            if let Err(mut errs) = fun(visitor) {
-                visitor.reset(prev);
-                let mut errors = SyntaxErrors::new();
-                errors.append(&mut errs);
-                return Err(errors);
+            match fun(visitor) {
+                Ok(result) => Ok(result),
+                Err(ref mut errs) => {
+                    visitor.reset(prev);
+                    let mut errors = SyntaxErrors::new();
+                    errors.append(errs);
+                    Err(errors)
+                }
+
             }
-            Ok(())
         }
     }
 }
