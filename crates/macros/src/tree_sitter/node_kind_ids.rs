@@ -2,28 +2,31 @@ use syn::parse::{Parse, ParseStream};
 
 mod keyword {
     syn::custom_keyword!(language);
-    syn::custom_keyword!(fields);
+    syn::custom_keyword!(node_kinds);
 }
 
-pub(crate) struct Field {
+pub(crate) struct NodeKind {
     pub(crate) ident: syn::Ident,
-    pub(crate) name: String,
+    pub(crate) kind: String,
+    pub(crate) named: bool,
 }
 
-impl Parse for Field {
+impl Parse for NodeKind {
     fn parse(input: ParseStream) -> syn::parse::Result<Self> {
         let content;
         syn::parenthesized!(content in input);
         let ident = content.parse()?;
         content.parse::<syn::Token![,]>()?;
-        let name = content.parse::<syn::LitStr>()?.value();
-        Ok(Field { ident, name })
+        let kind = content.parse::<syn::LitStr>()?.value();
+        content.parse::<syn::Token![,]>()?;
+        let named = content.parse::<syn::LitBool>()?.value();
+        Ok(NodeKind { ident, kind, named })
     }
 }
 
 pub(crate) struct MacroInput {
-    pub(crate) language: super::language::Language,
-    pub(crate) fields: Vec<Field>,
+    pub(crate) language: crate::language::Language,
+    pub(crate) node_kinds: Vec<NodeKind>,
 }
 
 impl Parse for MacroInput {
@@ -33,18 +36,18 @@ impl Parse for MacroInput {
         let language = input.parse()?;
         input.parse::<syn::Token![,]>()?;
 
-        input.parse::<keyword::fields>()?;
+        input.parse::<keyword::node_kinds>()?;
         input.parse::<syn::Token![:]>()?;
-        let fields = {
+        let node_kinds = {
             let content;
             syn::bracketed!(content in input);
             content
-                .parse_terminated::<Field, syn::Token![,]>(|b| b.parse())?
+                .parse_terminated::<NodeKind, syn::Token![,]>(|b| b.parse())?
                 .into_iter()
                 .collect()
         };
         input.parse::<syn::Token![,]>().ok();
 
-        Ok(MacroInput { language, fields })
+        Ok(MacroInput { language, node_kinds })
     }
 }

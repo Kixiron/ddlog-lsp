@@ -8,11 +8,10 @@ use glob::glob;
 use proc_macro::TokenStream;
 use quote::quote;
 
-mod corpus_tests;
-mod field_ids;
 mod language;
-mod node_kind_ids;
-mod syntax_utils;
+mod testing;
+mod tree_sitter;
+mod visitor;
 
 /// Generate tests from a corpus of wasm modules on the filesystem.
 ///
@@ -33,12 +32,12 @@ mod syntax_utils;
 /// ```
 #[proc_macro]
 pub fn corpus_tests(input: TokenStream) -> TokenStream {
-    let corpus_tests::MacroInput {
+    let testing::corpus_tests::MacroInput {
         corpus,
         include,
         exclude,
         handler,
-    } = syn::parse_macro_input!(input as corpus_tests::MacroInput);
+    } = syn::parse_macro_input!(input as crate::testing::corpus_tests::MacroInput);
     // Compute a string representation for the corpus name.
     let corpus_name = corpus.to_string();
     let corpus_name = corpus_name.as_str();
@@ -92,7 +91,7 @@ pub fn corpus_tests(input: TokenStream) -> TokenStream {
 pub fn field_ids(input: TokenStream) -> TokenStream {
     use ddlog_lsp_languages::language;
 
-    let macro_input = syn::parse_macro_input!(input as field_ids::MacroInput);
+    let macro_input = syn::parse_macro_input!(input as crate::tree_sitter::field_ids::MacroInput);
 
     #[allow(unsafe_code)]
     let language = match macro_input.language.0 {
@@ -124,7 +123,7 @@ pub fn field_ids(input: TokenStream) -> TokenStream {
 pub fn node_kind_ids(input: TokenStream) -> TokenStream {
     use ddlog_lsp_languages::language;
 
-    let macro_input = syn::parse_macro_input!(input as node_kind_ids::MacroInput);
+    let macro_input = syn::parse_macro_input!(input as crate::tree_sitter::node_kind_ids::MacroInput);
 
     #[allow(unsafe_code)]
     let language = match macro_input.language.0 {
@@ -154,11 +153,12 @@ pub fn node_kind_ids(input: TokenStream) -> TokenStream {
 #[allow(missing_docs)]
 #[proc_macro]
 pub fn impl_alt(input: TokenStream) -> TokenStream {
-    let syntax_utils::impls::MacroInput { depth } = syn::parse_macro_input!(input as syntax_utils::impls::MacroInput);
+    let crate::visitor::impls::MacroInput { depth } =
+        syn::parse_macro_input!(input as crate::visitor::impls::MacroInput);
 
-    let tuple_types_impl = syntax_utils::impls::tuple_types_impl(depth);
-    let tuple_types_for = syntax_utils::impls::tuple_types_for(depth);
-    let tuple_types_where = syntax_utils::impls::tuple_types_where(depth);
+    let tuple_types_impl = crate::visitor::impls::tuple_types_impl(depth);
+    let tuple_types_for = crate::visitor::impls::tuple_types_for(depth);
+    let tuple_types_where = crate::visitor::impls::tuple_types_where(depth);
 
     let alt_inner = match depth {
         0 => {
@@ -211,11 +211,12 @@ pub fn impl_alt(input: TokenStream) -> TokenStream {
 #[allow(missing_docs)]
 #[proc_macro]
 pub fn impl_seq(input: TokenStream) -> TokenStream {
-    let syntax_utils::impls::MacroInput { depth } = syn::parse_macro_input!(input as syntax_utils::impls::MacroInput);
+    let crate::visitor::impls::MacroInput { depth } =
+        syn::parse_macro_input!(input as crate::visitor::impls::MacroInput);
 
-    let tuple_types_impl = syntax_utils::impls::tuple_types_impl(depth);
-    let tuple_types_for = syntax_utils::impls::tuple_types_for(depth);
-    let tuple_types_where = syntax_utils::impls::tuple_types_where(depth);
+    let tuple_types_impl = crate::visitor::impls::tuple_types_impl(depth);
+    let tuple_types_for = crate::visitor::impls::tuple_types_for(depth);
+    let tuple_types_where = crate::visitor::impls::tuple_types_where(depth);
 
     let seq_inner = match depth {
         0 => {
