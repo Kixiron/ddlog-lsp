@@ -395,14 +395,14 @@ mod syntax_utils {
 
 #[allow(missing_docs)]
 #[proc_macro]
-pub fn impl_choice(input: TokenStream) -> TokenStream {
+pub fn impl_alt(input: TokenStream) -> TokenStream {
     let syntax_utils::impls::MacroInput { depth } = syn::parse_macro_input!(input as syntax_utils::impls::MacroInput);
 
     let tuple_types_impl = syntax_utils::impls::tuple_types_impl(depth);
     let tuple_types_for = syntax_utils::impls::tuple_types_for(depth);
     let tuple_types_where = syntax_utils::impls::tuple_types_where(depth);
 
-    let choice_inner = match depth {
+    let alt_inner = match depth {
         0 => {
             quote! {
                 Ok(())
@@ -433,7 +433,7 @@ pub fn impl_choice(input: TokenStream) -> TokenStream {
     };
 
     let result = quote! {
-        impl<'tree, Ctx, Ast, Vis, #(#tuple_types_impl),*> Choice<'tree, Ctx, Ast, Vis> for #tuple_types_for
+        impl<'tree, Ctx, Ast, Vis, #(#tuple_types_impl),*> Alt<'tree, Ctx, Ast, Vis> for #tuple_types_for
         where
             Ctx: Context<'tree> + 'tree,
             Ast: AbstractSyntax<'tree> + 'tree,
@@ -441,8 +441,8 @@ pub fn impl_choice(input: TokenStream) -> TokenStream {
             #(#tuple_types_where),*
         {
             #[inline]
-            fn choice(&self, visitor: &mut Vis) -> Result<(), SyntaxErrors> {
-                #choice_inner
+            fn alt(&self, visitor: &mut Vis) -> Result<(), SyntaxErrors> {
+                #alt_inner
             }
         }
     };

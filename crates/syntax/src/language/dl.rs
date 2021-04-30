@@ -486,26 +486,26 @@ pub mod utils {
     use super::*;
     use crate::node::{Context, SyntaxError};
 
-    pub trait Choice<'tree, Ctx, Ast, Vis>
+    pub trait Alt<'tree, Ctx, Ast, Vis>
     where
         Ctx: Context<'tree> + 'tree,
         Ast: AbstractSyntax<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
     {
-        fn choice(&self, visitor: &mut Vis) -> Result<(), SyntaxErrors>;
+        fn alt(&self, visitor: &mut Vis) -> Result<(), SyntaxErrors>;
     }
 
-    ddlog_lsp_macros::impl_choice!(0);
+    ddlog_lsp_macros::impl_alt!(0);
 
     #[inline]
-    pub fn choice<'tree, Ctx, Ast, Vis, T>(funs: T) -> impl Fn(&mut Vis) -> Result<(), SyntaxErrors>
+    pub fn alt<'tree, Ctx, Ast, Vis, T>(funs: T) -> impl Fn(&mut Vis) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
         Ast: AbstractSyntax<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
-        T: Choice<'tree, Ctx, Ast, Vis>,
+        T: Alt<'tree, Ctx, Ast, Vis>,
     {
-        move |visitor| funs.choice(visitor)
+        move |visitor| funs.alt(visitor)
     }
 
     #[inline]
