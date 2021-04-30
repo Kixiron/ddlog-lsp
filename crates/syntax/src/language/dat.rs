@@ -392,9 +392,9 @@ pub mod utils {
     }
 
     #[inline]
-    pub fn optional<'tree, Ctx, Ast, Vis>(
-        fun: impl Fn(&mut Vis) -> Result<(), SyntaxErrors>,
-    ) -> impl Fn(&mut Vis) -> Result<(), SyntaxErrors>
+    pub fn optional<'tree, Ctx, Ast, Vis, R>(
+        fun: impl Fn(&mut Vis) -> Result<R, SyntaxErrors>,
+    ) -> impl Fn(&mut Vis) -> Result<Option<R>, SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
         Ast: AbstractSyntax<'tree> + 'tree,
@@ -402,48 +402,58 @@ pub mod utils {
     {
         move |visitor| {
             let prev = visitor.node();
-            if fun(visitor).is_err() {
-                visitor.reset(prev);
+            match fun(visitor) {
+                Ok(result) => Ok(Some(result)),
+                Err(_) => {
+                    visitor.reset(prev);
+                    Ok(None)
+                },
             }
-
-            Ok(())
         }
     }
 
-    pub fn repeat<'tree, Ctx, Ast, Vis>(
-        fun: impl Fn(&mut Vis) -> Result<(), SyntaxErrors>,
-    ) -> impl Fn(&mut Vis) -> Result<(), SyntaxErrors>
+    pub fn repeat<'tree, Ctx, Ast, Vis, R>(
+        fun: impl Fn(&mut Vis) -> Result<R, SyntaxErrors>,
+    ) -> impl Fn(&mut Vis) -> Result<Vec<R>, SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
         Ast: AbstractSyntax<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
     {
         move |visitor| {
+            let mut results = vec![];
+
             loop {
                 let prev = visitor.node();
                 if visitor.walker().done {
                     break;
                 }
-                if fun(visitor).is_err() {
-                    visitor.reset(prev);
-                    break;
+                match fun(visitor) {
+                    Ok(result) => {
+                        results.push(result);
+                    },
+                    Err(_) => {
+                        visitor.reset(prev);
+                        break;
+                    },
                 }
             }
 
-            Ok(())
+            Ok(results)
         }
     }
 
     #[inline]
-    pub fn repeat1<'tree, Ctx, Ast, Vis>(
-        fun: impl Fn(&mut Vis) -> Result<(), SyntaxErrors>,
-    ) -> impl Fn(&mut Vis) -> Result<(), SyntaxErrors>
+    pub fn repeat1<'tree, Ctx, Ast, Vis, R>(
+        fun: impl Fn(&mut Vis) -> Result<R, SyntaxErrors>,
+    ) -> impl Fn(&mut Vis) -> Result<Vec<R>, SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
         Ast: AbstractSyntax<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
     {
         move |visitor| {
+            let mut results = vec![];
             let mut errors = SyntaxErrors::new();
 
             if visitor.walker().done {
@@ -451,22 +461,24 @@ pub mod utils {
                 return Err(errors);
             }
 
-            let mut succeeded_once = false;
             loop {
                 let prev = visitor.node();
-                if let Err(mut errs) = fun(visitor) {
-                    if succeeded_once {
-                        visitor.reset(prev);
-                        break;
-                    }
-                    errors.append(&mut errs);
-                    return Err(errors);
-                } else {
-                    succeeded_once = true;
+                match fun(visitor) {
+                    Ok(result) => {
+                        results.push(result);
+                    },
+                    Err(mut errs) => {
+                        if !results.is_empty() {
+                            visitor.reset(prev);
+                            break;
+                        }
+                        errors.append(&mut errs);
+                        return Err(errors);
+                    },
                 }
             }
 
-            Ok(())
+            Ok(results)
         }
     }
 
@@ -514,8 +526,7 @@ pub mod utils {
                     let mut errors = SyntaxErrors::new();
                     errors.append(errs);
                     Err(errors)
-                }
-
+                },
             }
         }
     }

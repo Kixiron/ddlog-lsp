@@ -189,10 +189,10 @@ pub fn impl_alt(input: TokenStream) -> TokenStream {
 
     let type_generics = type_inputs_idents.clone().chain(type_outputs_idents.clone());
     let type_inputs_where =
-        crate::visitor::utils::parsers_where(type_inputs_idents.clone(), type_outputs_idents.clone());
+        crate::visitor::utils::parsers_where(type_inputs_idents, type_outputs_idents.clone());
 
     let return_type = Ident::new(format!("Alt{}", depth).as_str(), Span::call_site());
-    let return_type_params = type_outputs_idents.clone();
+    let return_type_params = type_outputs_idents;
 
     let enum_conses = (0 .. depth)
         .map(|n| {
@@ -257,12 +257,12 @@ pub fn impl_seq(input: TokenStream) -> TokenStream {
 
     let type_generics = type_inputs_idents.clone().chain(type_outputs_idents.clone());
     let type_inputs_where =
-        crate::visitor::utils::parsers_where(type_inputs_idents.clone(), type_outputs_idents.clone());
+        crate::visitor::utils::parsers_where(type_inputs_idents, type_outputs_idents);
 
     let seq_inner = {
         let results = (0 .. depth).map(|n| Ident::new(format!("r{}", n).as_str(), Span::call_site()));
         let returns = results.clone();
-        let accessors = (0 .. depth).map(|n| syn::Index::from(n));
+        let accessors = (0 .. depth).map(syn::Index::from);
         quote! {
             #(let #results = self.#accessors(visitor)?);*;
             Ok((#(#returns),*,))
