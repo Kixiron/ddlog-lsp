@@ -43,6 +43,7 @@ pub mod kind {
             (LIT_STRING, "lit_string", true),
             (LOG_LEVEL, "log_level", true),
             (MODIFY, "modify", true),
+            (NAME_REL, "name_rel", true),
             (PROFILE, "profile", true),
             (QUERY_INDEX, "query_index", true),
             (RECORD, "record", true),
@@ -147,6 +148,7 @@ pub trait AbstractSyntax<'tree> {
     type LitString;
     type LogLevel;
     type Modify;
+    type NameRel;
     type Profile;
     type QueryIndex;
     type Record;
@@ -162,6 +164,15 @@ pub trait AbstractSyntax<'tree> {
     type ValStruct;
     type ValTuple;
     type Word;
+
+    #[allow(non_snake_case)]
+    fn ROOT(commands: Vec<Self::Command>) -> Self::ROOT;
+
+    fn atom(atom_rec: Self::AtomRec, atom_pos: Self::AtomPos, atom_elem: Self::AtomElem) -> Self::Atom;
+
+    fn atom_elem(name_rel: Self::NameRel, exp: Self::Exp) -> Self::AtomElem;
+
+    fn atom_pos(name_rel: Self::NameRel, exps: Vec<Self::Exp>) -> Self::AtomPos;
 }
 
 #[allow(missing_docs)]
@@ -177,164 +188,168 @@ where
     fn reset(&mut self, node: tree_sitter::Node<'tree>);
 
     #[allow(non_snake_case)]
-    fn visit_ROOT(&mut self, node: tree_sitter::Node<'tree>) -> anyhow::Result<Ast::ROOT> {
-        visit::ROOT(self, node)
+    fn visit_ROOT(&mut self) -> Result<Ast::ROOT, SyntaxErrors> {
+        visit::ROOT(self)
     }
 
-    fn visit_atom(&mut self, node: tree_sitter::Node<'tree>) -> anyhow::Result<Ast::Atom> {
-        visit::atom(self, node)
+    fn visit_atom(&mut self) -> Result<Ast::Atom, SyntaxErrors> {
+        visit::atom(self)
     }
 
-    fn visit_atom_elem(&mut self, node: tree_sitter::Node<'tree>) -> anyhow::Result<Ast::AtomElem> {
-        visit::atom_elem(self, node)
+    fn visit_atom_elem(&mut self) -> Result<Ast::AtomElem, SyntaxErrors> {
+        visit::atom_elem(self)
     }
 
-    fn visit_atom_pos(&mut self, node: tree_sitter::Node<'tree>) -> anyhow::Result<Ast::AtomPos> {
-        visit::atom_pos(self, node)
+    fn visit_atom_pos(&mut self) -> Result<Ast::AtomPos, SyntaxErrors> {
+        visit::atom_pos(self)
     }
 
-    fn visit_atom_rec(&mut self, node: tree_sitter::Node<'tree>) -> anyhow::Result<Ast::AtomRec> {
-        visit::atom_rec(self, node)
+    fn visit_atom_rec(&mut self) -> Result<Ast::AtomRec, SyntaxErrors> {
+        visit::atom_rec(self)
     }
 
-    fn visit_clear(&mut self, node: tree_sitter::Node<'tree>) -> anyhow::Result<Ast::Clear> {
-        visit::clear(self, node)
+    fn visit_clear(&mut self) -> Result<Ast::Clear, SyntaxErrors> {
+        visit::clear(self)
     }
 
-    fn visit_command(&mut self, node: tree_sitter::Node<'tree>) -> anyhow::Result<Ast::Command> {
-        visit::command(self, node)
+    fn visit_command(&mut self) -> Result<Ast::Command, SyntaxErrors> {
+        visit::command(self)
     }
 
-    fn visit_comment_line(&mut self, node: tree_sitter::Node<'tree>) -> anyhow::Result<Ast::CommentLine> {
-        visit::comment_line(self, node)
+    fn visit_comment_line(&mut self) -> Result<Ast::CommentLine, SyntaxErrors> {
+        visit::comment_line(self)
     }
 
-    fn visit_commit(&mut self, node: tree_sitter::Node<'tree>) -> anyhow::Result<Ast::Commit> {
-        visit::commit(self, node)
+    fn visit_commit(&mut self) -> Result<Ast::Commit, SyntaxErrors> {
+        visit::commit(self)
     }
 
-    fn visit_cons_arg(&mut self, node: tree_sitter::Node<'tree>) -> anyhow::Result<Ast::ConsArg> {
-        visit::cons_arg(self, node)
+    fn visit_cons_arg(&mut self) -> Result<Ast::ConsArg, SyntaxErrors> {
+        visit::cons_arg(self)
     }
 
-    fn visit_cons_args(&mut self, node: tree_sitter::Node<'tree>) -> anyhow::Result<Ast::ConsArgs> {
-        visit::cons_args(self, node)
+    fn visit_cons_args(&mut self) -> Result<Ast::ConsArgs, SyntaxErrors> {
+        visit::cons_args(self)
     }
 
-    fn visit_delete(&mut self, node: tree_sitter::Node<'tree>) -> anyhow::Result<Ast::Delete> {
-        visit::delete(self, node)
+    fn visit_delete(&mut self) -> Result<Ast::Delete, SyntaxErrors> {
+        visit::delete(self)
     }
 
-    fn visit_delete_key(&mut self, node: tree_sitter::Node<'tree>) -> anyhow::Result<Ast::DeleteKey> {
-        visit::delete_key(self, node)
+    fn visit_delete_key(&mut self) -> Result<Ast::DeleteKey, SyntaxErrors> {
+        visit::delete_key(self)
     }
 
-    fn visit_dump(&mut self, node: tree_sitter::Node<'tree>) -> anyhow::Result<Ast::Dump> {
-        visit::dump(self, node)
+    fn visit_dump(&mut self) -> Result<Ast::Dump, SyntaxErrors> {
+        visit::dump(self)
     }
 
-    fn visit_dump_index(&mut self, node: tree_sitter::Node<'tree>) -> anyhow::Result<Ast::DumpIndex> {
-        visit::dump_index(self, node)
+    fn visit_dump_index(&mut self) -> Result<Ast::DumpIndex, SyntaxErrors> {
+        visit::dump_index(self)
     }
 
-    fn visit_echo(&mut self, node: tree_sitter::Node<'tree>) -> anyhow::Result<Ast::Echo> {
-        visit::echo(self, node)
+    fn visit_echo(&mut self) -> Result<Ast::Echo, SyntaxErrors> {
+        visit::echo(self)
     }
 
-    fn visit_exit(&mut self, node: tree_sitter::Node<'tree>) -> anyhow::Result<Ast::Exit> {
-        visit::exit(self, node)
+    fn visit_exit(&mut self) -> Result<Ast::Exit, SyntaxErrors> {
+        visit::exit(self)
     }
 
-    fn visit_exp(&mut self, node: tree_sitter::Node<'tree>) -> anyhow::Result<Ast::Exp> {
-        visit::exp(self, node)
+    fn visit_exp(&mut self) -> Result<Ast::Exp, SyntaxErrors> {
+        visit::exp(self)
     }
 
-    fn visit_insert(&mut self, node: tree_sitter::Node<'tree>) -> anyhow::Result<Ast::Insert> {
-        visit::insert(self, node)
+    fn visit_insert(&mut self) -> Result<Ast::Insert, SyntaxErrors> {
+        visit::insert(self)
     }
 
-    fn visit_insert_or_update(&mut self, node: tree_sitter::Node<'tree>) -> anyhow::Result<Ast::InsertOrUpdate> {
-        visit::insert_or_update(self, node)
+    fn visit_insert_or_update(&mut self) -> Result<Ast::InsertOrUpdate, SyntaxErrors> {
+        visit::insert_or_update(self)
     }
 
-    fn visit_lit_num_hex(&mut self, node: tree_sitter::Node<'tree>) -> anyhow::Result<Ast::LitNumHex> {
-        visit::lit_num_hex(self, node)
+    fn visit_lit_num_hex(&mut self) -> Result<Ast::LitNumHex, SyntaxErrors> {
+        visit::lit_num_hex(self)
     }
 
-    fn visit_lit_serialized(&mut self, node: tree_sitter::Node<'tree>) -> anyhow::Result<Ast::LitSerialized> {
-        visit::lit_serialized(self, node)
+    fn visit_lit_serialized(&mut self) -> Result<Ast::LitSerialized, SyntaxErrors> {
+        visit::lit_serialized(self)
     }
 
-    fn visit_lit_string(&mut self, node: tree_sitter::Node<'tree>) -> anyhow::Result<Ast::LitString> {
-        visit::lit_string(self, node)
+    fn visit_lit_string(&mut self) -> Result<Ast::LitString, SyntaxErrors> {
+        visit::lit_string(self)
     }
 
-    fn visit_log_level(&mut self, node: tree_sitter::Node<'tree>) -> anyhow::Result<Ast::LogLevel> {
-        visit::log_level(self, node)
+    fn visit_log_level(&mut self) -> Result<Ast::LogLevel, SyntaxErrors> {
+        visit::log_level(self)
     }
 
-    fn visit_modify(&mut self, node: tree_sitter::Node<'tree>) -> anyhow::Result<Ast::Modify> {
-        visit::modify(self, node)
+    fn visit_modify(&mut self) -> Result<Ast::Modify, SyntaxErrors> {
+        visit::modify(self)
     }
 
-    fn visit_profile(&mut self, node: tree_sitter::Node<'tree>) -> anyhow::Result<Ast::Profile> {
-        visit::profile(self, node)
+    fn visit_name_rel(&mut self) -> Result<Ast::NameRel, SyntaxErrors> {
+        visit::name_rel(self)
     }
 
-    fn visit_query_index(&mut self, node: tree_sitter::Node<'tree>) -> anyhow::Result<Ast::QueryIndex> {
-        visit::query_index(self, node)
+    fn visit_profile(&mut self) -> Result<Ast::Profile, SyntaxErrors> {
+        visit::profile(self)
     }
 
-    fn visit_record(&mut self, node: tree_sitter::Node<'tree>) -> anyhow::Result<Ast::Record> {
-        visit::record(self, node)
+    fn visit_query_index(&mut self) -> Result<Ast::QueryIndex, SyntaxErrors> {
+        visit::query_index(self)
     }
 
-    fn visit_record_named(&mut self, node: tree_sitter::Node<'tree>) -> anyhow::Result<Ast::RecordNamed> {
-        visit::record_named(self, node)
+    fn visit_record(&mut self) -> Result<Ast::Record, SyntaxErrors> {
+        visit::record(self)
     }
 
-    fn visit_rollback(&mut self, node: tree_sitter::Node<'tree>) -> anyhow::Result<Ast::Rollback> {
-        visit::rollback(self, node)
+    fn visit_record_named(&mut self) -> Result<Ast::RecordNamed, SyntaxErrors> {
+        visit::record_named(self)
     }
 
-    fn visit_serde_encoding(&mut self, node: tree_sitter::Node<'tree>) -> anyhow::Result<Ast::SerdeEncoding> {
-        visit::serde_encoding(self, node)
+    fn visit_rollback(&mut self) -> Result<Ast::Rollback, SyntaxErrors> {
+        visit::rollback(self)
     }
 
-    fn visit_sleep(&mut self, node: tree_sitter::Node<'tree>) -> anyhow::Result<Ast::Sleep> {
-        visit::sleep(self, node)
+    fn visit_serde_encoding(&mut self) -> Result<Ast::SerdeEncoding, SyntaxErrors> {
+        visit::serde_encoding(self)
     }
 
-    fn visit_start(&mut self, node: tree_sitter::Node<'tree>) -> anyhow::Result<Ast::Start> {
-        visit::start(self, node)
+    fn visit_sleep(&mut self) -> Result<Ast::Sleep, SyntaxErrors> {
+        visit::sleep(self)
     }
 
-    fn visit_timestamp(&mut self, node: tree_sitter::Node<'tree>) -> anyhow::Result<Ast::Timestamp> {
-        visit::timestamp(self, node)
+    fn visit_start(&mut self) -> Result<Ast::Start, SyntaxErrors> {
+        visit::start(self)
     }
 
-    fn visit_update(&mut self, node: tree_sitter::Node<'tree>) -> anyhow::Result<Ast::Update> {
-        visit::update(self, node)
+    fn visit_timestamp(&mut self) -> Result<Ast::Timestamp, SyntaxErrors> {
+        visit::timestamp(self)
     }
 
-    fn visit_updates(&mut self, node: tree_sitter::Node<'tree>) -> anyhow::Result<Ast::Updates> {
-        visit::updates(self, node)
+    fn visit_update(&mut self) -> Result<Ast::Update, SyntaxErrors> {
+        visit::update(self)
     }
 
-    fn visit_val_array(&mut self, node: tree_sitter::Node<'tree>) -> anyhow::Result<Ast::ValArray> {
-        visit::val_array(self, node)
+    fn visit_updates(&mut self) -> Result<Ast::Updates, SyntaxErrors> {
+        visit::updates(self)
     }
 
-    fn visit_val_struct(&mut self, node: tree_sitter::Node<'tree>) -> anyhow::Result<Ast::ValStruct> {
-        visit::val_struct(self, node)
+    fn visit_val_array(&mut self) -> Result<Ast::ValArray, SyntaxErrors> {
+        visit::val_array(self)
     }
 
-    fn visit_val_tuple(&mut self, node: tree_sitter::Node<'tree>) -> anyhow::Result<Ast::ValTuple> {
-        visit::val_tuple(self, node)
+    fn visit_val_struct(&mut self) -> Result<Ast::ValStruct, SyntaxErrors> {
+        visit::val_struct(self)
     }
 
-    fn visit_word(&mut self, node: tree_sitter::Node<'tree>) -> anyhow::Result<Ast::Word> {
-        visit::word(self, node)
+    fn visit_val_tuple(&mut self) -> Result<Ast::ValTuple, SyntaxErrors> {
+        visit::val_tuple(self)
+    }
+
+    fn visit_word(&mut self) -> Result<Ast::Word, SyntaxErrors> {
+        visit::word(self)
     }
 }
 
@@ -493,9 +508,9 @@ pub mod utils {
         fn seq(&self, visitor: &mut Vis) -> Result<Self::Output, SyntaxErrors>;
     }
 
-    ddlog_lsp_macros::impl_seq!(1);
     ddlog_lsp_macros::impl_seq!(2);
     ddlog_lsp_macros::impl_seq!(3);
+    ddlog_lsp_macros::impl_seq!(4);
 
     #[inline]
     pub fn seq<'tree, Ctx, Vis, Ast, T, R>(funs: T) -> impl Fn(&mut Vis) -> Result<R, SyntaxErrors>
@@ -535,62 +550,86 @@ pub mod utils {
 #[allow(unused)]
 #[allow(missing_docs)]
 pub mod visit {
-    use super::{AbstractSyntax, Visitor};
+    use super::*;
     use crate::node::Context;
 
     #[allow(non_snake_case)]
-    pub fn ROOT<'tree, Ctx, Ast, Vis>(
-        visitor: &mut Vis,
-        node: tree_sitter::Node<'tree>,
-    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::ROOT>
+    pub fn ROOT<'tree, Ctx, Ast, Vis>(visitor: &mut Vis) -> Result<<Ast as AbstractSyntax<'tree>>::ROOT, SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
         Ast: AbstractSyntax<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
     {
-        todo!()
+        visitor.walker().rule(kind::ROOT)?;
+        let commands = utils::repeat(command)(visitor)?;
+        Ok(Ast::ROOT(commands))
     }
 
-    pub fn atom<'tree, Ctx, Ast, Vis>(
-        visitor: &mut Vis,
-        node: tree_sitter::Node<'tree>,
-    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::Atom>
+    pub fn atom<'tree, Ctx, Ast, Vis>(visitor: &mut Vis) -> Result<<Ast as AbstractSyntax<'tree>>::Atom, SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
         Ast: AbstractSyntax<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
     {
-        todo!()
+        visitor.walker().rule(kind::ATOM)?;
+        let (atom_rec, atom_pos, atom_elem) = utils::seq((atom_rec, atom_pos, atom_elem))(visitor)?;
+        Ok(Ast::atom(atom_rec, atom_pos, atom_elem))
     }
 
     pub fn atom_elem<'tree, Ctx, Ast, Vis>(
         visitor: &mut Vis,
-        node: tree_sitter::Node<'tree>,
-    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::AtomElem>
+    ) -> Result<<Ast as AbstractSyntax<'tree>>::AtomElem, SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
         Ast: AbstractSyntax<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
     {
-        todo!()
+        visitor.walker().rule(kind::ATOM_ELEM)?;
+        let (name_rel, _, exp, _) =
+            utils::seq((name_rel, token::LEFT_SQUARE_BRACKET, exp, token::RIGHT_SQUARE_BRACKET))(visitor)?;
+        Ok(Ast::atom_elem(name_rel, exp))
     }
 
     pub fn atom_pos<'tree, Ctx, Ast, Vis>(
         visitor: &mut Vis,
-        node: tree_sitter::Node<'tree>,
-    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::AtomPos>
+    ) -> Result<<Ast as AbstractSyntax<'tree>>::AtomPos, SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
         Ast: AbstractSyntax<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
     {
-        todo!()
+        visitor.walker().rule(kind::ATOM_POS)?;
+        let (name_rel, pat1) = utils::seq((
+            name_rel,
+            utils::optional(utils::seq((
+                token::LEFT_PARENTHESIS,
+                utils::optional(utils::seq((
+                    exp,
+                    utils::repeat(utils::seq((token::COMMA, exp))),
+                    utils::optional(token::COMMA),
+                ))),
+                token::RIGHT_PARENTHESIS,
+            ))),
+        ))(visitor)?;
+        let exps = match pat1 {
+            None => vec![],
+            Some((_, pat10, _)) => match pat10 {
+                None => vec![],
+                Some((exp, pat101, _)) => {
+                    let mut exps = vec![exp];
+                    for ((_, exp)) in pat101 {
+                        exps.push(exp);
+                    }
+                    exps
+                },
+            },
+        };
+        Ok(Ast::atom_pos(name_rel, exps))
     }
 
     pub fn atom_rec<'tree, Ctx, Ast, Vis>(
         visitor: &mut Vis,
-        node: tree_sitter::Node<'tree>,
-    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::AtomRec>
+    ) -> Result<<Ast as AbstractSyntax<'tree>>::AtomRec, SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
         Ast: AbstractSyntax<'tree> + 'tree,
@@ -599,10 +638,7 @@ pub mod visit {
         todo!()
     }
 
-    pub fn clear<'tree, Ctx, Ast, Vis>(
-        visitor: &mut Vis,
-        node: tree_sitter::Node<'tree>,
-    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::Clear>
+    pub fn clear<'tree, Ctx, Ast, Vis>(visitor: &mut Vis) -> Result<<Ast as AbstractSyntax<'tree>>::Clear, SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
         Ast: AbstractSyntax<'tree> + 'tree,
@@ -613,8 +649,7 @@ pub mod visit {
 
     pub fn command<'tree, Ctx, Ast, Vis>(
         visitor: &mut Vis,
-        node: tree_sitter::Node<'tree>,
-    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::Command>
+    ) -> Result<<Ast as AbstractSyntax<'tree>>::Command, SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
         Ast: AbstractSyntax<'tree> + 'tree,
@@ -625,8 +660,7 @@ pub mod visit {
 
     pub fn comment_line<'tree, Ctx, Ast, Vis>(
         visitor: &mut Vis,
-        node: tree_sitter::Node<'tree>,
-    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::CommentLine>
+    ) -> Result<<Ast as AbstractSyntax<'tree>>::CommentLine, SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
         Ast: AbstractSyntax<'tree> + 'tree,
@@ -637,8 +671,7 @@ pub mod visit {
 
     pub fn commit<'tree, Ctx, Ast, Vis>(
         visitor: &mut Vis,
-        node: tree_sitter::Node<'tree>,
-    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::Commit>
+    ) -> Result<<Ast as AbstractSyntax<'tree>>::Commit, SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
         Ast: AbstractSyntax<'tree> + 'tree,
@@ -649,8 +682,7 @@ pub mod visit {
 
     pub fn cons_arg<'tree, Ctx, Ast, Vis>(
         visitor: &mut Vis,
-        node: tree_sitter::Node<'tree>,
-    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::ConsArg>
+    ) -> Result<<Ast as AbstractSyntax<'tree>>::ConsArg, SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
         Ast: AbstractSyntax<'tree> + 'tree,
@@ -661,8 +693,7 @@ pub mod visit {
 
     pub fn cons_args<'tree, Ctx, Ast, Vis>(
         visitor: &mut Vis,
-        node: tree_sitter::Node<'tree>,
-    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::ConsArgs>
+    ) -> Result<<Ast as AbstractSyntax<'tree>>::ConsArgs, SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
         Ast: AbstractSyntax<'tree> + 'tree,
@@ -673,8 +704,7 @@ pub mod visit {
 
     pub fn delete<'tree, Ctx, Ast, Vis>(
         visitor: &mut Vis,
-        node: tree_sitter::Node<'tree>,
-    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::Delete>
+    ) -> Result<<Ast as AbstractSyntax<'tree>>::Delete, SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
         Ast: AbstractSyntax<'tree> + 'tree,
@@ -685,8 +715,7 @@ pub mod visit {
 
     pub fn delete_key<'tree, Ctx, Ast, Vis>(
         visitor: &mut Vis,
-        node: tree_sitter::Node<'tree>,
-    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::DeleteKey>
+    ) -> Result<<Ast as AbstractSyntax<'tree>>::DeleteKey, SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
         Ast: AbstractSyntax<'tree> + 'tree,
@@ -695,10 +724,7 @@ pub mod visit {
         todo!()
     }
 
-    pub fn dump<'tree, Ctx, Ast, Vis>(
-        visitor: &mut Vis,
-        node: tree_sitter::Node<'tree>,
-    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::Dump>
+    pub fn dump<'tree, Ctx, Ast, Vis>(visitor: &mut Vis) -> Result<<Ast as AbstractSyntax<'tree>>::Dump, SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
         Ast: AbstractSyntax<'tree> + 'tree,
@@ -709,8 +735,7 @@ pub mod visit {
 
     pub fn dump_index<'tree, Ctx, Ast, Vis>(
         visitor: &mut Vis,
-        node: tree_sitter::Node<'tree>,
-    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::DumpIndex>
+    ) -> Result<<Ast as AbstractSyntax<'tree>>::DumpIndex, SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
         Ast: AbstractSyntax<'tree> + 'tree,
@@ -719,10 +744,7 @@ pub mod visit {
         todo!()
     }
 
-    pub fn echo<'tree, Ctx, Ast, Vis>(
-        visitor: &mut Vis,
-        node: tree_sitter::Node<'tree>,
-    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::Echo>
+    pub fn echo<'tree, Ctx, Ast, Vis>(visitor: &mut Vis) -> Result<<Ast as AbstractSyntax<'tree>>::Echo, SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
         Ast: AbstractSyntax<'tree> + 'tree,
@@ -731,10 +753,7 @@ pub mod visit {
         todo!()
     }
 
-    pub fn exit<'tree, Ctx, Ast, Vis>(
-        visitor: &mut Vis,
-        node: tree_sitter::Node<'tree>,
-    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::Exit>
+    pub fn exit<'tree, Ctx, Ast, Vis>(visitor: &mut Vis) -> Result<<Ast as AbstractSyntax<'tree>>::Exit, SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
         Ast: AbstractSyntax<'tree> + 'tree,
@@ -743,10 +762,7 @@ pub mod visit {
         todo!()
     }
 
-    pub fn exp<'tree, Ctx, Ast, Vis>(
-        visitor: &mut Vis,
-        node: tree_sitter::Node<'tree>,
-    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::Exp>
+    pub fn exp<'tree, Ctx, Ast, Vis>(visitor: &mut Vis) -> Result<<Ast as AbstractSyntax<'tree>>::Exp, SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
         Ast: AbstractSyntax<'tree> + 'tree,
@@ -757,8 +773,7 @@ pub mod visit {
 
     pub fn insert<'tree, Ctx, Ast, Vis>(
         visitor: &mut Vis,
-        node: tree_sitter::Node<'tree>,
-    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::Insert>
+    ) -> Result<<Ast as AbstractSyntax<'tree>>::Insert, SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
         Ast: AbstractSyntax<'tree> + 'tree,
@@ -769,8 +784,7 @@ pub mod visit {
 
     pub fn insert_or_update<'tree, Ctx, Ast, Vis>(
         visitor: &mut Vis,
-        node: tree_sitter::Node<'tree>,
-    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::InsertOrUpdate>
+    ) -> Result<<Ast as AbstractSyntax<'tree>>::InsertOrUpdate, SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
         Ast: AbstractSyntax<'tree> + 'tree,
@@ -781,8 +795,7 @@ pub mod visit {
 
     pub fn lit_num_hex<'tree, Ctx, Ast, Vis>(
         visitor: &mut Vis,
-        node: tree_sitter::Node<'tree>,
-    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::LitNumHex>
+    ) -> Result<<Ast as AbstractSyntax<'tree>>::LitNumHex, SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
         Ast: AbstractSyntax<'tree> + 'tree,
@@ -793,8 +806,7 @@ pub mod visit {
 
     pub fn lit_serialized<'tree, Ctx, Ast, Vis>(
         visitor: &mut Vis,
-        node: tree_sitter::Node<'tree>,
-    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::LitSerialized>
+    ) -> Result<<Ast as AbstractSyntax<'tree>>::LitSerialized, SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
         Ast: AbstractSyntax<'tree> + 'tree,
@@ -805,8 +817,7 @@ pub mod visit {
 
     pub fn lit_string<'tree, Ctx, Ast, Vis>(
         visitor: &mut Vis,
-        node: tree_sitter::Node<'tree>,
-    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::LitString>
+    ) -> Result<<Ast as AbstractSyntax<'tree>>::LitString, SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
         Ast: AbstractSyntax<'tree> + 'tree,
@@ -817,8 +828,7 @@ pub mod visit {
 
     pub fn log_level<'tree, Ctx, Ast, Vis>(
         visitor: &mut Vis,
-        node: tree_sitter::Node<'tree>,
-    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::LogLevel>
+    ) -> Result<<Ast as AbstractSyntax<'tree>>::LogLevel, SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
         Ast: AbstractSyntax<'tree> + 'tree,
@@ -829,8 +839,18 @@ pub mod visit {
 
     pub fn modify<'tree, Ctx, Ast, Vis>(
         visitor: &mut Vis,
-        node: tree_sitter::Node<'tree>,
-    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::Modify>
+    ) -> Result<<Ast as AbstractSyntax<'tree>>::Modify, SyntaxErrors>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Ast: AbstractSyntax<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn name_rel<'tree, Ctx, Ast, Vis>(
+        visitor: &mut Vis,
+    ) -> Result<<Ast as AbstractSyntax<'tree>>::NameRel, SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
         Ast: AbstractSyntax<'tree> + 'tree,
@@ -841,8 +861,7 @@ pub mod visit {
 
     pub fn profile<'tree, Ctx, Ast, Vis>(
         visitor: &mut Vis,
-        node: tree_sitter::Node<'tree>,
-    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::Profile>
+    ) -> Result<<Ast as AbstractSyntax<'tree>>::Profile, SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
         Ast: AbstractSyntax<'tree> + 'tree,
@@ -853,8 +872,7 @@ pub mod visit {
 
     pub fn query_index<'tree, Ctx, Ast, Vis>(
         visitor: &mut Vis,
-        node: tree_sitter::Node<'tree>,
-    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::QueryIndex>
+    ) -> Result<<Ast as AbstractSyntax<'tree>>::QueryIndex, SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
         Ast: AbstractSyntax<'tree> + 'tree,
@@ -865,8 +883,7 @@ pub mod visit {
 
     pub fn record<'tree, Ctx, Ast, Vis>(
         visitor: &mut Vis,
-        node: tree_sitter::Node<'tree>,
-    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::Record>
+    ) -> Result<<Ast as AbstractSyntax<'tree>>::Record, SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
         Ast: AbstractSyntax<'tree> + 'tree,
@@ -877,8 +894,7 @@ pub mod visit {
 
     pub fn record_named<'tree, Ctx, Ast, Vis>(
         visitor: &mut Vis,
-        node: tree_sitter::Node<'tree>,
-    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::RecordNamed>
+    ) -> Result<<Ast as AbstractSyntax<'tree>>::RecordNamed, SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
         Ast: AbstractSyntax<'tree> + 'tree,
@@ -889,8 +905,7 @@ pub mod visit {
 
     pub fn rollback<'tree, Ctx, Ast, Vis>(
         visitor: &mut Vis,
-        node: tree_sitter::Node<'tree>,
-    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::Rollback>
+    ) -> Result<<Ast as AbstractSyntax<'tree>>::Rollback, SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
         Ast: AbstractSyntax<'tree> + 'tree,
@@ -901,8 +916,7 @@ pub mod visit {
 
     pub fn serde_encoding<'tree, Ctx, Ast, Vis>(
         visitor: &mut Vis,
-        node: tree_sitter::Node<'tree>,
-    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::SerdeEncoding>
+    ) -> Result<<Ast as AbstractSyntax<'tree>>::SerdeEncoding, SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
         Ast: AbstractSyntax<'tree> + 'tree,
@@ -911,10 +925,7 @@ pub mod visit {
         todo!()
     }
 
-    pub fn sleep<'tree, Ctx, Ast, Vis>(
-        visitor: &mut Vis,
-        node: tree_sitter::Node<'tree>,
-    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::Sleep>
+    pub fn sleep<'tree, Ctx, Ast, Vis>(visitor: &mut Vis) -> Result<<Ast as AbstractSyntax<'tree>>::Sleep, SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
         Ast: AbstractSyntax<'tree> + 'tree,
@@ -923,10 +934,7 @@ pub mod visit {
         todo!()
     }
 
-    pub fn start<'tree, Ctx, Ast, Vis>(
-        visitor: &mut Vis,
-        node: tree_sitter::Node<'tree>,
-    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::Start>
+    pub fn start<'tree, Ctx, Ast, Vis>(visitor: &mut Vis) -> Result<<Ast as AbstractSyntax<'tree>>::Start, SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
         Ast: AbstractSyntax<'tree> + 'tree,
@@ -937,8 +945,7 @@ pub mod visit {
 
     pub fn timestamp<'tree, Ctx, Ast, Vis>(
         visitor: &mut Vis,
-        node: tree_sitter::Node<'tree>,
-    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::Timestamp>
+    ) -> Result<<Ast as AbstractSyntax<'tree>>::Timestamp, SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
         Ast: AbstractSyntax<'tree> + 'tree,
@@ -949,8 +956,7 @@ pub mod visit {
 
     pub fn update<'tree, Ctx, Ast, Vis>(
         visitor: &mut Vis,
-        node: tree_sitter::Node<'tree>,
-    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::Update>
+    ) -> Result<<Ast as AbstractSyntax<'tree>>::Update, SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
         Ast: AbstractSyntax<'tree> + 'tree,
@@ -961,8 +967,7 @@ pub mod visit {
 
     pub fn updates<'tree, Ctx, Ast, Vis>(
         visitor: &mut Vis,
-        node: tree_sitter::Node<'tree>,
-    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::Updates>
+    ) -> Result<<Ast as AbstractSyntax<'tree>>::Updates, SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
         Ast: AbstractSyntax<'tree> + 'tree,
@@ -973,8 +978,7 @@ pub mod visit {
 
     pub fn val_array<'tree, Ctx, Ast, Vis>(
         visitor: &mut Vis,
-        node: tree_sitter::Node<'tree>,
-    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::ValArray>
+    ) -> Result<<Ast as AbstractSyntax<'tree>>::ValArray, SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
         Ast: AbstractSyntax<'tree> + 'tree,
@@ -985,8 +989,7 @@ pub mod visit {
 
     pub fn val_struct<'tree, Ctx, Ast, Vis>(
         visitor: &mut Vis,
-        node: tree_sitter::Node<'tree>,
-    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::ValStruct>
+    ) -> Result<<Ast as AbstractSyntax<'tree>>::ValStruct, SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
         Ast: AbstractSyntax<'tree> + 'tree,
@@ -997,8 +1000,7 @@ pub mod visit {
 
     pub fn val_tuple<'tree, Ctx, Ast, Vis>(
         visitor: &mut Vis,
-        node: tree_sitter::Node<'tree>,
-    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::ValTuple>
+    ) -> Result<<Ast as AbstractSyntax<'tree>>::ValTuple, SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
         Ast: AbstractSyntax<'tree> + 'tree,
@@ -1007,15 +1009,48 @@ pub mod visit {
         todo!()
     }
 
-    pub fn word<'tree, Ctx, Ast, Vis>(
-        visitor: &mut Vis,
-        node: tree_sitter::Node<'tree>,
-    ) -> anyhow::Result<<Ast as AbstractSyntax<'tree>>::Word>
+    pub fn word<'tree, Ctx, Ast, Vis>(visitor: &mut Vis) -> Result<<Ast as AbstractSyntax<'tree>>::Word, SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
         Ast: AbstractSyntax<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
     {
         todo!()
+    }
+
+    pub mod token {
+        use super::*;
+
+        macro_rules! make {
+            ($name:tt) => {
+                #[inline]
+                #[allow(non_snake_case)]
+                pub fn $name<'tree, Ctx, Ast, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
+                where
+                    Ctx: Context<'tree> + 'tree,
+                    Ast: AbstractSyntax<'tree> + 'tree,
+                    Vis: Visitor<'tree, Ctx, Ast> + ?Sized,
+                {
+                    visitor.walker().token(super::super::token::$name)?;
+                    Ok(())
+                }
+            };
+        }
+
+        make!(COMMA);
+        make!(COMMERCIAL_AT);
+        make!(DOLLAR_SIGN);
+        make!(EQUALS_SIGN);
+        make!(FULL_STOP);
+        make!(LEFT_CURLY_BRACKET);
+        make!(LEFT_PARENTHESIS);
+        make!(LEFT_SQUARE_BRACKET);
+        make!(LEFTWARDS_ARROW);
+        make!(NUMBER_SIGN);
+        make!(QUOTATION_MARK);
+        make!(RIGHT_CURLY_BRACKET);
+        make!(RIGHT_PARENTHESIS);
+        make!(RIGHT_SQUARE_BRACKET);
+        make!(SEMICOLON);
     }
 }

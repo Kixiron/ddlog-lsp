@@ -188,8 +188,7 @@ pub fn impl_alt(input: TokenStream) -> TokenStream {
     let type_outputs_idents = crate::visitor::utils::idents(depth, Some("O"));
 
     let type_generics = type_inputs_idents.clone().chain(type_outputs_idents.clone());
-    let type_inputs_where =
-        crate::visitor::utils::parsers_where(type_inputs_idents, type_outputs_idents.clone());
+    let type_inputs_where = crate::visitor::utils::parsers_where(type_inputs_idents, type_outputs_idents.clone());
 
     let return_type = Ident::new(format!("Alt{}", depth).as_str(), Span::call_site());
     let return_type_params = type_outputs_idents;
@@ -256,8 +255,7 @@ pub fn impl_seq(input: TokenStream) -> TokenStream {
     let type_outputs_tuple = crate::visitor::utils::tuple_type(type_outputs_idents.clone());
 
     let type_generics = type_inputs_idents.clone().chain(type_outputs_idents.clone());
-    let type_inputs_where =
-        crate::visitor::utils::parsers_where(type_inputs_idents, type_outputs_idents);
+    let type_inputs_where = crate::visitor::utils::parsers_where(type_inputs_idents, type_outputs_idents);
 
     let seq_inner = {
         let results = (0 .. depth).map(|n| Ident::new(format!("r{}", n).as_str(), Span::call_site()));
