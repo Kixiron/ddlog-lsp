@@ -6,7 +6,6 @@
 
 use glob::glob;
 use proc_macro::TokenStream;
-use proc_macro2::{Ident, Span};
 use quote::quote;
 
 mod language;
@@ -153,32 +152,7 @@ pub fn node_kind_ids(input: TokenStream) -> TokenStream {
 
 #[allow(missing_docs)]
 #[proc_macro]
-pub fn enum_alt(input: TokenStream) -> TokenStream {
-    let crate::visitor::utils::impls::MacroInput { depth } =
-        syn::parse_macro_input!(input as crate::visitor::utils::impls::MacroInput);
-
-    let enum_ident = Ident::new(format!("Alt{}", depth).as_str(), Span::call_site());
-    let enum_inputs_idents = crate::visitor::utils::idents(depth, None);
-
-    let enum_args = enum_inputs_idents.clone().collect::<Vec<_>>();
-    let enum_cases = (0 .. depth).map(|n| {
-        let con = Ident::new(format!("Case{}", n).as_str(), Span::call_site());
-        let arg = &enum_args[n];
-        quote!(#con(#arg))
-    });
-
-    let result = quote! {
-        pub enum #enum_ident<#(#enum_inputs_idents),*> {
-            #(#enum_cases),*
-        }
-    };
-
-    result.into()
-}
-
-#[allow(missing_docs)]
-#[proc_macro]
-pub fn impl_alt(input: TokenStream) -> TokenStream {
+pub fn impl_choice(input: TokenStream) -> TokenStream {
     let crate::visitor::utils::impls::MacroInput { depth } =
         syn::parse_macro_input!(input as crate::visitor::utils::impls::MacroInput);
 
@@ -210,14 +184,14 @@ pub fn impl_alt(input: TokenStream) -> TokenStream {
     };
 
     let result = quote! {
-        impl<'tree, Ctx, Vis, #(#type_generics),*> Alt<'tree, Ctx, Vis> for #type_inputs_tuple
+        impl<'tree, Ctx, Vis, #(#type_generics),*> Choice<'tree, Ctx, Vis> for #type_inputs_tuple
         where
             Ctx: Context<'tree> + 'tree,
             Vis: Visitor<'tree, Ctx> + ?Sized,
             #(#type_inputs_where),*
         {
             #[inline]
-            fn alt(&self, visitor: &mut Vis) -> Result<(), SyntaxErrors> {
+            fn choice(&self, visitor: &mut Vis) -> Result<(), SyntaxErrors> {
                 #alt_inner
             }
         }
