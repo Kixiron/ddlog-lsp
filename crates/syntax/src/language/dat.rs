@@ -44,6 +44,7 @@ pub mod kind {
             (LOG_LEVEL, "log_level", true),
             (MODIFY, "modify", true),
             (NAME_ARG, "name_arg", true),
+            (NAME_INDEX, "name_index", true),
             (NAME_REL, "name_rel", true),
             (PROFILE, "profile", true),
             (QUERY_INDEX, "query_index", true),
@@ -316,6 +317,7 @@ pub mod utils {
     ddlog_lsp_macros::impl_choice!(2);
     ddlog_lsp_macros::impl_choice!(3);
     ddlog_lsp_macros::impl_choice!(14);
+    ddlog_lsp_macros::impl_choice!(51);
 
     #[inline]
     pub fn choice<'tree, Ctx, Vis, T>(funs: T) -> impl Fn(&mut Vis) -> Result<(), SyntaxErrors>
@@ -579,7 +581,8 @@ pub mod visit {
         Ctx: Context<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
-        todo!()
+        visitor.walker().rule(kind::COMMENT_LINE)?;
+        Ok(())
     }
 
     pub fn commit<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
@@ -587,7 +590,8 @@ pub mod visit {
         Ctx: Context<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
-        todo!()
+        visitor.walker().rule(kind::COMMIT)?;
+        utils::seq((token::COMMIT, utils::optional(token::DUMP_CHANGES), token::SEMICOLON))(visitor)
     }
 
     pub fn cons_arg<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
@@ -595,7 +599,8 @@ pub mod visit {
         Ctx: Context<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
-        todo!()
+        visitor.walker().rule(kind::CONS_ARG)?;
+        utils::seq((cons_arg, utils::repeat(utils::seq((token::COMMA, cons_arg)))))(visitor)
     }
 
     pub fn cons_args<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
@@ -603,7 +608,8 @@ pub mod visit {
         Ctx: Context<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
-        todo!()
+        visitor.walker().rule(kind::CONS_ARGS)?;
+        utils::choice((record_named, record))(visitor)
     }
 
     pub fn delete<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
@@ -611,7 +617,8 @@ pub mod visit {
         Ctx: Context<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
-        todo!()
+        visitor.walker().rule(kind::DELETE)?;
+        utils::seq((token::DELETE, atom))(visitor)
     }
 
     pub fn delete_key<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
@@ -627,7 +634,8 @@ pub mod visit {
         Ctx: Context<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
-        todo!()
+        visitor.walker().rule(kind::DUMP)?;
+        utils::seq((token::DUMP, utils::optional(name_rel), token::SEMICOLON))(visitor)
     }
 
     pub fn dump_index<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
@@ -635,7 +643,8 @@ pub mod visit {
         Ctx: Context<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
-        todo!()
+        visitor.walker().rule(kind::DUMP_INDEX)?;
+        utils::seq((token::DUMP_INDEX, name_index, token::SEMICOLON))(visitor)
     }
 
     pub fn echo<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
@@ -643,7 +652,9 @@ pub mod visit {
         Ctx: Context<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
-        todo!()
+        visitor.walker().rule(kind::ECHO)?;
+        let todo1: Box<dyn Fn(&mut Vis) -> _> = todo!();
+        utils::seq((token::ECHO, todo1, token::SEMICOLON))(visitor)
     }
 
     pub fn exit<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
@@ -651,10 +662,464 @@ pub mod visit {
         Ctx: Context<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
-        todo!()
+        visitor.walker().rule(kind::EXIT)?;
+        utils::seq((token::EXIT, token::SEMICOLON))(visitor)
     }
 
     pub fn exp<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx> + ?Sized,
+    {
+        visitor.walker().rule(kind::EXP)?;
+        utils::choice((
+            lit_serialized,
+            exp_add,
+            exp_assign,
+            exp_binding,
+            exp_bit_and,
+            exp_bit_neg,
+            exp_bit_or,
+            exp_bit_slice,
+            exp_bit_xor,
+            exp_block,
+            exp_break,
+            exp_cast,
+            exp_cat,
+            exp_cond,
+            exp_continue,
+            exp_cons_pos,
+            exp_cons_rec,
+            exp_decl_var,
+            exp_div,
+            exp_eq,
+            exp_field,
+            exp_for,
+            exp_fun_call,
+            exp_fun_call_dot,
+            exp_gt,
+            exp_gteq,
+            exp_lambda,
+            exp_lit,
+            exp_log_and,
+            exp_log_imp,
+            exp_log_neg,
+            exp_log_or,
+            exp_lt,
+            exp_lteq,
+            exp_match,
+            exp_mul,
+            exp_neg,
+            exp_neq,
+            exp_proj,
+            exp_ref,
+            exp_rem,
+            exp_return,
+            exp_seq,
+            exp_shl,
+            exp_shr,
+            exp_slice,
+            exp_sub,
+            exp_try,
+            exp_tuple,
+            exp_type,
+            exp_wild,
+        ))(visitor)
+    }
+
+    pub fn exp_add<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn exp_assign<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn exp_binding<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn exp_bit_and<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn exp_bit_neg<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn exp_bit_or<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn exp_bit_slice<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn exp_bit_xor<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn exp_block<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn exp_break<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn exp_cast<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn exp_cat<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn exp_cond<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn exp_continue<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn exp_cons_pos<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn exp_cons_rec<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn exp_decl_var<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn exp_div<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn exp_eq<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn exp_field<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn exp_for<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn exp_fun_call<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn exp_fun_call_dot<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn exp_gt<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn exp_gteq<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn exp_lambda<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn exp_lit<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn exp_log_and<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn exp_log_imp<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn exp_log_neg<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn exp_log_or<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn exp_lt<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn exp_lteq<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn exp_match<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn exp_mul<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn exp_neg<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn exp_neq<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn exp_proj<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn exp_ref<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn exp_rem<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn exp_return<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn exp_seq<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn exp_shl<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn exp_shr<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn exp_slice<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn exp_sub<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn exp_try<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn exp_tuple<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn exp_type<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn exp_wild<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx> + ?Sized,
@@ -719,6 +1184,14 @@ pub mod visit {
     }
 
     pub fn name_arg<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn name_index<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx> + ?Sized,
@@ -872,8 +1345,32 @@ pub mod visit {
             };
         }
 
+        // keywords
         make!(CLEAR);
+        make!(COMMIT);
+        make!(CPU);
+        make!(DELETE);
+        make!(DELETE_KEY);
+        make!(DUMP);
+        make!(DUMP_CHANGES);
+        make!(DUMP_INDEX);
+        make!(ECHO);
+        make!(EXIT);
+        make!(INSERT);
+        make!(INSERT_OR_UPDATE);
+        make!(JSON);
+        make!(LOG_LEVEL);
+        make!(MODIFY);
+        make!(OFF);
+        make!(ON);
+        make!(PROFILE);
+        make!(QUERY_INDEX);
+        make!(ROLLBACK);
+        make!(SLEEP);
+        make!(START);
+        make!(TIMESTAMP);
 
+        // tokens
         make!(COMMA);
         make!(COMMERCIAL_AT);
         make!(DOLLAR_SIGN);
