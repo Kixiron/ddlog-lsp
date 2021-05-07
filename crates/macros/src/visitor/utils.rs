@@ -4,11 +4,6 @@ use quote::quote;
 pub fn alphabet(prefix: &'static str) -> impl Iterator<Item = String> + Clone {
     ('A' ..= 'Z').cycle().zip(0 ..).map(move |(c, i)| {
         let suffix = i / 26;
-        let suffix = if suffix > 0 {
-            (suffix - 1).to_string()
-        } else {
-            "".to_string()
-        };
         format!("{}{}{}", prefix, c, suffix)
     })
 }
