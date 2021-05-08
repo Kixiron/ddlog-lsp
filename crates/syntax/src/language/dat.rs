@@ -34,6 +34,7 @@ pub mod kind {
             (DUMP, "dump", true),
             (DUMP_INDEX, "dump_index", true),
             (ECHO, "echo", true),
+            (ECHO_INNER, "echo_inner", true),
             (EXIT, "exit", true),
             (EXP, "exp", true),
             (INSERT, "insert", true),
@@ -195,6 +196,10 @@ where
 
     fn visit_echo(&mut self) -> Result<(), SyntaxErrors> {
         visit::echo(self)
+    }
+
+    fn visit_echo_inner(&mut self) -> Result<(), SyntaxErrors> {
+        visit::echo_inner(self)
     }
 
     fn visit_exit(&mut self) -> Result<(), SyntaxErrors> {
@@ -626,7 +631,12 @@ pub mod visit {
         Ctx: Context<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
-        todo!()
+        visitor.walker().rule(kind::DELETE_KEY)?;
+        utils::seq((
+            token::DELETE_KEY,
+            name_rel,
+            exp,
+        ))(visitor)
     }
 
     pub fn dump<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>

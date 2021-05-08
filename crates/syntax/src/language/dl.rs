@@ -179,6 +179,7 @@ pub mod kind {
             (TYPE_UNION, "type_union", true),
             (TYPE_USER, "type_user", true),
             (TYPE_VAR, "type_var", true),
+            (TYPE_VAR_IDENT, "type_var_ident", true),
             (TYPEDEF, "typedef", true),
             (TYPEDEF_EXTERN, "typedef_extern", true),
             (TYPEDEF_NORMAL, "typedef_normal", true),
@@ -247,6 +248,7 @@ pub mod token {
         language: "ddlog.dl",
         node_kinds: [
             (AMPERSAND, "&", false),
+            (APOSTROPHE, "'", false),
             (ASTERISK, "*", false),
             (ASTERISK_SOLIDUS, "*/", false),
             (CIRCUMFLEX_ACCENT, "^", false),
@@ -315,10 +317,662 @@ where
 
     fn reset(&mut self, node: tree_sitter::Node<'tree>);
 
-    // #[allow(non_snake_case)]
-    // fn visit_ROOT(&mut self, node: tree_sitter::Node<'tree>) -> anyhow::Result<Ast::ROOT> {
-    //     visit::ROOT(self, node)
-    // }
+    #[allow(non_snake_case)]
+    fn visit_ROOT(&mut self) -> Result<(), SyntaxErrors> {
+        visit::ROOT(self)
+    }
+
+    fn visit_annotated_item(&mut self) -> Result<(), SyntaxErrors> {
+        visit::annotated_item(self)
+    }
+
+    fn visit_apply(&mut self) -> Result<(), SyntaxErrors> {
+        visit::annotated_item(self)
+    }
+
+    fn visit_arg(&mut self) -> Result<(), SyntaxErrors> {
+        visit::arg(self)
+    }
+
+    fn visit_arg_opt_type(&mut self) -> Result<(), SyntaxErrors> {
+        visit::arg_opt_type(self)
+    }
+
+    fn visit_arg_trans(&mut self) -> Result<(), SyntaxErrors> {
+        visit::arg_trans(self)
+    }
+
+    fn visit_atom(&mut self) -> Result<(), SyntaxErrors> {
+        visit::atom(self)
+    }
+
+    fn visit_atom_elem(&mut self) -> Result<(), SyntaxErrors> {
+        visit::atom_elem(self)
+    }
+
+    fn visit_atom_pos(&mut self) -> Result<(), SyntaxErrors> {
+        visit::atom_pos(self)
+    }
+
+    fn visit_atom_rec(&mut self) -> Result<(), SyntaxErrors> {
+        visit::atom_rec(self)
+    }
+
+    fn visit_attribute(&mut self) -> Result<(), SyntaxErrors> {
+        visit::attribute(self)
+    }
+
+    fn visit_attributes(&mut self) -> Result<(), SyntaxErrors> {
+        visit::attributes(self)
+    }
+
+    fn visit_comment_block(&mut self) -> Result<(), SyntaxErrors> {
+        visit::comment_block(self)
+    }
+
+    fn visit_comment_block_inner(&mut self) -> Result<(), SyntaxErrors> {
+        visit::comment_block_inner(self)
+    }
+
+    fn visit_comment_line(&mut self) -> Result<(), SyntaxErrors> {
+        visit::comment_line(self)
+    }
+
+    fn visit_cons(&mut self) -> Result<(), SyntaxErrors> {
+        visit::cons(self)
+    }
+
+    fn visit_cons_pos(&mut self) -> Result<(), SyntaxErrors> {
+        visit::cons_pos(self)
+    }
+
+    fn visit_cons_rec(&mut self) -> Result<(), SyntaxErrors> {
+        visit::cons_rec(self)
+    }
+
+    fn visit_escape_sequence(&mut self) -> Result<(), SyntaxErrors> {
+        visit::escape_sequence(self)
+    }
+
+    fn visit_escape_sequence_interpolated(&mut self) -> Result<(), SyntaxErrors> {
+        visit::escape_sequence_interpolated(self)
+    }
+
+    fn visit_exp(&mut self) -> Result<(), SyntaxErrors> {
+        visit::exp(self)
+    }
+
+    fn visit_exp_add(&mut self) -> Result<(), SyntaxErrors> {
+        visit::exp_add(self)
+    }
+
+    fn visit_exp_assign(&mut self) -> Result<(), SyntaxErrors> {
+        visit::exp_assign(self)
+    }
+
+    fn visit_exp_binding(&mut self) -> Result<(), SyntaxErrors> {
+        visit::exp_binding(self)
+    }
+
+    fn visit_exp_bit_and(&mut self) -> Result<(), SyntaxErrors> {
+        visit::exp_bit_and(self)
+    }
+
+    fn visit_exp_bit_neg(&mut self) -> Result<(), SyntaxErrors> {
+        visit::exp_bit_neg(self)
+    }
+
+    fn visit_exp_bit_or(&mut self) -> Result<(), SyntaxErrors> {
+        visit::exp_bit_or(self)
+    }
+
+    fn visit_exp_bit_slice(&mut self) -> Result<(), SyntaxErrors> {
+        visit::exp_bit_slice(self)
+    }
+
+    fn visit_exp_bit_xor(&mut self) -> Result<(), SyntaxErrors> {
+        visit::exp_bit_xor(self)
+    }
+
+    fn visit_exp_block(&mut self) -> Result<(), SyntaxErrors> {
+        visit::exp_block(self)
+    }
+
+    fn visit_exp_break(&mut self) -> Result<(), SyntaxErrors> {
+        visit::exp_break(self)
+    }
+
+    fn visit_exp_cast(&mut self) -> Result<(), SyntaxErrors> {
+        visit::exp_cast(self)
+    }
+
+    fn visit_exp_cat(&mut self) -> Result<(), SyntaxErrors> {
+        visit::exp_cat(self)
+    }
+
+    fn visit_exp_cond(&mut self) -> Result<(), SyntaxErrors> {
+        visit::exp_cond(self)
+    }
+
+    fn visit_exp_cons_pos(&mut self) -> Result<(), SyntaxErrors> {
+        visit::exp_cons_pos(self)
+    }
+
+    fn visit_exp_cons_rec(&mut self) -> Result<(), SyntaxErrors> {
+        visit::exp_cons_rec(self)
+    }
+
+    fn visit_exp_continue(&mut self) -> Result<(), SyntaxErrors> {
+        visit::exp_continue(self)
+    }
+
+    fn visit_exp_decl_var(&mut self) -> Result<(), SyntaxErrors> {
+        visit::exp_decl_var(self)
+    }
+
+    fn visit_exp_div(&mut self) -> Result<(), SyntaxErrors> {
+        visit::exp_div(self)
+    }
+
+    fn visit_exp_eq(&mut self) -> Result<(), SyntaxErrors> {
+        visit::exp_eq(self)
+    }
+
+    fn visit_exp_field(&mut self) -> Result<(), SyntaxErrors> {
+        visit::exp_field(self)
+    }
+
+    fn visit_exp_for(&mut self) -> Result<(), SyntaxErrors> {
+        visit::exp_for(self)
+    }
+
+    fn visit_exp_fun_call(&mut self) -> Result<(), SyntaxErrors> {
+        visit::exp_fun_call(self)
+    }
+
+    fn visit_exp_fun_call_dot(&mut self) -> Result<(), SyntaxErrors> {
+        visit::exp_fun_call_dot(self)
+    }
+
+    fn visit_exp_gt(&mut self) -> Result<(), SyntaxErrors> {
+        visit::exp_gt(self)
+    }
+
+    fn visit_exp_gteq(&mut self) -> Result<(), SyntaxErrors> {
+        visit::exp_gteq(self)
+    }
+
+    fn visit_exp_lambda(&mut self) -> Result<(), SyntaxErrors> {
+        visit::exp_lambda(self)
+    }
+
+    fn visit_exp_lit(&mut self) -> Result<(), SyntaxErrors> {
+        visit::exp_lit(self)
+    }
+
+    fn visit_exp_log_and(&mut self) -> Result<(), SyntaxErrors> {
+        visit::exp_log_and(self)
+    }
+
+    fn visit_exp_log_imp(&mut self) -> Result<(), SyntaxErrors> {
+        visit::exp_log_imp(self)
+    }
+
+    fn visit_exp_log_neg(&mut self) -> Result<(), SyntaxErrors> {
+        visit::exp_log_neg(self)
+    }
+
+    fn visit_exp_log_or(&mut self) -> Result<(), SyntaxErrors> {
+        visit::exp_log_or(self)
+    }
+
+    fn visit_exp_lt(&mut self) -> Result<(), SyntaxErrors> {
+        visit::exp_lt(self)
+    }
+
+    fn visit_exp_lteq(&mut self) -> Result<(), SyntaxErrors> {
+        visit::exp_lteq(self)
+    }
+
+    fn visit_exp_match(&mut self) -> Result<(), SyntaxErrors> {
+        visit::exp_match(self)
+    }
+
+    fn visit_exp_mul(&mut self) -> Result<(), SyntaxErrors> {
+        visit::exp_mul(self)
+    }
+
+    fn visit_exp_neg(&mut self) -> Result<(), SyntaxErrors> {
+        visit::exp_neg(self)
+    }
+
+    fn visit_exp_neq(&mut self) -> Result<(), SyntaxErrors> {
+        visit::exp_neq(self)
+    }
+
+    fn visit_exp_proj(&mut self) -> Result<(), SyntaxErrors> {
+        visit::exp_proj(self)
+    }
+
+    fn visit_exp_proj_digits(&mut self) -> Result<(), SyntaxErrors> {
+        visit::exp_proj_digits(self)
+    }
+
+    fn visit_exp_ref(&mut self) -> Result<(), SyntaxErrors> {
+        visit::exp_ref(self)
+    }
+
+    fn visit_exp_rem(&mut self) -> Result<(), SyntaxErrors> {
+        visit::exp_rem(self)
+    }
+
+    fn visit_exp_return(&mut self) -> Result<(), SyntaxErrors> {
+        visit::exp_return(self)
+    }
+
+    fn visit_exp_seq(&mut self) -> Result<(), SyntaxErrors> {
+        visit::exp_seq(self)
+    }
+
+    fn visit_exp_shl(&mut self) -> Result<(), SyntaxErrors> {
+        visit::exp_shl(self)
+    }
+
+    fn visit_exp_shr(&mut self) -> Result<(), SyntaxErrors> {
+        visit::exp_shr(self)
+    }
+
+    fn visit_exp_slice(&mut self) -> Result<(), SyntaxErrors> {
+        visit::exp_slice(self)
+    }
+
+    fn visit_exp_sub(&mut self) -> Result<(), SyntaxErrors> {
+        visit::exp_sub(self)
+    }
+
+    fn visit_exp_try(&mut self) -> Result<(), SyntaxErrors> {
+        visit::exp_try(self)
+    }
+
+    fn visit_exp_tuple(&mut self) -> Result<(), SyntaxErrors> {
+        visit::exp_tuple(self)
+    }
+
+    fn visit_exp_type(&mut self) -> Result<(), SyntaxErrors> {
+        visit::exp_type(self)
+    }
+
+    fn visit_exp_wild(&mut self) -> Result<(), SyntaxErrors> {
+        visit::exp_wild(self)
+    }
+
+    fn visit_filed(&mut self) -> Result<(), SyntaxErrors> {
+        visit::field(self)
+    }
+
+    fn visit_function(&mut self) -> Result<(), SyntaxErrors> {
+        visit::function(self)
+    }
+
+    fn visit_function_extern(&mut self) -> Result<(), SyntaxErrors> {
+        visit::function_extern(self)
+    }
+
+    fn visit_function_normal(&mut self) -> Result<(), SyntaxErrors> {
+        visit::function_normal(self)
+    }
+
+    fn visit_ident(&mut self) -> Result<(), SyntaxErrors> {
+        visit::ident(self)
+    }
+
+    fn visit_ident_lower(&mut self) -> Result<(), SyntaxErrors> {
+        visit::ident_lower(self)
+    }
+
+    fn visit_ident_lower_scoped(&mut self) -> Result<(), SyntaxErrors> {
+        visit::ident_lower_scoped(self)
+    }
+
+    fn visit_ident_scoped(&mut self) -> Result<(), SyntaxErrors> {
+        visit::ident_scoped(self)
+    }
+
+    fn visit_ident_upper(&mut self) -> Result<(), SyntaxErrors> {
+        visit::ident_upper(self)
+    }
+
+    fn visit_ident_upper_scoped(&mut self) -> Result<(), SyntaxErrors> {
+        visit::ident_upper_scoped(self)
+    }
+
+    fn visit_import(&mut self) -> Result<(), SyntaxErrors> {
+        visit::import(self)
+    }
+
+    fn visit_index(&mut self) -> Result<(), SyntaxErrors> {
+        visit::index(self)
+    }
+
+    fn visit_interpolation(&mut self) -> Result<(), SyntaxErrors> {
+        visit::interpolation(self)
+    }
+
+    fn visit_item(&mut self) -> Result<(), SyntaxErrors> {
+        visit::item(self)
+    }
+
+    fn visit_key_primary(&mut self) -> Result<(), SyntaxErrors> {
+        visit::key_primary(self)
+    }
+
+    fn visit_lit_bool(&mut self) -> Result<(), SyntaxErrors> {
+        visit::lit_bool(self)
+    }
+
+    fn visit_lit_map(&mut self) -> Result<(), SyntaxErrors> {
+        visit::lit_map(self)
+    }
+
+    fn visit_lit_num(&mut self) -> Result<(), SyntaxErrors> {
+        visit::lit_num(self)
+    }
+
+    fn visit_lit_num_bin(&mut self) -> Result<(), SyntaxErrors> {
+        visit::lit_num_bin(self)
+    }
+
+    fn visit_lit_num_dec(&mut self) -> Result<(), SyntaxErrors> {
+        visit::lit_num_dec(self)
+    }
+
+    fn visit_lit_num_float(&mut self) -> Result<(), SyntaxErrors> {
+        visit::lit_num_float(self)
+    }
+
+    fn visit_lit_num_hex(&mut self) -> Result<(), SyntaxErrors> {
+        visit::lit_num_hex(self)
+    }
+
+    fn visit_lit_num_oct(&mut self) -> Result<(), SyntaxErrors> {
+        visit::lit_num_oct(self)
+    }
+
+    fn visit_lit_string(&mut self) -> Result<(), SyntaxErrors> {
+        visit::lit_string(self)
+    }
+
+    fn visit_lit_vec(&mut self) -> Result<(), SyntaxErrors> {
+        visit::lit_vec(self)
+    }
+
+    fn visit_module_alias(&mut self) -> Result<(), SyntaxErrors> {
+        visit::module_alias(self)
+    }
+
+    fn visit_module_path(&mut self) -> Result<(), SyntaxErrors> {
+        visit::module_path(self)
+    }
+
+    fn visit_name(&mut self) -> Result<(), SyntaxErrors> {
+        visit::name(self)
+    }
+
+    fn visit_name_arg(&mut self) -> Result<(), SyntaxErrors> {
+        visit::name_arg(self)
+    }
+
+    fn visit_name_cons(&mut self) -> Result<(), SyntaxErrors> {
+        visit::name_cons(self)
+    }
+
+    fn visit_name_field(&mut self) -> Result<(), SyntaxErrors> {
+        visit::name_field(self)
+    }
+
+    fn visit_name_func(&mut self) -> Result<(), SyntaxErrors> {
+        visit::name_func(self)
+    }
+
+    fn visit_name_index(&mut self) -> Result<(), SyntaxErrors> {
+        visit::name_index(self)
+    }
+
+    fn visit_name_rel(&mut self) -> Result<(), SyntaxErrors> {
+        visit::name_rel(self)
+    }
+
+    fn visit_name_trans(&mut self) -> Result<(), SyntaxErrors> {
+        visit::name_trans(self)
+    }
+
+    fn visit_name_type(&mut self) -> Result<(), SyntaxErrors> {
+        visit::name_type(self)
+    }
+
+    fn visit_name_var_term(&mut self) -> Result<(), SyntaxErrors> {
+        visit::name_var_term(self)
+    }
+
+    fn visit_name_var_type(&mut self) -> Result<(), SyntaxErrors> {
+        visit::name_var_type(self)
+    }
+
+    fn visit_pat(&mut self) -> Result<(), SyntaxErrors> {
+        visit::pat(self)
+    }
+
+    fn visit_pat_cons(&mut self) -> Result<(), SyntaxErrors> {
+        visit::pat_cons(self)
+    }
+
+    fn visit_pat_cons_pos(&mut self) -> Result<(), SyntaxErrors> {
+        visit::pat_cons_pos(self)
+    }
+
+    fn visit_pat_cons_rec(&mut self) -> Result<(), SyntaxErrors> {
+        visit::pat_cons_rec(self)
+    }
+
+    fn visit_pat_lit(&mut self) -> Result<(), SyntaxErrors> {
+        visit::pat_lit(self)
+    }
+
+    fn visit_pat_term_decl_var(&mut self) -> Result<(), SyntaxErrors> {
+        visit::pat_term_decl_var(self)
+    }
+
+    fn visit_pat_tuple(&mut self) -> Result<(), SyntaxErrors> {
+        visit::pat_tuple(self)
+    }
+
+    fn visit_pat_type(&mut self) -> Result<(), SyntaxErrors> {
+        visit::pat_type(self)
+    }
+
+    fn visit_pat_wild(&mut self) -> Result<(), SyntaxErrors> {
+        visit::pat_wild(self)
+    }
+
+    fn visit_rel(&mut self) -> Result<(), SyntaxErrors> {
+        visit::rel(self)
+    }
+
+    fn visit_rel_args(&mut self) -> Result<(), SyntaxErrors> {
+        visit::rel_args(self)
+    }
+
+    fn visit_rel_elem(&mut self) -> Result<(), SyntaxErrors> {
+        visit::rel_elem(self)
+    }
+
+    fn visit_rel_role(&mut self) -> Result<(), SyntaxErrors> {
+        visit::rel_role(self)
+    }
+
+    fn visit_rel_semantics(&mut self) -> Result<(), SyntaxErrors> {
+        visit::rel_semantics(self)
+    }
+
+    fn visit_rhs(&mut self) -> Result<(), SyntaxErrors> {
+        visit::rhs(self)
+    }
+
+    fn visit_rhs_atom_neg(&mut self) -> Result<(), SyntaxErrors> {
+        visit::rhs_atom_neg(self)
+    }
+
+    fn visit_rhs_flat_map(&mut self) -> Result<(), SyntaxErrors> {
+        visit::rhs_flat_map(self)
+    }
+
+    fn visit_rhs_grouping(&mut self) -> Result<(), SyntaxErrors> {
+        visit::rhs_grouping(self)
+    }
+
+    fn visit_rule(&mut self) -> Result<(), SyntaxErrors> {
+        visit::rule(self)
+    }
+
+    fn visit_rule_end(&mut self) -> Result<(), SyntaxErrors> {
+        visit::rule_end(self)
+    }
+
+    fn visit_statement(&mut self) -> Result<(), SyntaxErrors> {
+        visit::statement(self)
+    }
+
+    fn visit_statement_assign(&mut self) -> Result<(), SyntaxErrors> {
+        visit::statement_assign(self)
+    }
+
+    fn visit_statement_block(&mut self) -> Result<(), SyntaxErrors> {
+        visit::statement_block(self)
+    }
+
+    fn visit_statement_empty(&mut self) -> Result<(), SyntaxErrors> {
+        visit::statement_empty(self)
+    }
+
+    fn visit_statement_for(&mut self) -> Result<(), SyntaxErrors> {
+        visit::statement_for(self)
+    }
+
+    fn visit_statement_if(&mut self) -> Result<(), SyntaxErrors> {
+        visit::statement_if(self)
+    }
+
+    fn visit_statement_insert(&mut self) -> Result<(), SyntaxErrors> {
+        visit::statement_insert(self)
+    }
+
+    fn visit_statement_match(&mut self) -> Result<(), SyntaxErrors> {
+        visit::statement_match(self)
+    }
+
+    fn visit_string_quoted(&mut self) -> Result<(), SyntaxErrors> {
+        visit::string_quoted(self)
+    }
+
+    fn visit_string_quoted_escaped(&mut self) -> Result<(), SyntaxErrors> {
+        visit::string_quoted_escaped(self)
+    }
+
+    fn visit_string_raw(&mut self) -> Result<(), SyntaxErrors> {
+        visit::string_raw(self)
+    }
+
+    fn visit_string_raw_interpolated(&mut self) -> Result<(), SyntaxErrors> {
+        visit::string_raw_interpolated(self)
+    }
+
+    fn visit_transformer(&mut self) -> Result<(), SyntaxErrors> {
+        visit::transformer(self)
+    }
+
+    fn visit_type(&mut self) -> Result<(), SyntaxErrors> {
+        visit::r#type(self)
+    }
+
+    fn visit_type_atom(&mut self) -> Result<(), SyntaxErrors> {
+        visit::type_atom(self)
+    }
+
+    fn visit_type_bigint(&mut self) -> Result<(), SyntaxErrors> {
+        visit::type_bigint(self)
+    }
+
+    fn visit_type_bit(&mut self) -> Result<(), SyntaxErrors> {
+        visit::type_bit(self)
+    }
+
+    fn visit_type_bool(&mut self) -> Result<(), SyntaxErrors> {
+        visit::type_bool(self)
+    }
+
+    fn visit_type_double(&mut self) -> Result<(), SyntaxErrors> {
+        visit::type_double(self)
+    }
+
+    fn visit_type_float(&mut self) -> Result<(), SyntaxErrors> {
+        visit::type_float(self)
+    }
+
+    fn visit_type_fun(&mut self) -> Result<(), SyntaxErrors> {
+        visit::type_fun(self)
+    }
+
+    fn visit_type_signed(&mut self) -> Result<(), SyntaxErrors> {
+        visit::type_signed(self)
+    }
+
+    fn visit_type_string(&mut self) -> Result<(), SyntaxErrors> {
+        visit::type_string(self)
+    }
+
+    fn visit_type_trans(&mut self) -> Result<(), SyntaxErrors> {
+        visit::type_trans(self)
+    }
+
+    fn visit_type_trans_fun(&mut self) -> Result<(), SyntaxErrors> {
+        visit::type_trans_fun(self)
+    }
+
+    fn visit_type_tuple(&mut self) -> Result<(), SyntaxErrors> {
+        visit::type_tuple(self)
+    }
+
+    fn visit_type_union(&mut self) -> Result<(), SyntaxErrors> {
+        visit::type_union(self)
+    }
+
+    fn visit_type_user(&mut self) -> Result<(), SyntaxErrors> {
+        visit::type_user(self)
+    }
+
+    fn visit_type_var(&mut self) -> Result<(), SyntaxErrors> {
+        visit::type_var(self)
+    }
+
+    fn visit_type_var_ident(&mut self) -> Result<(), SyntaxErrors> {
+        visit::type_var_ident(self)
+    }
+
+    fn visit_typedef(&mut self) -> Result<(), SyntaxErrors> {
+        visit::typedef(self)
+    }
+
+    fn visit_typedef_extern(&mut self) -> Result<(), SyntaxErrors> {
+        visit::typedef_extern(self)
+    }
+
+    fn visit_typedef_normal(&mut self) -> Result<(), SyntaxErrors> {
+        visit::typedef_normal(self)
+    }
+
+    fn visit_word(&mut self) -> Result<(), SyntaxErrors> {
+        visit::word(self)
+    }
 }
 
 pub mod utils {
@@ -954,7 +1608,25 @@ pub mod visit {
         Ctx: Context<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
-        todo!()
+        visitor.walker().rule(kind::EXP_CONS_REC)?;
+        utils::seq((
+            name_cons,
+            token::LEFT_CURLY_BRACKET,
+            utils::optional(utils::seq((
+                token::FULL_STOP,
+                name_field,
+                token::EQUALS_SIGN,
+                exp,
+                utils::repeat(utils::seq((
+                    token::COMMA,
+                    token::FULL_STOP,
+                    name_field,
+                    token::EQUALS_SIGN,
+                    exp,
+                ))),
+            ))),
+            token::RIGHT_CURLY_BRACKET,
+        ))(visitor)
     }
 
     pub fn exp_continue<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
@@ -2174,36 +2846,44 @@ pub mod visit {
         ))(visitor)
     }
 
+    // NOTE: might have to descend into subnodes
     pub fn string_quoted<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
-        todo!()
+        visitor.walker().rule(kind::STRING_QUOTED)?;
+        Ok(())
     }
 
+    // NOTE: might have to descend into subnodes
     pub fn string_quoted_escaped<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
-        todo!()
+        visitor.walker().rule(kind::STRING_QUOTED_ESCAPED)?;
+        Ok(())
     }
 
+    // NOTE: might have to descend into subnodes
     pub fn string_raw<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
-        todo!()
+        visitor.walker().rule(kind::STRING_RAW)?;
+        Ok(())
     }
 
+    // NOTE: might have to descend into subnodes
     pub fn string_raw_interpolated<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
-        todo!()
+        visitor.walker().rule(kind::STRING_RAW_INTERPOLATED)?;
+        Ok(())
     }
 
     pub fn transformer<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
@@ -2289,7 +2969,8 @@ pub mod visit {
         Ctx: Context<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
-        todo!()
+        visitor.walker().rule(kind::TYPE_BIT)?;
+        utils::seq((token::BIT, token::LESS_THAN_SIGN, lit_num_dec, token::GREATER_THAN_SIGN))(visitor)
     }
 
     pub fn type_bool<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
@@ -2324,7 +3005,30 @@ pub mod visit {
         Ctx: Context<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
-        todo!()
+        visitor.walker().rule(kind::TYPE_FUN)?;
+        utils::choice((
+            utils::seq((
+                token::FUNCTION,
+                token::LEFT_PARENTHESIS,
+                utils::optional(utils::seq((
+                    utils::optional(token::MUT),
+                    r#type,
+                    utils::repeat(utils::seq((token::COMMA, utils::optional(token::MUT), r#type))),
+                ))),
+                token::RIGHT_PARENTHESIS,
+                utils::optional(utils::seq((token::COLON, r#type))),
+            )),
+            utils::seq((
+                token::VERTICAL_LINE,
+                utils::optional(utils::seq((
+                    utils::optional(token::MUT),
+                    r#type,
+                    utils::repeat(utils::seq((token::COMMA, utils::optional(token::MUT), r#type))),
+                ))),
+                token::VERTICAL_LINE,
+                utils::optional(utils::seq((token::COLON, r#type))),
+            )),
+        ))(visitor)
     }
 
     pub fn type_signed<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
@@ -2332,7 +3036,13 @@ pub mod visit {
         Ctx: Context<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
-        todo!()
+        visitor.walker().rule(kind::TYPE_SIGNED)?;
+        utils::seq((
+            token::SIGNED,
+            token::LESS_THAN_SIGN,
+            lit_num_dec,
+            token::GREATER_THAN_SIGN,
+        ))(visitor)
     }
 
     pub fn type_string<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
@@ -2349,7 +3059,8 @@ pub mod visit {
         Ctx: Context<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
-        todo!()
+        visitor.walker().rule(kind::TYPE_TRANS)?;
+        utils::choice((type_trans_fun, type_trans_rel))(visitor)
     }
 
     pub fn type_trans_fun<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
@@ -2357,7 +3068,15 @@ pub mod visit {
         Ctx: Context<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
-        todo!()
+        visitor.walker().rule(kind::TYPE_TRANS_FUN)?;
+        utils::seq((
+            token::FUNCTION,
+            token::LEFT_PARENTHESIS,
+            utils::optional(utils::seq((arg, utils::repeat(utils::seq((token::COMMA, arg)))))),
+            token::RIGHT_PARENTHESIS,
+            token::COLON,
+            type_atom,
+        ))(visitor)
     }
 
     pub fn type_trans_rel<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
@@ -2365,7 +3084,13 @@ pub mod visit {
         Ctx: Context<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
-        todo!()
+        visitor.walker().rule(kind::TYPE_TRANS_REL)?;
+        utils::seq((
+            token::RELATION,
+            token::LEFT_SQUARE_BRACKET,
+            type_atom,
+            token::RIGHT_SQUARE_BRACKET,
+        ))(visitor)
     }
 
     pub fn type_tuple<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
@@ -2373,7 +3098,16 @@ pub mod visit {
         Ctx: Context<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
-        todo!()
+        visitor.walker().rule(kind::TYPE_TUPLE)?;
+        utils::seq((
+            token::LEFT_PARENTHESIS,
+            utils::optional(utils::seq((
+                type_atom,
+                utils::repeat(utils::seq((token::COMMA, type_atom))),
+                utils::optional(token::COMMA),
+            ))),
+            token::RIGHT_PARENTHESIS,
+        ))(visitor)
     }
 
     pub fn type_union<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
@@ -2381,7 +3115,8 @@ pub mod visit {
         Ctx: Context<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
-        todo!()
+        visitor.walker().rule(kind::TYPE_UNION)?;
+        utils::seq((utils::repeat(utils::seq((cons, token::VERTICAL_LINE))), cons))(visitor)
     }
 
     pub fn type_user<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
@@ -2389,7 +3124,16 @@ pub mod visit {
         Ctx: Context<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
-        todo!()
+        visitor.walker().rule(kind::TYPE_USER)?;
+        utils::seq((
+            name_type,
+            utils::optional(utils::seq((
+                token::LESS_THAN_SIGN,
+                r#type,
+                utils::repeat(utils::seq((token::COMMA, r#type))),
+                token::GREATER_THAN_SIGN,
+            ))),
+        ))(visitor)
     }
 
     pub fn type_var<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
@@ -2397,7 +3141,17 @@ pub mod visit {
         Ctx: Context<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
-        todo!()
+        visitor.walker().rule(kind::TYPE_VAR)?;
+        utils::seq((token::APOSTROPHE, type_var_ident))(visitor)
+    }
+
+    pub fn type_var_ident<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx> + ?Sized,
+    {
+        visitor.walker().rule(kind::TYPE_VAR_IDENT)?;
+        Ok(())
     }
 
     pub fn typedef<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
@@ -2405,7 +3159,8 @@ pub mod visit {
         Ctx: Context<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
-        todo!()
+        visitor.walker().rule(kind::TYPEDEF)?;
+        utils::choice((typedef_normal, typedef_extern))(visitor)
     }
 
     pub fn typedef_extern<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
@@ -2413,7 +3168,18 @@ pub mod visit {
         Ctx: Context<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
-        todo!()
+        visitor.walker().rule(kind::TYPEDEF_EXTERN)?;
+        utils::seq((
+            token::EXTERN,
+            token::TYPE,
+            name_type,
+            utils::optional(utils::seq((
+                token::LESS_THAN_SIGN,
+                name_var_type,
+                utils::repeat(utils::seq((token::COMMA, name_var_type))),
+                token::GREATER_THAN_SIGN,
+            ))),
+        ))(visitor)
     }
 
     pub fn typedef_normal<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
@@ -2421,7 +3187,19 @@ pub mod visit {
         Ctx: Context<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
-        todo!()
+        visitor.walker().rule(kind::TYPEDEF_NORMAL)?;
+        utils::seq((
+            token::TYPEDEF,
+            name_type,
+            utils::optional(utils::seq((
+                token::LESS_THAN_SIGN,
+                name_var_type,
+                utils::repeat(utils::seq((token::COMMA, name_var_type))),
+                token::GREATER_THAN_SIGN,
+            ))),
+            token::EQUALS_SIGN,
+            r#type,
+        ))(visitor)
     }
 
     pub fn word<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
@@ -2429,7 +3207,8 @@ pub mod visit {
         Ctx: Context<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
-        todo!()
+        visitor.walker().rule(kind::WORD)?;
+        Ok(())
     }
 
     pub mod token {
@@ -2499,6 +3278,7 @@ pub mod visit {
 
         // tokens
         make!(AMPERSAND);
+        make!(APOSTROPHE);
         make!(ASTERISK);
         make!(ASTERISK_SOLIDUS);
         make!(CIRCUMFLEX_ACCENT);
