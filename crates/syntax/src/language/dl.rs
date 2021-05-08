@@ -31,6 +31,7 @@ pub mod kind {
             (ATTRIBUTE, "attribute", true),
             (ATTRIBUTES, "attributes", true),
             (COMMENT_BLOCK, "comment_block", true),
+            (COMMENT_BLOCK_INNER, "comment_block_inner", true),
             (COMMENT_LINE, "comment_line", true),
             (CONS, "cons", true),
             (CONS_POS, "cons_pos", true),
@@ -76,6 +77,7 @@ pub mod kind {
             (EXP_NEG, "exp_neg", true),
             (EXP_NEQ, "exp_neq", true),
             (EXP_PROJ, "exp_proj", true),
+            (EXP_PROJ_DIGITS, "exp_proj_digits", true),
             (EXP_REF, "exp_ref", true),
             (EXP_REM, "exp_rem", true),
             (EXP_RETURN, "exp_return", true),
@@ -331,6 +333,8 @@ pub mod utils {
 
     ddlog_lsp_macros::impl_choice!(2);
     ddlog_lsp_macros::impl_choice!(3);
+    ddlog_lsp_macros::impl_choice!(5);
+    ddlog_lsp_macros::impl_choice!(50);
 
     #[inline]
     pub fn choice<'tree, Ctx, Vis, T>(funs: T) -> impl Fn(&mut Vis) -> Result<(), SyntaxErrors>
@@ -443,6 +447,8 @@ pub mod utils {
     ddlog_lsp_macros::impl_seq!(3);
     ddlog_lsp_macros::impl_seq!(4);
     ddlog_lsp_macros::impl_seq!(5);
+    ddlog_lsp_macros::impl_seq!(6);
+    ddlog_lsp_macros::impl_seq!(7);
     ddlog_lsp_macros::impl_seq!(8);
     ddlog_lsp_macros::impl_seq!(9);
     ddlog_lsp_macros::impl_seq!(11);
@@ -649,7 +655,21 @@ pub mod visit {
         Ctx: Context<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
-        todo!()
+        visitor.walker().rule(kind::COMMENT_BLOCK)?;
+        utils::seq((
+            token::SOLIDUS_ASTERISK,
+            utils::repeat(utils::choice((comment_block, comment_block_inner))),
+            token::ASTERISK_SOLIDUS,
+        ))(visitor)
+    }
+
+    pub fn comment_block_inner<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx> + ?Sized,
+    {
+        visitor.walker().rule(kind::COMMENT_BLOCK_INNER)?;
+        Ok(())
     }
 
     pub fn comment_line<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
@@ -657,7 +677,8 @@ pub mod visit {
         Ctx: Context<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
-        todo!()
+        visitor.walker().rule(kind::COMMENT_LINE)?;
+        Ok(())
     }
 
     pub fn cons<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
@@ -665,7 +686,8 @@ pub mod visit {
         Ctx: Context<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
-        todo!()
+        visitor.walker().rule(kind::CONS)?;
+        utils::choice((cons_rec, cons_pos))(visitor)
     }
 
     pub fn cons_pos<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
@@ -673,7 +695,8 @@ pub mod visit {
         Ctx: Context<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
-        todo!()
+        visitor.walker().rule(kind::CONS_POS)?;
+        utils::seq((utils::optional(attributes), name_cons))(visitor)
     }
 
     pub fn cons_rec<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
@@ -681,7 +704,18 @@ pub mod visit {
         Ctx: Context<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
-        todo!()
+        visitor.walker().rule(kind::CONS_REC)?;
+        utils::seq((
+            utils::optional(attributes),
+            name_cons,
+            token::LEFT_CURLY_BRACKET,
+            utils::optional(utils::seq((
+                field,
+                utils::repeat(utils::seq((token::COMMA, field))),
+                utils::optional(token::COMMA),
+            ))),
+            token::RIGHT_CURLY_BRACKET,
+        ))(visitor)
     }
 
     pub fn escape_sequence<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
@@ -689,7 +723,8 @@ pub mod visit {
         Ctx: Context<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
-        todo!()
+        visitor.walker().rule(kind::ESCAPE_SEQUENCE)?;
+        Ok(())
     }
 
     pub fn escape_sequence_interpolated<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
@@ -697,7 +732,8 @@ pub mod visit {
         Ctx: Context<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
-        todo!()
+        visitor.walker().rule(kind::ESCAPE_SEQUENCE_INTERPOLATED)?;
+        Ok(())
     }
 
     pub fn exp<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
@@ -705,7 +741,59 @@ pub mod visit {
         Ctx: Context<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
-        todo!()
+        visitor.walker().rule(kind::EXP)?;
+        utils::choice((
+            exp_add,
+            exp_assign,
+            exp_binding,
+            exp_bit_and,
+            exp_bit_neg,
+            exp_bit_or,
+            exp_bit_slice,
+            exp_bit_xor,
+            exp_block,
+            exp_break,
+            exp_cast,
+            exp_cat,
+            exp_cond,
+            exp_continue,
+            exp_cons_pos,
+            exp_cons_rec,
+            exp_decl_var,
+            exp_div,
+            exp_eq,
+            exp_field,
+            exp_for,
+            exp_fun_call,
+            exp_fun_call_dot,
+            exp_gt,
+            exp_gteq,
+            exp_lambda,
+            exp_lit,
+            exp_log_and,
+            exp_log_imp,
+            exp_log_neg,
+            exp_log_or,
+            exp_lt,
+            exp_lteq,
+            exp_match,
+            exp_mul,
+            exp_neg,
+            exp_neq,
+            exp_proj,
+            exp_ref,
+            exp_rem,
+            exp_return,
+            exp_seq,
+            exp_shl,
+            exp_shr,
+            exp_slice,
+            exp_sub,
+            exp_try,
+            exp_tuple,
+            exp_type,
+            exp_wild,
+        ))(visitor)
     }
 
     pub fn exp_add<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
@@ -713,7 +801,8 @@ pub mod visit {
         Ctx: Context<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
-        todo!()
+        visitor.walker().rule(kind::EXP_ADD)?;
+        utils::seq((exp, token::PLUS_SIGN, exp))(visitor)
     }
 
     pub fn exp_assign<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
@@ -721,7 +810,8 @@ pub mod visit {
         Ctx: Context<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
-        todo!()
+        visitor.walker().rule(kind::EXP_ASSIGN)?;
+        utils::seq((exp, token::PLUS_SIGN, exp))(visitor)
     }
 
     pub fn exp_binding<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
@@ -729,7 +819,8 @@ pub mod visit {
         Ctx: Context<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
-        todo!()
+        visitor.walker().rule(kind::EXP_BINDING)?;
+        utils::seq((name_var_term, token::COMMERCIAL_AT, exp))(visitor)
     }
 
     pub fn exp_bit_and<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
@@ -737,7 +828,8 @@ pub mod visit {
         Ctx: Context<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
-        todo!()
+        visitor.walker().rule(kind::EXP_BIT_AND)?;
+        utils::seq((exp, token::AMPERSAND, exp))(visitor)
     }
 
     pub fn exp_bit_neg<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
@@ -745,7 +837,8 @@ pub mod visit {
         Ctx: Context<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
-        todo!()
+        visitor.walker().rule(kind::EXP_BIT_NEG)?;
+        utils::seq((token::TILDE, exp))(visitor)
     }
 
     pub fn exp_bit_or<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
@@ -753,7 +846,8 @@ pub mod visit {
         Ctx: Context<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
-        todo!()
+        visitor.walker().rule(kind::EXP_BIT_OR)?;
+        utils::seq((exp, token::VERTICAL_LINE, exp))(visitor)
     }
 
     pub fn exp_bit_slice<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
@@ -761,7 +855,8 @@ pub mod visit {
         Ctx: Context<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
-        todo!()
+        visitor.walker().rule(kind::EXP_BIT_OR)?;
+        utils::seq((exp, token::LEFT_SQUARE_BRACKET, token::RIGHT_SQUARE_BRACKET))(visitor)
     }
 
     pub fn exp_bit_xor<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
@@ -769,7 +864,8 @@ pub mod visit {
         Ctx: Context<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
-        todo!()
+        visitor.walker().rule(kind::EXP_BIT_XOR)?;
+        utils::seq((exp, token::CIRCUMFLEX_ACCENT, exp))(visitor)
     }
 
     pub fn exp_block<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
@@ -777,7 +873,12 @@ pub mod visit {
         Ctx: Context<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
-        todo!()
+        visitor.walker().rule(kind::EXP_BLOCK)?;
+        utils::seq((
+            token::LEFT_CURLY_BRACKET,
+            utils::optional(exp),
+            token::RIGHT_CURLY_BRACKET,
+        ))(visitor)
     }
 
     pub fn exp_break<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
@@ -785,7 +886,8 @@ pub mod visit {
         Ctx: Context<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
-        todo!()
+        visitor.walker().rule(kind::EXP_BREAK)?;
+        Ok(())
     }
 
     pub fn exp_cast<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
@@ -793,7 +895,8 @@ pub mod visit {
         Ctx: Context<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
-        todo!()
+        visitor.walker().rule(kind::EXP_CAST)?;
+        utils::seq((exp, token::AS, type_atom))(visitor)
     }
 
     pub fn exp_cat<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
@@ -801,7 +904,8 @@ pub mod visit {
         Ctx: Context<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
-        todo!()
+        visitor.walker().rule(kind::EXP_CAT)?;
+        utils::seq((exp, token::PLUS_SIGN_PLUS_SIGN, exp))(visitor)
     }
 
     pub fn exp_cond<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
@@ -809,7 +913,8 @@ pub mod visit {
         Ctx: Context<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
-        todo!()
+        visitor.walker().rule(kind::EXP_COND)?;
+        utils::seq((token::IF, exp, exp, utils::optional(utils::seq((token::ELSE, exp)))))(visitor)
     }
 
     pub fn exp_cons_pos<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
@@ -817,7 +922,19 @@ pub mod visit {
         Ctx: Context<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
-        todo!()
+        visitor.walker().rule(kind::EXP_CONS_POS)?;
+        utils::seq((
+            name_cons,
+            utils::optional(utils::seq((
+                token::LEFT_CURLY_BRACKET,
+                utils::optional(utils::seq((
+                    token::LEFT_CURLY_BRACKET,
+                    utils::optional(utils::seq((exp, utils::repeat(utils::seq((token::COMMA, exp)))))),
+                    token::RIGHT_CURLY_BRACKET,
+                ))),
+                token::RIGHT_CURLY_BRACKET,
+            ))),
+        ))(visitor)
     }
 
     pub fn exp_cons_rec<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
@@ -833,7 +950,8 @@ pub mod visit {
         Ctx: Context<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
-        todo!()
+        visitor.walker().rule(kind::EXP_CONTINUE)?;
+        Ok(())
     }
 
     pub fn exp_decl_var<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
@@ -841,7 +959,8 @@ pub mod visit {
         Ctx: Context<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
-        todo!()
+        visitor.walker().rule(kind::EXP_DECL_VAR)?;
+        utils::seq((utils::optional(token::VAR), name_var_term))(visitor)
     }
 
     pub fn exp_div<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
@@ -849,7 +968,8 @@ pub mod visit {
         Ctx: Context<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
-        todo!()
+        visitor.walker().rule(kind::EXP_DIV)?;
+        utils::seq((exp, token::SOLIDUS, exp))(visitor)
     }
 
     pub fn exp_eq<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
@@ -857,7 +977,8 @@ pub mod visit {
         Ctx: Context<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
-        todo!()
+        visitor.walker().rule(kind::EXP_DIV)?;
+        utils::seq((exp, token::EQUALS_SIGN_EQUALS_SIGN, exp))(visitor)
     }
 
     pub fn exp_field<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
@@ -865,7 +986,8 @@ pub mod visit {
         Ctx: Context<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
-        todo!()
+        visitor.walker().rule(kind::EXP_FIELD)?;
+        utils::seq((exp, token::FULL_STOP, ident))(visitor)
     }
 
     pub fn exp_for<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
@@ -873,7 +995,16 @@ pub mod visit {
         Ctx: Context<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
-        todo!()
+        visitor.walker().rule(kind::EXP_FOR)?;
+        utils::seq((
+            token::FOR,
+            token::LEFT_PARENTHESIS,
+            name_var_term,
+            token::IN,
+            exp,
+            token::RIGHT_PARENTHESIS,
+            exp,
+        ))(visitor)
     }
 
     pub fn exp_fun_call<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
@@ -881,7 +1012,17 @@ pub mod visit {
         Ctx: Context<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
-        todo!()
+        visitor.walker().rule(kind::EXP_FUN_CALL)?;
+        utils::seq((
+            exp,
+            token::LEFT_PARENTHESIS,
+            utils::optional(utils::seq((
+                exp,
+                utils::repeat(utils::seq((token::COMMA, exp))),
+                utils::optional(token::COMMA),
+            ))),
+            token::RIGHT_PARENTHESIS,
+        ))(visitor)
     }
 
     pub fn exp_fun_call_dot<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
@@ -889,7 +1030,19 @@ pub mod visit {
         Ctx: Context<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
-        todo!()
+        visitor.walker().rule(kind::EXP_FUN_CALL_DOT)?;
+        utils::seq((
+            exp,
+            token::FULL_STOP,
+            name_func,
+            token::LEFT_PARENTHESIS,
+            utils::optional(utils::seq((
+                exp,
+                utils::repeat(utils::seq((token::COMMA, exp))),
+                utils::optional(token::COMMA),
+            ))),
+            token::RIGHT_PARENTHESIS,
+        ))(visitor)
     }
 
     pub fn exp_gt<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
@@ -897,7 +1050,8 @@ pub mod visit {
         Ctx: Context<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
-        todo!()
+        visitor.walker().rule(kind::EXP_GT)?;
+        utils::seq((exp, token::GREATER_THAN_SIGN, exp))(visitor)
     }
 
     pub fn exp_gteq<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
@@ -905,7 +1059,8 @@ pub mod visit {
         Ctx: Context<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
-        todo!()
+        visitor.walker().rule(kind::EXP_GTEQ)?;
+        utils::seq((exp, token::GREATER_THAN_SIGN_EQUALS_SIGN, exp))(visitor)
     }
 
     pub fn exp_lambda<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
@@ -913,7 +1068,30 @@ pub mod visit {
         Ctx: Context<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
-        todo!()
+        visitor.walker().rule(kind::EXP_LAMBDA)?;
+        utils::choice((
+            utils::seq((
+                token::FUNCTION,
+                token::LEFT_PARENTHESIS,
+                utils::optional(utils::seq((
+                    arg_opt_type,
+                    utils::repeat(utils::seq((token::COMMA, arg_opt_type))),
+                ))),
+                token::RIGHT_PARENTHESIS,
+                utils::optional(utils::seq((token::COLON, type_atom))),
+                exp,
+            )),
+            utils::seq((
+                token::VERTICAL_LINE,
+                utils::optional(utils::seq((
+                    arg_opt_type,
+                    utils::repeat(utils::seq((token::COMMA, arg_opt_type))),
+                ))),
+                token::VERTICAL_LINE,
+                utils::optional(utils::seq((token::COLON, type_atom))),
+                exp,
+            )),
+        ))(visitor)
     }
 
     pub fn exp_lit<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
@@ -921,7 +1099,8 @@ pub mod visit {
         Ctx: Context<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
-        todo!()
+        visitor.walker().rule(kind::EXP_LIT)?;
+        utils::choice((lit_bool, lit_num, lit_map, lit_string, lit_vec))(visitor)
     }
 
     pub fn exp_log_and<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
@@ -929,7 +1108,26 @@ pub mod visit {
         Ctx: Context<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
-        todo!()
+        visitor.walker().rule(kind::EXP_LOG_AND)?;
+        utils::seq((exp, token::AND, exp))(visitor)
+    }
+
+    pub fn exp_log_imp<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx> + ?Sized,
+    {
+        visitor.walker().rule(kind::EXP_LOG_IMP)?;
+        utils::seq((exp, token::EQUALS_SIGN_GREATER_THAN_SIGN, exp))(visitor)
+    }
+
+    pub fn exp_log_neg<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx> + ?Sized,
+    {
+        visitor.walker().rule(kind::EXP_LOG_NEG)?;
+        utils::seq((token::NOT, exp))(visitor)
     }
 
     pub fn exp_log_or<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
@@ -937,7 +1135,8 @@ pub mod visit {
         Ctx: Context<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
-        todo!()
+        visitor.walker().rule(kind::EXP_LOG_OR)?;
+        utils::seq((exp, token::OR, exp))(visitor)
     }
 
     pub fn exp_lt<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
@@ -945,7 +1144,8 @@ pub mod visit {
         Ctx: Context<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
-        todo!()
+        visitor.walker().rule(kind::EXP_LT)?;
+        utils::seq((exp, token::LESS_THAN_SIGN, exp))(visitor)
     }
 
     pub fn exp_lteq<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
@@ -953,7 +1153,8 @@ pub mod visit {
         Ctx: Context<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
-        todo!()
+        visitor.walker().rule(kind::EXP_LTEQ)?;
+        utils::seq((exp, token::LESS_THAN_SIGN_EQUALS_SIGN, exp))(visitor)
     }
 
     pub fn exp_match<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
@@ -961,7 +1162,23 @@ pub mod visit {
         Ctx: Context<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
-        todo!()
+        visitor.walker().rule(kind::EXP_MATCH)?;
+        utils::seq((
+            token::MATCH,
+            token::LEFT_PARENTHESIS,
+            exp,
+            token::RIGHT_PARENTHESIS,
+            token::LEFT_CURLY_BRACKET,
+            utils::optional(utils::seq((
+                utils::seq((pat, token::RIGHTWARDS_ARROW, exp)),
+                utils::repeat(utils::seq((
+                    token::COMMA,
+                    utils::seq((pat, token::RIGHTWARDS_ARROW, exp)),
+                ))),
+                utils::optional(token::COMMA),
+            ))),
+            token::RIGHT_CURLY_BRACKET,
+        ))(visitor)
     }
 
     pub fn exp_mul<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
@@ -969,7 +1186,8 @@ pub mod visit {
         Ctx: Context<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
-        todo!()
+        visitor.walker().rule(kind::EXP_MUL)?;
+        utils::seq((exp, token::ASTERISK, exp))(visitor)
     }
 
     pub fn exp_neg<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
@@ -977,7 +1195,8 @@ pub mod visit {
         Ctx: Context<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
-        todo!()
+        visitor.walker().rule(kind::EXP_NEG)?;
+        utils::seq((token::HYPHEN_MINUS, exp))(visitor)
     }
 
     pub fn exp_neq<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
@@ -985,7 +1204,8 @@ pub mod visit {
         Ctx: Context<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
-        todo!()
+        visitor.walker().rule(kind::EXP_NEQ)?;
+        utils::seq((exp, token::EXCLAMATION_MARK_EQUALS_SIGN, exp))(visitor)
     }
 
     pub fn exp_proj<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
@@ -993,7 +1213,17 @@ pub mod visit {
         Ctx: Context<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
-        todo!()
+        visitor.walker().rule(kind::EXP_PROJ)?;
+        utils::seq((exp, token::FULL_STOP, exp_proj_digits))(visitor)
+    }
+
+    pub fn exp_proj_digits<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx> + ?Sized,
+    {
+        visitor.walker().rule(kind::EXP_PROJ_DIGITS)?;
+        Ok(())
     }
 
     pub fn exp_ref<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
@@ -1001,7 +1231,8 @@ pub mod visit {
         Ctx: Context<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
-        todo!()
+        visitor.walker().rule(kind::EXP_REF)?;
+        utils::seq((token::AMPERSAND, exp))(visitor)
     }
 
     pub fn exp_rem<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
@@ -1009,7 +1240,8 @@ pub mod visit {
         Ctx: Context<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
-        todo!()
+        visitor.walker().rule(kind::EXP_REM)?;
+        utils::seq((exp, token::PERCENT_SIGN, exp))(visitor)
     }
 
     pub fn exp_return<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
@@ -1017,7 +1249,8 @@ pub mod visit {
         Ctx: Context<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
-        todo!()
+        visitor.walker().rule(kind::EXP_RETURN)?;
+        utils::seq((token::RETURN, utils::optional(exp)))(visitor)
     }
 
     pub fn exp_seq<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
@@ -1025,7 +1258,8 @@ pub mod visit {
         Ctx: Context<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
-        todo!()
+        visitor.walker().rule(kind::EXP_SEQ)?;
+        utils::seq((exp, token::SEMICOLON, utils::optional(exp)))(visitor)
     }
 
     pub fn exp_shl<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
@@ -1033,7 +1267,8 @@ pub mod visit {
         Ctx: Context<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
-        todo!()
+        visitor.walker().rule(kind::EXP_SHL)?;
+        utils::seq((exp, token::LESS_THAN_SIGN_LESS_THAN_SIGN, exp))(visitor)
     }
 
     pub fn exp_shr<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
@@ -1041,7 +1276,8 @@ pub mod visit {
         Ctx: Context<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
-        todo!()
+        visitor.walker().rule(kind::EXP_SHR)?;
+        utils::seq((exp, token::GREATER_THAN_SIGN_GREATER_THAN_SIGN, exp))(visitor)
     }
 
     pub fn exp_slice<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
@@ -1049,7 +1285,15 @@ pub mod visit {
         Ctx: Context<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
-        todo!()
+        visitor.walker().rule(kind::EXP_SLICE)?;
+        utils::seq((
+            exp,
+            token::LEFT_SQUARE_BRACKET,
+            lit_num_dec,
+            token::COLON,
+            lit_num_dec,
+            token::RIGHT_SQUARE_BRACKET,
+        ))(visitor)
     }
 
     pub fn exp_sub<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
@@ -1057,7 +1301,8 @@ pub mod visit {
         Ctx: Context<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
-        todo!()
+        visitor.walker().rule(kind::EXP_SUB)?;
+        utils::seq((exp, token::HYPHEN_MINUS, exp))(visitor)
     }
 
     pub fn exp_try<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
@@ -1065,7 +1310,8 @@ pub mod visit {
         Ctx: Context<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
-        todo!()
+        visitor.walker().rule(kind::EXP_TRY)?;
+        utils::seq((exp, token::QUESTION_MARK))(visitor)
     }
 
     pub fn exp_tuple<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
@@ -1073,7 +1319,16 @@ pub mod visit {
         Ctx: Context<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
-        todo!()
+        visitor.walker().rule(kind::EXP_TUPLE)?;
+        utils::seq((
+            token::LEFT_PARENTHESIS,
+            utils::optional(utils::seq((
+                exp,
+                utils::repeat(utils::seq((token::COMMA, exp))),
+                utils::optional(token::COMMA),
+            ))),
+            token::RIGHT_PARENTHESIS,
+        ))(visitor)
     }
 
     pub fn exp_type<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
@@ -1081,7 +1336,8 @@ pub mod visit {
         Ctx: Context<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
-        todo!()
+        visitor.walker().rule(kind::EXP_TYPE)?;
+        utils::seq((exp, token::COLON, type_atom))(visitor)
     }
 
     pub fn exp_wild<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
@@ -1089,7 +1345,8 @@ pub mod visit {
         Ctx: Context<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
-        todo!()
+        visitor.walker().rule(kind::EXP_WILD)?;
+        Ok(())
     }
 
     pub fn field<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
@@ -1097,7 +1354,8 @@ pub mod visit {
         Ctx: Context<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
-        todo!()
+        visitor.walker().rule(kind::FIELD)?;
+        utils::seq((utils::optional(attributes), name_field, token::COLON, type_atom))(visitor)
     }
 
     pub fn function<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
@@ -1105,7 +1363,8 @@ pub mod visit {
         Ctx: Context<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
-        todo!()
+        visitor.walker().rule(kind::FUNCTION)?;
+        utils::choice((function_normal, function_extern))(visitor)
     }
 
     pub fn function_extern<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
@@ -1301,6 +1560,14 @@ pub mod visit {
     }
 
     pub fn name_cons<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx> + ?Sized,
+    {
+        todo!()
+    }
+
+    pub fn name_field<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx> + ?Sized,
