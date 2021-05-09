@@ -265,8 +265,8 @@ pub mod token {
             (EXCLAMATION_MARK_EQUALS_SIGN, "!=", false),
             (FULL_STOP, ".", false),
             (GREATER_THAN_SIGN, ">", false),
-            (GREATER_THAN_SIGN_GREATER_THAN_SIGN, ">>", false),
             (GREATER_THAN_SIGN_EQUALS_SIGN, ">=", false),
+            (GREATER_THAN_SIGN_GREATER_THAN_SIGN, ">>", false),
             (HYPHEN_MINUS, "-", false),
             (LEFT_CURLY_BRACKET, "{", false),
             (LEFT_PARENTHESIS, "(", false),
@@ -1477,7 +1477,7 @@ pub mod visit {
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
         visitor.walker().rule(kind::EXP_ASSIGN)?;
-        utils::seq((exp, token::PLUS_SIGN, exp))(visitor)
+        utils::seq((exp, token::EQUALS_SIGN, exp))(visitor)
     }
 
     pub fn exp_binding<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
