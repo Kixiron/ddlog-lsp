@@ -41,7 +41,6 @@ pub mod kind {
             (DUMP, "dump", true),
             (DUMP_INDEX, "dump_index", true),
             (ECHO, "echo", true),
-            (ECHO_INNER, "echo_inner", true),
             (EXIT, "exit", true),
             (EXP, "exp", true),
             (EXP_ADD, "exp_add", true),
@@ -98,7 +97,8 @@ pub mod kind {
             (FIELD, "field", true),
             (IDENT, "ident", false),
             (IDENT_LOWER, "ident_lower", true),
-            (IDENT_LOWER_SCOPED, "ident_lower_scoped", false),
+            (IDENT_LOWER_SCOPED, "ident_lower_scoped", true),
+            (IDENT_SCOPED, "ident_scoped", true),
             (IDENT_UPPER, "ident_upper", true),
             (IDENT_UPPER_SCOPED, "ident_upper_scoped", true),
             (INSERT, "insert", true),
@@ -115,6 +115,7 @@ pub mod kind {
             (LIT_STRING, "lit_string", true),
             (LIT_VEC, "lit_vec", true),
             (LOG_LEVEL, "log_level", true),
+            (MISC_PAT0, "misc_pat0", true),
             (MODIFY, "modify", true),
             (NAME, "name", true),
             (NAME_ARG, "name_arg", true),
@@ -142,6 +143,10 @@ pub mod kind {
             (SERDE_ENCODING, "serde_encoding", true),
             (SLEEP, "sleep", true),
             (START, "start", true),
+            (STRING_QUOTED, "string_quoted", true),
+            (STRING_QUOTED_ESCAPED, "string_quoted_escaped", true),
+            (STRING_RAW, "string_raw", true),
+            (STRING_RAW_INTERPOLATED, "string_raw_interpolated", true),
             (TIMESTAMP, "timestamp", true),
             (TYPE, "type", true),
             (TYPE_ATOM, "type_atom", true),
@@ -163,6 +168,7 @@ pub mod kind {
             (TYPE_VAR_IDENT, "type_var_ident", true),
             (UPDATE, "update", true),
             (UPDATES, "updates", true),
+            (UPDATES_END, "updates_end", true),
             (VAL_ARRAY, "val_array", true),
             (VAL_STRUCT, "val_struct", true),
             (VAL_TUPLE, "val_tuple", true),
@@ -362,10 +368,6 @@ where
         visit::echo(self)
     }
 
-    fn visit_echo_inner(&mut self) -> Result<(), SyntaxErrors> {
-        visit::echo_inner(self)
-    }
-
     fn visit_exit(&mut self) -> Result<(), SyntaxErrors> {
         visit::exit(self)
     }
@@ -396,6 +398,10 @@ where
 
     fn visit_log_level(&mut self) -> Result<(), SyntaxErrors> {
         visit::log_level(self)
+    }
+
+    fn visit_misc_pat0(&mut self) -> Result<(), SyntaxErrors> {
+        visit::misc_pat0(self)
     }
 
     fn visit_modify(&mut self) -> Result<(), SyntaxErrors> {
@@ -485,6 +491,7 @@ pub mod utils {
     ddlog_lsp_macros::impl_choice!(1);
     ddlog_lsp_macros::impl_choice!(2);
     ddlog_lsp_macros::impl_choice!(3);
+    ddlog_lsp_macros::impl_choice!(4);
     ddlog_lsp_macros::impl_choice!(5);
     ddlog_lsp_macros::impl_choice!(6);
     ddlog_lsp_macros::impl_choice!(9);
@@ -912,16 +919,7 @@ pub mod visit {
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
         visitor.walker().rule(kind::ECHO)?;
-        utils::seq((token::ECHO, echo_inner, token::SEMICOLON))(visitor)
-    }
-
-    pub fn echo_inner<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
-    where
-        Ctx: Context<'tree> + 'tree,
-        Vis: Visitor<'tree, Ctx> + ?Sized,
-    {
-        visitor.walker().rule(kind::ECHO_INNER)?;
-        Ok(())
+        utils::seq((token::ECHO, misc_pat0, token::SEMICOLON))(visitor)
     }
 
     pub fn exit<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
@@ -1601,6 +1599,15 @@ pub mod visit {
         Ok(())
     }
 
+    pub fn ident_scoped<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx> + ?Sized,
+    {
+        visitor.walker().rule(kind::IDENT_SCOPED)?;
+        Ok(())
+    }
+
     pub fn ident_upper<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -1624,7 +1631,8 @@ pub mod visit {
         Ctx: Context<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
-        todo!()
+        visitor.walker().rule(kind::INSERT)?;
+        utils::seq((token::INSERT, atom))(visitor)
     }
 
     pub fn insert_or_update<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
@@ -1632,7 +1640,8 @@ pub mod visit {
         Ctx: Context<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
-        todo!()
+        visitor.walker().rule(kind::INSERT_OR_UPDATE)?;
+        utils::seq((token::INSERT_OR_UPDATE, atom))(visitor)
     }
 
     pub fn lit_bool<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
@@ -1717,7 +1726,8 @@ pub mod visit {
         Ctx: Context<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
-        todo!()
+        visitor.walker().rule(kind::LIT_NUM_HEX)?;
+        Ok(())
     }
 
     pub fn lit_num_oct<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
@@ -1734,7 +1744,8 @@ pub mod visit {
         Ctx: Context<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
-        todo!()
+        visitor.walker().rule(kind::LIT_SERIALIZED)?;
+        utils::seq((token::COMMERCIAL_AT, serde_encoding))(visitor)
     }
 
     pub fn lit_string<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
@@ -1742,7 +1753,13 @@ pub mod visit {
         Ctx: Context<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
-        todo!()
+        visitor.walker().rule(kind::LIT_STRING)?;
+        utils::repeat1(utils::choice((
+            string_quoted,
+            string_quoted_escaped,
+            string_raw,
+            string_raw_interpolated,
+        )))(visitor)
     }
 
     pub fn log_level<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
@@ -1750,7 +1767,8 @@ pub mod visit {
         Ctx: Context<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
-        todo!()
+        visitor.walker().rule(kind::LOG_LEVEL)?;
+        utils::seq((token::LOG_LEVEL, misc_pat0))(visitor)
     }
 
     pub fn lit_vec<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
@@ -1767,12 +1785,22 @@ pub mod visit {
         ))(visitor)
     }
 
+    pub fn misc_pat0<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx> + ?Sized,
+    {
+        visitor.walker().rule(kind::MISC_PAT0)?;
+        Ok(())
+    }
+
     pub fn modify<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
-        todo!()
+        visitor.walker().rule(kind::MODIFY)?;
+        utils::seq((token::MODIFY, name_rel, record, token::LEFTWARDS_ARROW, record))(visitor)
     }
 
     pub fn name<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
@@ -1789,7 +1817,8 @@ pub mod visit {
         Ctx: Context<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
-        todo!()
+        visitor.walker().rule(kind::NAME_ARG)?;
+        Ok(())
     }
 
     pub fn name_cons<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
@@ -1824,7 +1853,8 @@ pub mod visit {
         Ctx: Context<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
-        todo!()
+        visitor.walker().rule(kind::NAME_INDEX)?;
+        ident_scoped(visitor)
     }
 
     pub fn name_rel<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
@@ -1832,7 +1862,8 @@ pub mod visit {
         Ctx: Context<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
-        todo!()
+        visitor.walker().rule(kind::NAME_REL)?;
+        ident_upper_scoped(visitor)
     }
 
     pub fn name_type<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
@@ -1971,7 +2002,12 @@ pub mod visit {
         Ctx: Context<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
-        todo!()
+        visitor.walker().rule(kind::PROFILE)?;
+        utils::seq((
+            token::PROFILE,
+            utils::optional(utils::seq((token::CPU, utils::choice((token::ON, token::OFF))))),
+            token::SEMICOLON,
+        ))(visitor)
     }
 
     pub fn query_index<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
@@ -1979,7 +2015,19 @@ pub mod visit {
         Ctx: Context<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
-        todo!()
+        visitor.walker().rule(kind::QUERY_INDEX)?;
+        utils::seq((
+            token::QUERY_INDEX,
+            name_index,
+            token::LEFT_PARENTHESIS,
+            utils::optional(utils::seq((
+                arg,
+                utils::repeat(utils::seq((token::COMMA, arg))),
+                utils::optional(token::COMMA),
+            ))),
+            token::RIGHT_PARENTHESIS,
+            token::SEMICOLON,
+        ))(visitor)
     }
 
     pub fn record<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
@@ -1987,7 +2035,18 @@ pub mod visit {
         Ctx: Context<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
-        todo!()
+        visitor.walker().rule(kind::RECORD)?;
+        utils::choice((
+            lit_bool,
+            lit_string,
+            lit_serialized,
+            val_tuple,
+            val_array,
+            val_struct,
+            lit_num_float,
+            lit_num_dec,
+            lit_num_hex,
+        ))(visitor)
     }
 
     pub fn record_named<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
@@ -1995,7 +2054,8 @@ pub mod visit {
         Ctx: Context<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
-        todo!()
+        visitor.walker().rule(kind::RECORD_NAMED)?;
+        utils::seq((token::FULL_STOP, name_field, token::EQUALS_SIGN, record))(visitor)
     }
 
     pub fn rollback<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
@@ -2003,7 +2063,8 @@ pub mod visit {
         Ctx: Context<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
-        todo!()
+        visitor.walker().rule(kind::ROLLBACK)?;
+        utils::seq((token::ROLLBACK, token::SEMICOLON))(visitor)
     }
 
     pub fn serde_encoding<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
@@ -2011,7 +2072,8 @@ pub mod visit {
         Ctx: Context<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
-        todo!()
+        visitor.walker().rule(kind::SERDE_ENCODING)?;
+        token::JSON(visitor)
     }
 
     pub fn sleep<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
@@ -2019,7 +2081,8 @@ pub mod visit {
         Ctx: Context<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
-        todo!()
+        visitor.walker().rule(kind::SLEEP)?;
+        utils::seq((token::SLEEP, misc_pat0, token::SEMICOLON))(visitor)
     }
 
     pub fn start<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
@@ -2027,7 +2090,48 @@ pub mod visit {
         Ctx: Context<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
-        todo!()
+        visitor.walker().rule(kind::START)?;
+        utils::seq((token::START, token::SEMICOLON))(visitor)
+    }
+
+    // NOTE: might have to descend into subnodes
+    pub fn string_quoted<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx> + ?Sized,
+    {
+        visitor.walker().rule(kind::STRING_QUOTED)?;
+        Ok(())
+    }
+
+    // NOTE: might have to descend into subnodes
+    pub fn string_quoted_escaped<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx> + ?Sized,
+    {
+        visitor.walker().rule(kind::STRING_QUOTED_ESCAPED)?;
+        Ok(())
+    }
+
+    // NOTE: might have to descend into subnodes
+    pub fn string_raw<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx> + ?Sized,
+    {
+        visitor.walker().rule(kind::STRING_RAW)?;
+        Ok(())
+    }
+
+    // NOTE: might have to descend into subnodes
+    pub fn string_raw_interpolated<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx> + ?Sized,
+    {
+        visitor.walker().rule(kind::STRING_RAW_INTERPOLATED)?;
+        Ok(())
     }
 
     pub fn timestamp<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
@@ -2035,7 +2139,8 @@ pub mod visit {
         Ctx: Context<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
-        todo!()
+        visitor.walker().rule(kind::TIMESTAMP)?;
+        utils::seq((token::TIMESTAMP, token::SEMICOLON))(visitor)
     }
 
     pub fn r#type<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
@@ -2285,7 +2390,8 @@ pub mod visit {
         Ctx: Context<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
-        todo!()
+        visitor.walker().rule(kind::UPDATE)?;
+        utils::choice((delete, delete_key, insert, insert_or_update, modify))(visitor)
     }
 
     pub fn updates<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
@@ -2293,7 +2399,17 @@ pub mod visit {
         Ctx: Context<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
-        todo!()
+        visitor.walker().rule(kind::UPDATES)?;
+        utils::seq((update, utils::repeat(utils::seq((token::COMMA, update))), updates_end))(visitor)
+    }
+
+    pub fn updates_end<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx> + ?Sized,
+    {
+        visitor.walker().rule(kind::UPDATES_END)?;
+        Ok(())
     }
 
     pub fn val_array<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
@@ -2301,7 +2417,16 @@ pub mod visit {
         Ctx: Context<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
-        todo!()
+        visitor.walker().rule(kind::VAL_ARRAY)?;
+        utils::seq((
+            token::LEFT_SQUARE_BRACKET,
+            utils::optional(utils::seq((
+                record,
+                utils::repeat(utils::seq((token::COMMA, record))),
+                utils::optional(token::COMMA),
+            ))),
+            token::RIGHT_SQUARE_BRACKET,
+        ))(visitor)
     }
 
     pub fn val_struct<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
@@ -2309,7 +2434,15 @@ pub mod visit {
         Ctx: Context<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
-        todo!()
+        visitor.walker().rule(kind::VAL_STRUCT)?;
+        utils::seq((
+            name_rel,
+            utils::optional(utils::seq((
+                token::LEFT_CURLY_BRACKET,
+                cons_args,
+                token::RIGHT_CURLY_BRACKET,
+            ))),
+        ))(visitor)
     }
 
     pub fn val_tuple<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
@@ -2317,7 +2450,16 @@ pub mod visit {
         Ctx: Context<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
-        todo!()
+        visitor.walker().rule(kind::VAL_TUPLE)?;
+        utils::seq((
+            token::LEFT_PARENTHESIS,
+            utils::optional(utils::seq((
+                record,
+                utils::repeat(utils::seq((token::COMMA, record))),
+                utils::optional(token::COMMA),
+            ))),
+            token::RIGHT_PARENTHESIS,
+        ))(visitor)
     }
 
     pub fn word<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
@@ -2325,7 +2467,8 @@ pub mod visit {
         Ctx: Context<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
-        todo!()
+        visitor.walker().rule(kind::WORD)?;
+        Ok(())
     }
 
     pub mod token {

@@ -115,6 +115,7 @@ pub mod kind {
             (LIT_NUM_OCT, "lit_num_oct", true),
             (LIT_STRING, "lit_string", true),
             (LIT_VEC, "lit_vec", true),
+            (MISC_PAT0, "misc_pat0", true),
             (MODULE_ALIAS, "module_alias", true),
             (MODULE_PATH, "module_path", true),
             (NAME, "name", true),
@@ -179,7 +180,6 @@ pub mod kind {
             (TYPE_UNION, "type_union", true),
             (TYPE_USER, "type_user", true),
             (TYPE_VAR, "type_var", true),
-            (TYPE_VAR_IDENT, "type_var_ident", true),
             (TYPEDEF, "typedef", true),
             (TYPEDEF_EXTERN, "typedef_extern", true),
             (TYPEDEF_NORMAL, "typedef_normal", true),
@@ -706,6 +706,10 @@ where
         visit::lit_vec(self)
     }
 
+    fn visit_misc_pat0(&mut self) -> Result<(), SyntaxErrors> {
+        visit::misc_pat0(self)
+    }
+
     fn visit_module_alias(&mut self) -> Result<(), SyntaxErrors> {
         visit::module_alias(self)
     }
@@ -952,10 +956,6 @@ where
 
     fn visit_type_var(&mut self) -> Result<(), SyntaxErrors> {
         visit::type_var(self)
-    }
-
-    fn visit_type_var_ident(&mut self) -> Result<(), SyntaxErrors> {
-        visit::type_var_ident(self)
     }
 
     fn visit_typedef(&mut self) -> Result<(), SyntaxErrors> {
@@ -2345,6 +2345,15 @@ pub mod visit {
         ))(visitor)
     }
 
+    pub fn misc_pat0<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx> + ?Sized,
+    {
+        visitor.walker().rule(kind::MISC_PAT0)?;
+        Ok(())
+    }
+
     pub fn module_alias<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -3142,16 +3151,7 @@ pub mod visit {
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
         visitor.walker().rule(kind::TYPE_VAR)?;
-        utils::seq((token::APOSTROPHE, type_var_ident))(visitor)
-    }
-
-    pub fn type_var_ident<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
-    where
-        Ctx: Context<'tree> + 'tree,
-        Vis: Visitor<'tree, Ctx> + ?Sized,
-    {
-        visitor.walker().rule(kind::TYPE_VAR_IDENT)?;
-        Ok(())
+        utils::seq((token::APOSTROPHE, misc_pat0))(visitor)
     }
 
     pub fn typedef<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
