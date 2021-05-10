@@ -308,6 +308,14 @@ where
         visit::ROOT(self)
     }
 
+    fn visit_arg(&mut self) -> Result<(), SyntaxErrors> {
+        visit::arg(self)
+    }
+
+    fn visit_arg_opt_type(&mut self) -> Result<(), SyntaxErrors> {
+        visit::arg_opt_type(self)
+    }
+
     fn visit_atom(&mut self) -> Result<(), SyntaxErrors> {
         visit::atom(self)
     }
@@ -322,6 +330,14 @@ where
 
     fn visit_atom_rec(&mut self) -> Result<(), SyntaxErrors> {
         visit::atom_rec(self)
+    }
+
+    fn visit_attribute(&mut self) -> Result<(), SyntaxErrors> {
+        visit::attribute(self)
+    }
+
+    fn visit_attributes(&mut self) -> Result<(), SyntaxErrors> {
+        visit::attributes(self)
     }
 
     fn visit_clear(&mut self) -> Result<(), SyntaxErrors> {
@@ -346,6 +362,10 @@ where
 
     fn visit_cons_args(&mut self) -> Result<(), SyntaxErrors> {
         visit::cons_args(self)
+    }
+
+    fn visit_cons_rec(&mut self) -> Result<(), SyntaxErrors> {
+        visit::cons_rec(self)
     }
 
     fn visit_delete(&mut self) -> Result<(), SyntaxErrors> {
@@ -376,6 +396,234 @@ where
         visit::exp(self)
     }
 
+    fn visit_exp_add(&mut self) -> Result<(), SyntaxErrors> {
+        visit::exp_add(self)
+    }
+
+    fn visit_exp_assign(&mut self) -> Result<(), SyntaxErrors> {
+        visit::exp_assign(self)
+    }
+
+    fn visit_exp_binding(&mut self) -> Result<(), SyntaxErrors> {
+        visit::exp_binding(self)
+    }
+
+    fn visit_exp_bit_and(&mut self) -> Result<(), SyntaxErrors> {
+        visit::exp_bit_and(self)
+    }
+
+    fn visit_exp_bit_neg(&mut self) -> Result<(), SyntaxErrors> {
+        visit::exp_bit_neg(self)
+    }
+
+    fn visit_exp_bit_or(&mut self) -> Result<(), SyntaxErrors> {
+        visit::exp_bit_or(self)
+    }
+
+    fn visit_exp_bit_slice(&mut self) -> Result<(), SyntaxErrors> {
+        visit::exp_bit_slice(self)
+    }
+
+    fn visit_exp_bit_xor(&mut self) -> Result<(), SyntaxErrors> {
+        visit::exp_bit_xor(self)
+    }
+
+    fn visit_exp_block(&mut self) -> Result<(), SyntaxErrors> {
+        visit::exp_block(self)
+    }
+
+    fn visit_exp_break(&mut self) -> Result<(), SyntaxErrors> {
+        visit::exp_break(self)
+    }
+
+    fn visit_exp_cast(&mut self) -> Result<(), SyntaxErrors> {
+        visit::exp_cast(self)
+    }
+
+    fn visit_exp_cat(&mut self) -> Result<(), SyntaxErrors> {
+        visit::exp_cat(self)
+    }
+
+    fn visit_exp_cond(&mut self) -> Result<(), SyntaxErrors> {
+        visit::exp_cond(self)
+    }
+
+    fn visit_exp_cons_pos(&mut self) -> Result<(), SyntaxErrors> {
+        visit::exp_cons_pos(self)
+    }
+
+    fn visit_exp_cons_rec(&mut self) -> Result<(), SyntaxErrors> {
+        visit::exp_cons_rec(self)
+    }
+
+    fn visit_exp_continue(&mut self) -> Result<(), SyntaxErrors> {
+        visit::exp_continue(self)
+    }
+
+    fn visit_exp_decl_var(&mut self) -> Result<(), SyntaxErrors> {
+        visit::exp_decl_var(self)
+    }
+
+    fn visit_exp_div(&mut self) -> Result<(), SyntaxErrors> {
+        visit::exp_div(self)
+    }
+
+    fn visit_exp_eq(&mut self) -> Result<(), SyntaxErrors> {
+        visit::exp_eq(self)
+    }
+
+    fn visit_exp_field(&mut self) -> Result<(), SyntaxErrors> {
+        visit::exp_field(self)
+    }
+
+    fn visit_exp_for(&mut self) -> Result<(), SyntaxErrors> {
+        visit::exp_for(self)
+    }
+
+    fn visit_exp_fun_call(&mut self) -> Result<(), SyntaxErrors> {
+        visit::exp_fun_call(self)
+    }
+
+    fn visit_exp_fun_call_dot(&mut self) -> Result<(), SyntaxErrors> {
+        visit::exp_fun_call_dot(self)
+    }
+
+    fn visit_exp_gt(&mut self) -> Result<(), SyntaxErrors> {
+        visit::exp_gt(self)
+    }
+
+    fn visit_exp_gteq(&mut self) -> Result<(), SyntaxErrors> {
+        visit::exp_gteq(self)
+    }
+
+    fn visit_exp_lambda(&mut self) -> Result<(), SyntaxErrors> {
+        visit::exp_lambda(self)
+    }
+
+    fn visit_exp_lit(&mut self) -> Result<(), SyntaxErrors> {
+        visit::exp_lit(self)
+    }
+
+    fn visit_exp_log_and(&mut self) -> Result<(), SyntaxErrors> {
+        visit::exp_log_and(self)
+    }
+
+    fn visit_exp_log_imp(&mut self) -> Result<(), SyntaxErrors> {
+        visit::exp_log_imp(self)
+    }
+
+    fn visit_exp_log_neg(&mut self) -> Result<(), SyntaxErrors> {
+        visit::exp_log_neg(self)
+    }
+
+    fn visit_exp_log_or(&mut self) -> Result<(), SyntaxErrors> {
+        visit::exp_log_or(self)
+    }
+
+    fn visit_exp_lt(&mut self) -> Result<(), SyntaxErrors> {
+        visit::exp_lt(self)
+    }
+
+    fn visit_exp_lteq(&mut self) -> Result<(), SyntaxErrors> {
+        visit::exp_lteq(self)
+    }
+
+    fn visit_exp_match(&mut self) -> Result<(), SyntaxErrors> {
+        visit::exp_match(self)
+    }
+
+    fn visit_exp_mul(&mut self) -> Result<(), SyntaxErrors> {
+        visit::exp_mul(self)
+    }
+
+    fn visit_exp_neg(&mut self) -> Result<(), SyntaxErrors> {
+        visit::exp_neg(self)
+    }
+
+    fn visit_exp_neq(&mut self) -> Result<(), SyntaxErrors> {
+        visit::exp_neq(self)
+    }
+
+    fn visit_exp_proj(&mut self) -> Result<(), SyntaxErrors> {
+        visit::exp_proj(self)
+    }
+
+    fn visit_exp_proj_digits(&mut self) -> Result<(), SyntaxErrors> {
+        visit::exp_proj_digits(self)
+    }
+
+    fn visit_exp_ref(&mut self) -> Result<(), SyntaxErrors> {
+        visit::exp_ref(self)
+    }
+
+    fn visit_exp_rem(&mut self) -> Result<(), SyntaxErrors> {
+        visit::exp_rem(self)
+    }
+
+    fn visit_exp_return(&mut self) -> Result<(), SyntaxErrors> {
+        visit::exp_return(self)
+    }
+
+    fn visit_exp_seq(&mut self) -> Result<(), SyntaxErrors> {
+        visit::exp_seq(self)
+    }
+
+    fn visit_exp_shl(&mut self) -> Result<(), SyntaxErrors> {
+        visit::exp_shl(self)
+    }
+
+    fn visit_exp_shr(&mut self) -> Result<(), SyntaxErrors> {
+        visit::exp_shr(self)
+    }
+
+    fn visit_exp_slice(&mut self) -> Result<(), SyntaxErrors> {
+        visit::exp_slice(self)
+    }
+
+    fn visit_exp_sub(&mut self) -> Result<(), SyntaxErrors> {
+        visit::exp_sub(self)
+    }
+
+    fn visit_exp_try(&mut self) -> Result<(), SyntaxErrors> {
+        visit::exp_try(self)
+    }
+
+    fn visit_exp_tuple(&mut self) -> Result<(), SyntaxErrors> {
+        visit::exp_tuple(self)
+    }
+
+    fn visit_exp_type(&mut self) -> Result<(), SyntaxErrors> {
+        visit::exp_type(self)
+    }
+
+    fn visit_exp_wild(&mut self) -> Result<(), SyntaxErrors> {
+        visit::exp_wild(self)
+    }
+
+    fn visit_ident(&mut self) -> Result<(), SyntaxErrors> {
+        visit::ident(self)
+    }
+
+    fn visit_ident_lower(&mut self) -> Result<(), SyntaxErrors> {
+        visit::ident_lower(self)
+    }
+
+    fn visit_ident_lower_scoped(&mut self) -> Result<(), SyntaxErrors> {
+        visit::ident_lower_scoped(self)
+    }
+
+    fn visit_ident_scoped(&mut self) -> Result<(), SyntaxErrors> {
+        visit::ident_scoped(self)
+    }
+
+    fn visit_ident_upper(&mut self) -> Result<(), SyntaxErrors> {
+        visit::ident_upper(self)
+    }
+
+    fn visit_ident_upper_scoped(&mut self) -> Result<(), SyntaxErrors> {
+        visit::ident_upper_scoped(self)
+    }
+
     fn visit_insert(&mut self) -> Result<(), SyntaxErrors> {
         visit::insert(self)
     }
@@ -384,8 +632,36 @@ where
         visit::insert_or_update(self)
     }
 
+    fn visit_lit_bool(&mut self) -> Result<(), SyntaxErrors> {
+        visit::lit_bool(self)
+    }
+
+    fn visit_lit_map(&mut self) -> Result<(), SyntaxErrors> {
+        visit::lit_map(self)
+    }
+
+    fn visit_lit_num(&mut self) -> Result<(), SyntaxErrors> {
+        visit::lit_num(self)
+    }
+
+    fn visit_lit_num_bin(&mut self) -> Result<(), SyntaxErrors> {
+        visit::lit_num_bin(self)
+    }
+
+    fn visit_lit_num_dec(&mut self) -> Result<(), SyntaxErrors> {
+        visit::lit_num_dec(self)
+    }
+
+    fn visit_lit_num_float(&mut self) -> Result<(), SyntaxErrors> {
+        visit::lit_num_float(self)
+    }
+
     fn visit_lit_num_hex(&mut self) -> Result<(), SyntaxErrors> {
         visit::lit_num_hex(self)
+    }
+
+    fn visit_lit_num_oct(&mut self) -> Result<(), SyntaxErrors> {
+        visit::lit_num_oct(self)
     }
 
     fn visit_lit_serialized(&mut self) -> Result<(), SyntaxErrors> {
@@ -394,6 +670,10 @@ where
 
     fn visit_lit_string(&mut self) -> Result<(), SyntaxErrors> {
         visit::lit_string(self)
+    }
+
+    fn visit_lit_vec(&mut self) -> Result<(), SyntaxErrors> {
+        visit::lit_vec(self)
     }
 
     fn visit_log_level(&mut self) -> Result<(), SyntaxErrors> {
@@ -408,8 +688,76 @@ where
         visit::modify(self)
     }
 
+    fn visit_name(&mut self) -> Result<(), SyntaxErrors> {
+        visit::name(self)
+    }
+
+    fn visit_name_arg(&mut self) -> Result<(), SyntaxErrors> {
+        visit::name_arg(self)
+    }
+
+    fn visit_name_cons(&mut self) -> Result<(), SyntaxErrors> {
+        visit::name_cons(self)
+    }
+
+    fn visit_name_field(&mut self) -> Result<(), SyntaxErrors> {
+        visit::name_field(self)
+    }
+
+    fn visit_name_func(&mut self) -> Result<(), SyntaxErrors> {
+        visit::name_func(self)
+    }
+
+    fn visit_name_index(&mut self) -> Result<(), SyntaxErrors> {
+        visit::name_index(self)
+    }
+
     fn visit_name_rel(&mut self) -> Result<(), SyntaxErrors> {
         visit::name_rel(self)
+    }
+
+    fn visit_name_type(&mut self) -> Result<(), SyntaxErrors> {
+        visit::name_type(self)
+    }
+
+    fn visit_name_var_term(&mut self) -> Result<(), SyntaxErrors> {
+        visit::name_var_term(self)
+    }
+
+    fn visit_pat(&mut self) -> Result<(), SyntaxErrors> {
+        visit::pat(self)
+    }
+
+    fn visit_pat_cons(&mut self) -> Result<(), SyntaxErrors> {
+        visit::pat_cons(self)
+    }
+
+    fn visit_pat_cons_pos(&mut self) -> Result<(), SyntaxErrors> {
+        visit::pat_cons_pos(self)
+    }
+
+    fn visit_pat_cons_rec(&mut self) -> Result<(), SyntaxErrors> {
+        visit::pat_cons_rec(self)
+    }
+
+    fn visit_pat_lit(&mut self) -> Result<(), SyntaxErrors> {
+        visit::pat_lit(self)
+    }
+
+    fn visit_pat_term_decl_var(&mut self) -> Result<(), SyntaxErrors> {
+        visit::pat_term_decl_var(self)
+    }
+
+    fn visit_pat_tuple(&mut self) -> Result<(), SyntaxErrors> {
+        visit::pat_tuple(self)
+    }
+
+    fn visit_pat_type(&mut self) -> Result<(), SyntaxErrors> {
+        visit::pat_type(self)
+    }
+
+    fn visit_pat_wild(&mut self) -> Result<(), SyntaxErrors> {
+        visit::pat_wild(self)
     }
 
     fn visit_profile(&mut self) -> Result<(), SyntaxErrors> {
@@ -444,8 +792,88 @@ where
         visit::start(self)
     }
 
+    fn visit_string_quoted(&mut self) -> Result<(), SyntaxErrors> {
+        visit::string_quoted(self)
+    }
+
+    fn visit_string_quoted_escaped(&mut self) -> Result<(), SyntaxErrors> {
+        visit::string_quoted_escaped(self)
+    }
+
+    fn visit_string_raw(&mut self) -> Result<(), SyntaxErrors> {
+        visit::string_raw(self)
+    }
+
+    fn visit_string_raw_interpolated(&mut self) -> Result<(), SyntaxErrors> {
+        visit::string_raw_interpolated(self)
+    }
+
     fn visit_timestamp(&mut self) -> Result<(), SyntaxErrors> {
         visit::timestamp(self)
+    }
+
+    fn visit_type(&mut self) -> Result<(), SyntaxErrors> {
+        visit::r#type(self)
+    }
+
+    fn visit_type_atom(&mut self) -> Result<(), SyntaxErrors> {
+        visit::type_atom(self)
+    }
+
+    fn visit_type_bigint(&mut self) -> Result<(), SyntaxErrors> {
+        visit::type_bigint(self)
+    }
+
+    fn visit_type_bit(&mut self) -> Result<(), SyntaxErrors> {
+        visit::type_bit(self)
+    }
+
+    fn visit_type_bool(&mut self) -> Result<(), SyntaxErrors> {
+        visit::type_bool(self)
+    }
+
+    fn visit_type_double(&mut self) -> Result<(), SyntaxErrors> {
+        visit::type_double(self)
+    }
+
+    fn visit_type_float(&mut self) -> Result<(), SyntaxErrors> {
+        visit::type_float(self)
+    }
+
+    fn visit_type_fun(&mut self) -> Result<(), SyntaxErrors> {
+        visit::type_fun(self)
+    }
+
+    fn visit_type_signed(&mut self) -> Result<(), SyntaxErrors> {
+        visit::type_signed(self)
+    }
+
+    fn visit_type_string(&mut self) -> Result<(), SyntaxErrors> {
+        visit::type_string(self)
+    }
+
+    fn visit_type_trans(&mut self) -> Result<(), SyntaxErrors> {
+        visit::type_trans(self)
+    }
+
+    fn visit_type_trans_fun(&mut self) -> Result<(), SyntaxErrors> {
+        visit::type_trans_fun(self)
+    }
+
+    fn visit_type_tuple(&mut self) -> Result<(), SyntaxErrors> {
+        visit::type_tuple(self)
+    }
+
+    fn visit_type_union(&mut self) -> Result<(), SyntaxErrors> {
+        visit::type_union(self)
+    }
+
+    fn visit_type_user(&mut self) -> Result<(), SyntaxErrors> {
+        visit::type_user(self)
+    }
+
+    fn visit_type_var(&mut self) -> Result<(), SyntaxErrors> {
+        visit::type_var(self)
     }
 
     fn visit_update(&mut self) -> Result<(), SyntaxErrors> {
@@ -454,6 +882,10 @@ where
 
     fn visit_updates(&mut self) -> Result<(), SyntaxErrors> {
         visit::updates(self)
+    }
+
+    fn visit_updates_end(&mut self) -> Result<(), SyntaxErrors> {
+        visit::updates_end(self)
     }
 
     fn visit_val_array(&mut self) -> Result<(), SyntaxErrors> {
@@ -1762,15 +2194,6 @@ pub mod visit {
         )))(visitor)
     }
 
-    pub fn log_level<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
-    where
-        Ctx: Context<'tree> + 'tree,
-        Vis: Visitor<'tree, Ctx> + ?Sized,
-    {
-        visitor.walker().rule(kind::LOG_LEVEL)?;
-        utils::seq((token::LOG_LEVEL, misc_pat0))(visitor)
-    }
-
     pub fn lit_vec<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -1783,6 +2206,15 @@ pub mod visit {
             utils::repeat(utils::seq((token::COMMA, exp))),
             token::RIGHT_SQUARE_BRACKET,
         ))(visitor)
+    }
+
+    pub fn log_level<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx> + ?Sized,
+    {
+        visitor.walker().rule(kind::LOG_LEVEL)?;
+        utils::seq((token::LOG_LEVEL, misc_pat0))(visitor)
     }
 
     pub fn misc_pat0<'tree, Ctx, Vis>(visitor: &mut Vis) -> Result<(), SyntaxErrors>

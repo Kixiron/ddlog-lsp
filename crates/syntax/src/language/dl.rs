@@ -606,7 +606,7 @@ where
         visit::exp_wild(self)
     }
 
-    fn visit_filed(&mut self) -> Result<(), SyntaxErrors> {
+    fn visit_field(&mut self) -> Result<(), SyntaxErrors> {
         visit::field(self)
     }
 
