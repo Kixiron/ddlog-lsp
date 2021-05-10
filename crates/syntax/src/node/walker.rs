@@ -349,7 +349,7 @@ impl<'tree, C: Context<'tree>> NodeWalker<'tree, C> {
             }
 
             if that_kind_id != next_kind_id {
-                let language = self.language.clone().into();
+                let language = self.language.into();
                 let expected = vec![that_kind_id];
                 let found = Some(NodeErrorData::new(next, self.error_state.clone()));
                 let error = NodeError {
