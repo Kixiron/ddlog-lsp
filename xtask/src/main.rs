@@ -478,6 +478,7 @@ USAGE:
     xtask init
 FLAGS:
     -h, --help          Prints help information
+    --with-corpus       Optionally initialize the corpus submodule
 "#
         .trim();
 
@@ -486,12 +487,23 @@ FLAGS:
             return Ok(());
         }
 
+        let with_corpus = args.contains("--with-corpus");
+
         // initialize "vendor/tree-sitter-ddlog" submodule
         let submodule = Path::new("vendor/tree-sitter-ddlog").to_str().unwrap();
         let mut cmd = Command::new("git");
         cmd.current_dir(metadata::project_root());
         cmd.args(&["submodule", "update", "--init", "--depth", "1", "--", submodule]);
         cmd.status()?;
+
+        if with_corpus {
+            // initialize "vendor/differential-datalog" submodule
+            let submodule = Path::new("vendor/differential-datalog").to_str().unwrap();
+            let mut cmd = Command::new("git");
+            cmd.current_dir(metadata::project_root());
+            cmd.args(&["submodule", "update", "--init", "--depth", "1", "--", submodule]);
+            cmd.status()?;
+        }
 
         Ok(())
     }
