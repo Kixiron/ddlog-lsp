@@ -64,4 +64,25 @@ pub mod text_document {
     ) -> anyhow::Result<Option<lsp::DocumentSymbolResponse>> {
         provider::document_symbol(session, params).await
     }
+
+    /// LSP message handler function for `textDocument/semanticTokens/*`.
+    pub mod semantic_tokens {
+        use crate::{core::Session, provider};
+        use anyhow::Result;
+        use lsp::{SemanticTokensParams, SemanticTokensRangeParams, SemanticTokensRangeResult, SemanticTokensResult};
+        use std::sync::Arc;
+
+        /// LSP message handler function for `textDocument/semanticTokens/full`.
+        pub async fn full(session: Arc<Session>, params: SemanticTokensParams) -> Result<Option<SemanticTokensResult>> {
+            provider::semantic_tokens::full(session, params).await
+        }
+
+        /// LSP message handler function for `textDocument/semanticTokens/range`.
+        pub async fn range(
+            session: Arc<Session>,
+            params: SemanticTokensRangeParams,
+        ) -> Result<Option<SemanticTokensRangeResult>> {
+            provider::semantic_tokens::range(session, params).await
+        }
+    }
 }

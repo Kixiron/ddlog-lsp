@@ -4,8 +4,12 @@ use super::token_builder::SemanticTokensBuilder;
 use crate::core::{language::dl, node::BasicNodeWalker, Language, Session};
 use anyhow::{Context, Result};
 use lsp::{
-    SemanticTokenModifier, SemanticTokenType, SemanticTokensLegend, SemanticTokensParams, SemanticTokensRangeParams,
-    SemanticTokensRangeResult, SemanticTokensResult,
+    SemanticTokenType,
+    SemanticTokensLegend,
+    SemanticTokensParams,
+    SemanticTokensRangeParams,
+    SemanticTokensRangeResult,
+    SemanticTokensResult,
 };
 use lsp_text::RopeExt;
 use ropey::Rope;
@@ -77,12 +81,11 @@ pub(crate) async fn range(
         while !handler.walker.done {
             match handler.walker.kind() {
                 dl::kind::ROOT => handler.root(),
-
                 dl::kind::ANNOTATED_ITEM => handler.annotated_item()?,
 
                 _ => {
                     handler.walker.goto_next();
-                }
+                },
             }
         }
 
@@ -121,31 +124,47 @@ impl<'text, 'tree> Handler<'text, 'tree> {
     }
 
     fn attributes(&mut self) -> Result<()> {
-        // TODO: How to loop while the next token is `#[`?
-        // "#["
-        self.walker.goto_next();
+        while self.walker.is(dl::token::NUMBER_SIGN_LEFT_SQUARE_BRACKET) {
+            // "#["
+            self.walker.goto_next();
 
-        self.attribute()?;
+            // $.attribute
+            self.attribute()?;
 
-        // "]"
-        self.walker.goto_next();
+            // repeat("," $.attribute)
+            while self.walker.is(dl::token::COMMA) {
+                self.walker.goto_next();
+
+                self.attribute()?;
+            }
+
+            // "]"
+            self.walker.goto_next();
+        }
 
         Ok(())
     }
 
     fn attribute(&mut self) -> Result<()> {
-        while self.walker.is(dl::kind::NAME) {
-            // $.name
-            {
-                let node = self.walker.node();
-                let token_type = &SemanticTokenType::VARIABLE;
-                let token_modifiers = None;
-                self.builder.push(node, token_type, token_modifiers)?;
-            }
+        // $.name
+        self.builder
+            .push(self.walker.node(), &SemanticTokenType::VARIABLE, None)?;
 
-            // TODO: if not `,` then break
+        // "="
+        self.walker.goto_next();
+        if self.walker.is(dl::token::EQUALS_SIGN) {
+            self.builder
+                .push(self.walker.node(), &SemanticTokenType::OPERATOR, None)?;
+
+            // $.exp
+            self.expression()?;
         }
 
+        Ok(())
+    }
+
+    #[allow(clippy::unnecessary_wraps)]
+    fn expression(&mut self) -> Result<()> {
         Ok(())
     }
 }

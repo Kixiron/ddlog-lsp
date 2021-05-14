@@ -1129,15 +1129,12 @@ pub mod utils {
     {
         move |visitor, m| {
             let prev = visitor.node();
-            match fun(visitor, m) {
-                Ok(result) => Ok(result),
-                Err(ref mut errs) => {
-                    visitor.reset(prev);
-                    let mut errors = SyntaxErrors::new();
-                    errors.append(errs);
-                    Err(errors)
-                },
-            }
+            fun(visitor, m).map_err(|ref mut errs| {
+                visitor.reset(prev);
+                let mut errors = SyntaxErrors::new();
+                errors.append(errs);
+                errors
+            })
         }
     }
 }

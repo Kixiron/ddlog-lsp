@@ -51,13 +51,17 @@ pub mod context {
                 None
             }
 
-            fn push(&mut self, _: Self::Level) {}
+            fn push(&mut self, _: Self::Level) {
+            }
 
-            fn push_ancestor(&mut self, _: Node<'tree>, _: Vec<Node<'tree>>) {}
+            fn push_ancestor(&mut self, _: Node<'tree>, _: Vec<Node<'tree>>) {
+            }
 
-            fn push_prefix(&mut self, _: Node<'tree>) {}
+            fn push_prefix(&mut self, _: Node<'tree>) {
+            }
 
-            fn reverse(&mut self) {}
+            fn reverse(&mut self) {
+            }
         }
     }
 
@@ -346,6 +350,7 @@ impl<'tree, C: Context<'tree>> NodeWalker<'tree, C> {
                 self.reset(prev);
                 let data = NodeErrorData::new(next, self.error_state.clone());
                 let error = SyntaxError::MissingNode(data);
+
                 return Err(error);
             }
 
@@ -359,6 +364,7 @@ impl<'tree, C: Context<'tree>> NodeWalker<'tree, C> {
                     found,
                 }
                 .into();
+
                 return Err(error);
             }
 
@@ -372,6 +378,7 @@ impl<'tree, C: Context<'tree>> NodeWalker<'tree, C> {
                 found,
             }
             .into();
+
             Err(error)
         }
     }
@@ -397,6 +404,13 @@ impl<'tree, C: Context<'tree>> NodeWalker<'tree, C> {
     /// Returns `true` if the current node is of the given kind
     #[inline]
     pub fn is(&self, kind: u16) -> bool {
+        let language: tree_sitter::Language = self.language.into();
+        log::info!(
+            "expected {}, got {}",
+            language.node_kind_for_id(kind).unwrap(),
+            self.kind(),
+        );
+
         self.kind() == kind
     }
 }

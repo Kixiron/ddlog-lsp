@@ -1,4 +1,18 @@
-use crate::{core, handler};
+use crate::{
+    core::{self, IntoJsonRpcError},
+    handler,
+};
+use lsp::{
+    SemanticTokenType,
+    SemanticTokensFullOptions,
+    SemanticTokensLegend,
+    SemanticTokensOptions,
+    SemanticTokensParams,
+    SemanticTokensRangeParams,
+    SemanticTokensRangeResult,
+    SemanticTokensResult,
+    SemanticTokensServerCapabilities,
+};
 use lspower::jsonrpc;
 use std::sync::Arc;
 
@@ -14,8 +28,49 @@ impl Server {
     }
 }
 
+/// Convenience function for building [`lsp::ServerCapabilities`] for [Server].
 pub fn capabilities() -> lsp::ServerCapabilities {
     let document_symbol_provider = Some(lsp::OneOf::Left(true));
+
+    let semantic_tokens_provider = {
+        let token_types = vec![
+            SemanticTokenType::NAMESPACE,
+            SemanticTokenType::TYPE,
+            SemanticTokenType::CLASS,
+            SemanticTokenType::ENUM,
+            SemanticTokenType::INTERFACE,
+            SemanticTokenType::STRUCT,
+            SemanticTokenType::TYPE_PARAMETER,
+            SemanticTokenType::PARAMETER,
+            SemanticTokenType::VARIABLE,
+            SemanticTokenType::PROPERTY,
+            SemanticTokenType::ENUM_MEMBER,
+            SemanticTokenType::EVENT,
+            SemanticTokenType::FUNCTION,
+            SemanticTokenType::METHOD,
+            SemanticTokenType::MACRO,
+            SemanticTokenType::KEYWORD,
+            SemanticTokenType::MODIFIER,
+            SemanticTokenType::COMMENT,
+            SemanticTokenType::STRING,
+            SemanticTokenType::NUMBER,
+            SemanticTokenType::REGEXP,
+            SemanticTokenType::OPERATOR,
+        ];
+        let token_modifiers = Default::default();
+
+        let options = SemanticTokensOptions {
+            legend: SemanticTokensLegend {
+                token_types,
+                token_modifiers,
+            },
+            range: Some(true),
+            full: Some(SemanticTokensFullOptions::Bool(true)),
+            ..Default::default()
+        };
+
+        Some(SemanticTokensServerCapabilities::SemanticTokensOptions(options))
+    };
 
     let text_document_sync = {
         let options = lsp::TextDocumentSyncOptions {
@@ -28,6 +83,7 @@ pub fn capabilities() -> lsp::ServerCapabilities {
 
     lsp::ServerCapabilities {
         text_document_sync,
+        semantic_tokens_provider,
         document_symbol_provider,
         ..Default::default()
     }
@@ -75,6 +131,26 @@ impl lspower::LanguageServer for Server {
     ) -> jsonrpc::Result<Option<lsp::DocumentSymbolResponse>> {
         let session = self.session.clone();
         let result = handler::text_document::document_symbol(session, params).await;
-        Ok(result.map_err(core::IntoJsonRpcError)?)
+        Ok(result.map_err(IntoJsonRpcError)?)
+    }
+
+    async fn semantic_tokens_full(
+        &self,
+        params: SemanticTokensParams,
+    ) -> jsonrpc::Result<Option<SemanticTokensResult>> {
+        let session = self.session.clone();
+        let result = handler::text_document::semantic_tokens::full(session, params).await;
+
+        Ok(result.map_err(IntoJsonRpcError)?)
+    }
+
+    async fn semantic_tokens_range(
+        &self,
+        params: SemanticTokensRangeParams,
+    ) -> jsonrpc::Result<Option<SemanticTokensRangeResult>> {
+        let session = self.session.clone();
+        let result = handler::text_document::semantic_tokens::range(session, params).await;
+
+        Ok(result.map_err(IntoJsonRpcError)?)
     }
 }
