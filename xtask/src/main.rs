@@ -422,6 +422,7 @@ FLAGS:
             cmd.args(&["--package", "ddlog-lsp-macros"]);
             cmd.args(&["--package", "ddlog-lsp-server"]);
             cmd.args(&["--package", "ddlog-lsp-syntax"]);
+            cmd.args(&["--package", "ddlog-lsp-testing"]);
             cmd.args(cargo_args);
             cmd.status()?;
 

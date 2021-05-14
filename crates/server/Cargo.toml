@@ -53,6 +53,7 @@ ddlog-lsp-macros = { version = "0.0", path = "../macros" }
 futures = "0.3"
 glob = "0.3"
 indoc = "1.0"
+testing = { package = "ddlog-lsp-testing", path = "../testing" }
 
 [target.'cfg(not(target_arch = "wasm32"))'.dev-dependencies]
 goldenfile = "1.0"
