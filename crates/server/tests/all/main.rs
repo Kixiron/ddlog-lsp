@@ -1,1 +1,2 @@
 mod lsp;
+mod testing;

@@ -601,7 +601,6 @@ dependencies = [
  "ddlog-lsp-languages",
  "ddlog-lsp-macros",
  "ddlog-lsp-syntax",
- "ddlog-lsp-testing",
  "env_logger",
  "futures",
  "glob",
@@ -615,6 +614,7 @@ dependencies = [
  "serde_json",
  "thiserror",
  "tokio",
+ "tower-test",
  "tree-sitter-facade",
  "wasm-bindgen-futures",
  "wasm-bindgen-test",
@@ -634,17 +634,6 @@ dependencies = [
  "wasm-bindgen",
  "wasm-bindgen-futures",
  "web-tree-sitter-sys",
-]
-
-[[package]]
-name = "ddlog-lsp-testing"
-version = "0.0.0"
-dependencies = [
- "anyhow",
- "ddlog-lsp-server",
- "lspower",
- "serde_json",
- "tower-test",
 ]
 
 [[package]]

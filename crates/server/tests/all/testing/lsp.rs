@@ -66,6 +66,7 @@ pub mod shutdown {
     }
 }
 
+#[allow(unused)]
 pub mod text_document {
     pub mod did_change {
 

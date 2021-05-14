@@ -27,6 +27,6 @@ macro_rules! assert_status {
 #[macro_export]
 macro_rules! assert_exchange {
     ($service:expr, $request:expr, $response:expr) => {
-        assert_eq!(testing::service::send($service, $request).await, $response);
+        assert_eq!(crate::testing::service::send($service, $request).await, $response);
     };
 }
