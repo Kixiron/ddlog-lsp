@@ -985,12 +985,12 @@ pub mod utils {
     use super::*;
     use crate::node::{Context, SyntaxError};
 
-    pub trait Choice<'tree, Ctx, Vis>
+    pub trait Choice<'tree, Ctx, Vis, Ret>
     where
         Ctx: Context<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
-        fn choice(&self, visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>;
+        fn choice(&self, visitor: &mut Vis, m: NodeMove) -> Result<Ret, SyntaxErrors>;
     }
 
     ddlog_lsp_macros::impl_choice!(1);
@@ -1007,11 +1007,11 @@ pub mod utils {
     ddlog_lsp_macros::impl_choice!(50);
 
     #[inline]
-    pub fn choice<'tree, Ctx, Vis, T>(funs: T) -> impl Fn(&mut Vis, NodeMove) -> Result<(), SyntaxErrors>
+    pub fn choice<'tree, Ctx, Vis, Ret, T>(funs: T) -> impl Fn(&mut Vis, NodeMove) -> Result<Ret, SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx> + ?Sized,
-        T: Choice<'tree, Ctx, Vis>,
+        T: Choice<'tree, Ctx, Vis, Ret>,
     {
         move |visitor, m| funs.choice(visitor, m)
     }
@@ -1120,9 +1120,9 @@ pub mod utils {
     }
 
     #[inline]
-    pub fn restore<'tree, Ctx, Vis>(
-        fun: impl Fn(&mut Vis, NodeMove) -> Result<(), SyntaxErrors>,
-    ) -> impl Fn(&mut Vis, NodeMove) -> Result<(), SyntaxErrors>
+    pub fn restore<'tree, Ctx, Vis, Ret>(
+        fun: impl Fn(&mut Vis, NodeMove) -> Result<Ret, SyntaxErrors>,
+    ) -> impl Fn(&mut Vis, NodeMove) -> Result<Ret, SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
         Vis: Visitor<'tree, Ctx> + ?Sized,

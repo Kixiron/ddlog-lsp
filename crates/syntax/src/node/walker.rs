@@ -320,8 +320,50 @@ impl<'tree, C: Context<'tree>> NodeWalker<'tree, C> {
         self.cursor.reset(node);
     }
 
+    // fn expect(&mut self, expected_kind: u16) -> Result<tree_sitter::Node<'tree>, SyntaxError> {
+    //     let language: tree_sitter::Language = self.language.into();
+    //
+    //     let current = self.node();
+    //     let (current_id, current_kind_id) = (current.id(), current.kind_id());
+    //     let current_kind = language.node_kind_for_id(current_kind_id).unwrap();
+    //
+    //     let expected = language.node_kind_for_id(expected_kind).unwrap();
+    //
+    //     log::info!(
+    //         "current: `{}`, id: {}, kind: {}. expected: `{}`, kind: `{}`",
+    //         current_kind,
+    //         current_id,
+    //         current_kind_id,
+    //         expected,
+    //         expected_kind,
+    //     );
+    //
+    //     if current.is_missing() {
+    //         let data = NodeErrorData::new(current, self.error_state.clone());
+    //         let error = SyntaxError::MissingNode(data);
+    //
+    //         return Err(error);
+    //     }
+    //
+    //     if current_kind_id != expected_kind {
+    //         let language = self.language.into();
+    //         let expected = vec![current_kind_id];
+    //         let found = Some(NodeErrorData::new(current, self.error_state.clone()));
+    //         let error = NodeError {
+    //             language,
+    //             expected,
+    //             found,
+    //         }
+    //         .into();
+    //
+    //         return Err(error);
+    //     }
+    //
+    //     Ok(current)
+    // }
+
     #[inline]
-    fn step(&mut self, that_kind_id: u16, m: NodeMove) -> Result<(), SyntaxError> {
+    fn step(&mut self, that_kind_id: u16, m: NodeMove) -> Result<tree_sitter::Node<'tree>, SyntaxError> {
         let prev = self.node();
 
         let language: tree_sitter::Language = self.language.into();
@@ -348,6 +390,7 @@ impl<'tree, C: Context<'tree>> NodeWalker<'tree, C> {
 
             if next.is_missing() {
                 self.reset(prev);
+
                 let data = NodeErrorData::new(next, self.error_state.clone());
                 let error = SyntaxError::MissingNode(data);
 
@@ -355,7 +398,6 @@ impl<'tree, C: Context<'tree>> NodeWalker<'tree, C> {
             }
 
             if that_kind_id != next_kind_id {
-                let language = self.language.into();
                 let expected = vec![that_kind_id];
                 let found = Some(NodeErrorData::new(next, self.error_state.clone()));
                 let error = NodeError {
@@ -368,7 +410,7 @@ impl<'tree, C: Context<'tree>> NodeWalker<'tree, C> {
                 return Err(error);
             }
 
-            Ok(())
+            Ok(next)
         } else {
             let expected = vec![that_kind_id];
             let found = None;
@@ -385,13 +427,13 @@ impl<'tree, C: Context<'tree>> NodeWalker<'tree, C> {
 
     #[allow(missing_docs)]
     #[inline]
-    pub fn rule(&mut self, that_id: u16, m: NodeMove) -> Result<(), SyntaxError> {
+    pub fn rule(&mut self, that_id: u16, m: NodeMove) -> Result<tree_sitter::Node<'tree>, SyntaxError> {
         self.step(that_id, m)
     }
 
     #[allow(missing_docs)]
     #[inline]
-    pub fn token(&mut self, that_id: u16, m: NodeMove) -> Result<(), SyntaxError> {
+    pub fn token(&mut self, that_id: u16, m: NodeMove) -> Result<tree_sitter::Node<'tree>, SyntaxError> {
         self.step(that_id, m)
     }
 

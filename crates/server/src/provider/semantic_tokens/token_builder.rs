@@ -18,6 +18,63 @@ use std::{
 };
 use tree_sitter::Node;
 
+pub mod tokens {
+    use lsp::SemanticTokenType;
+
+    pub const DDLOG_TOKEN_TYPES: &[SemanticTokenType] = &[
+        SemanticTokenType::TYPE,
+        SemanticTokenType::ENUM,
+        SemanticTokenType::STRUCT,
+        SemanticTokenType::TYPE_PARAMETER,
+        SemanticTokenType::PARAMETER,
+        SemanticTokenType::VARIABLE,
+        SemanticTokenType::PROPERTY,
+        SemanticTokenType::ENUM_MEMBER,
+        SemanticTokenType::FUNCTION,
+        SemanticTokenType::METHOD,
+        SemanticTokenType::MACRO,
+        SemanticTokenType::KEYWORD,
+        SemanticTokenType::MODIFIER,
+        SemanticTokenType::COMMENT,
+        SemanticTokenType::STRING,
+        SemanticTokenType::NUMBER,
+        SemanticTokenType::OPERATOR,
+        RELATION,
+    ];
+
+    pub const RELATION: SemanticTokenType = SemanticTokenType::new("relation");
+}
+
+pub mod modifiers {
+    use lsp::SemanticTokenModifier;
+
+    pub const DDLOG_TOKEN_MODIFIERS: &[SemanticTokenModifier] = &[
+        SemanticTokenModifier::DECLARATION,
+        SemanticTokenModifier::DEFINITION,
+        SemanticTokenModifier::READONLY,
+        SemanticTokenModifier::STATIC,
+        SemanticTokenModifier::DEPRECATED,
+        SemanticTokenModifier::ABSTRACT,
+        SemanticTokenModifier::ASYNC,
+        SemanticTokenModifier::MODIFICATION,
+        SemanticTokenModifier::DOCUMENTATION,
+        SemanticTokenModifier::DEFAULT_LIBRARY,
+        INPUT,
+        OUTPUT,
+        MULTISET,
+        STREAM,
+        MUTABLE,
+        ATTRIBUTE,
+    ];
+
+    pub const INPUT: SemanticTokenModifier = SemanticTokenModifier::new("input");
+    pub const OUTPUT: SemanticTokenModifier = SemanticTokenModifier::new("output");
+    pub const MULTISET: SemanticTokenModifier = SemanticTokenModifier::new("multiset");
+    pub const STREAM: SemanticTokenModifier = SemanticTokenModifier::new("stream");
+    pub const MUTABLE: SemanticTokenModifier = SemanticTokenModifier::new("mutable");
+    pub const ATTRIBUTE: SemanticTokenModifier = SemanticTokenModifier::new("attribute");
+}
+
 /// Manages tokenization state for encoding semantic token data.
 #[derive(Clone, Debug)]
 pub struct SemanticTokensBuilder<'text, 'tree> {
@@ -190,6 +247,7 @@ impl<'text, 'tree> SemanticTokensBuilder<'text, 'tree> {
         &mut self,
         node: Node,
         token_type: &SemanticTokenType,
+        // TODO: This could be a cow to remove some intermediate allocations
         token_modifiers: Option<Vec<&SemanticTokenModifier>>,
     ) -> Result<()> {
         if !self.has_legend {
@@ -197,6 +255,8 @@ impl<'text, 'tree> SemanticTokensBuilder<'text, 'tree> {
         }
 
         if node.has_error() {
+            log::warn!("pushing a token with an error'd node, bailing early");
+
             return Ok(());
         }
 
@@ -211,9 +271,9 @@ impl<'text, 'tree> SemanticTokensBuilder<'text, 'tree> {
             let length = range.end.character - range.start.character;
 
             let mut n_token_modifiers = 0;
-            if let Some(token_modifiers) = token_modifiers {
-                for token_modifier in token_modifiers {
-                    if let Some(n_token_modifier) = self.token_modifier_map.get(token_modifier) {
+            if let Some(token_modifiers) = token_modifiers.as_ref() {
+                for &token_modifier in token_modifiers {
+                    if let Some(&n_token_modifier) = self.token_modifier_map.get(token_modifier) {
                         n_token_modifiers |= 1 << n_token_modifier;
                     } else {
                         anyhow::bail!("`token_modifier` is not in the provided legend");
@@ -221,6 +281,12 @@ impl<'text, 'tree> SemanticTokensBuilder<'text, 'tree> {
                 }
             }
 
+            log::info!(
+                "pushing semantic token {:?} with modifiers {:?} for node {:?}",
+                token_type,
+                token_modifiers,
+                node,
+            );
             self.push_encoded(line, char, length, n_token_type, n_token_modifiers);
         } else {
             anyhow::bail!("`token_type` is not in the provided legend");

@@ -1,9 +1,17 @@
 //! Semantic tokens provider definitions for ".dl" files.
 
 use super::token_builder::SemanticTokensBuilder;
-use crate::core::{language::dl, node::BasicNodeWalker, Language, Session};
+use crate::{
+    core::{language::NodeMove, node::BasicNodeWalker, Language, Session},
+    provider::semantic_tokens::modifiers,
+};
 use anyhow::{Context, Result};
+use ddlog_lsp_syntax::{
+    language::dl::{kind, utils, visit::exp, Visitor},
+    node::{context::basic::Context as BasicContext, SyntaxErrors},
+};
 use lsp::{
+    SemanticTokenModifier,
     SemanticTokenType,
     SemanticTokensLegend,
     SemanticTokensParams,
@@ -13,7 +21,7 @@ use lsp::{
 };
 use lsp_text::RopeExt;
 use ropey::Rope;
-use std::sync::Arc;
+use std::{result::Result as StdResult, sync::Arc};
 
 // Move to the next appropriate node in the syntax tree.
 struct Handler<'text, 'tree> {
@@ -67,7 +75,7 @@ pub(crate) async fn range(
     let tree = session.get_tree(&params.text_document.uri).await?;
     let tree = tree.lock().await;
 
-    let root_node = {
+    let node = {
         let range = content.lsp_range_to_tree_sitter_range(params.range)?;
         let start = range.start_point();
         let end = range.end_point();
@@ -75,18 +83,29 @@ pub(crate) async fn range(
         tree.root_node().descendant_for_point_range(start, end)
     };
 
-    if let Some(node) = root_node {
+    if let Some(node) = node {
         let mut handler = Handler::new(content, legend, node)?;
 
         while !handler.walker.done {
             match handler.walker.kind() {
-                dl::kind::ROOT => handler.root(),
-                dl::kind::ANNOTATED_ITEM => handler.annotated_item()?,
+                kind::ATTRIBUTE => handler.visit_attribute(NodeMove::Init),
+                kind::ATTRIBUTES => handler.visit_attributes(NodeMove::Init),
+                kind::ANNOTATED_ITEM => handler.visit_annotated_item(NodeMove::Init),
+                kind::ITEM => handler.visit_item(NodeMove::Init),
+                kind::FUNCTION => handler.visit_function(NodeMove::Init),
+                kind::TYPEDEF => handler.visit_typedef(NodeMove::Init),
+                kind::TYPEDEF_EXTERN => handler.visit_typedef_extern(NodeMove::Init),
+                kind::TYPEDEF_NORMAL => handler.visit_typedef_normal(NodeMove::Init),
 
                 _ => {
-                    handler.walker.goto_next();
+                    if !handler.walker.goto_next() {
+                        break;
+                    }
+
+                    Ok(())
                 },
             }
+            .unwrap_or_else(|err| log::error!("encountered error during syntax highlighting: {:?}", err));
         }
 
         let tokens = handler.builder.build();
@@ -107,64 +126,124 @@ impl<'text, 'tree> Handler<'text, 'tree> {
         let language = Language::DDlogDl;
         let builder = SemanticTokensBuilder::new(content, legend)?;
         let walker = BasicNodeWalker::new(language, node);
+
         Ok(Self { builder, walker })
     }
 
-    fn root(&mut self) {
-        self.walker.goto_next();
+    fn any_ident(&mut self, m: NodeMove) -> StdResult<tree_sitter::Node<'tree>, SyntaxErrors> {
+        utils::choice((
+            |handler: &mut Handler<'text, 'tree>, m: NodeMove| {
+                handler
+                    .walker()
+                    .rule(kind::IDENT_LOWER_SCOPED, m)
+                    .map_err(SyntaxErrors::from)
+            },
+            |handler: &mut Handler<'text, 'tree>, m: NodeMove| {
+                handler
+                    .walker()
+                    .rule(kind::IDENT_UPPER_SCOPED, m)
+                    .map_err(SyntaxErrors::from)
+            },
+            |handler: &mut Handler<'text, 'tree>, m: NodeMove| {
+                handler.walker().rule(kind::IDENT_LOWER, m).map_err(SyntaxErrors::from)
+            },
+            |handler: &mut Handler<'text, 'tree>, m: NodeMove| {
+                handler.walker().rule(kind::IDENT_UPPER, m).map_err(SyntaxErrors::from)
+            },
+            |handler: &mut Handler<'text, 'tree>, m: NodeMove| {
+                handler.walker().rule(kind::IDENT_SCOPED, m).map_err(SyntaxErrors::from)
+            },
+        ))(self, m)
+    }
+}
+
+impl<'text, 'tree> Visitor<'tree, BasicContext<'tree>> for Handler<'text, 'tree> {
+    fn walker(&mut self) -> &mut BasicNodeWalker<'tree> {
+        &mut self.walker
     }
 
-    fn annotated_item(&mut self) -> Result<()> {
-        // Attributes
-        if self.walker.is(dl::kind::ATTRIBUTES) {
-            self.attributes()?;
-        }
-
-        Ok(())
+    fn node(&self) -> tree_sitter::Node<'tree> {
+        self.walker.node()
     }
 
-    fn attributes(&mut self) -> Result<()> {
-        while self.walker.is(dl::token::NUMBER_SIGN_LEFT_SQUARE_BRACKET) {
-            // "#["
-            self.walker.goto_next();
-
-            // $.attribute
-            self.attribute()?;
-
-            // repeat("," $.attribute)
-            while self.walker.is(dl::token::COMMA) {
-                self.walker.goto_next();
-
-                self.attribute()?;
-            }
-
-            // "]"
-            self.walker.goto_next();
-        }
-
-        Ok(())
+    fn reset(&mut self, node: tree_sitter::Node<'tree>) {
+        self.walker().reset(node)
     }
 
-    fn attribute(&mut self) -> Result<()> {
-        // $.name
+    fn visit_attribute(&mut self, m: NodeMove) -> Result<(), SyntaxErrors> {
+        let name = self.walker().rule(kind::NAME, m)?;
         self.builder
-            .push(self.walker.node(), &SemanticTokenType::VARIABLE, None)?;
+            .push(
+                name,
+                &SemanticTokenType::VARIABLE,
+                Some(vec![&SemanticTokenModifier::MODIFICATION, &modifiers::ATTRIBUTE]),
+            )
+            .unwrap_or_else(|err| log::error!("error creating semantic token: {:?}", err));
+        utils::optional(utils::seq((operator::EQUALS_SIGN, exp)))(self, NodeMove::Step)
+    }
 
-        // "="
-        self.walker.goto_next();
-        if self.walker.is(dl::token::EQUALS_SIGN) {
-            self.builder
-                .push(self.walker.node(), &SemanticTokenType::OPERATOR, None)?;
-
-            // $.exp
-            self.expression()?;
-        }
+    fn visit_name_func(&mut self, m: NodeMove) -> Result<(), SyntaxErrors> {
+        let node = self.any_ident(m)?;
+        self.builder
+            .push(
+                node,
+                &SemanticTokenType::FUNCTION,
+                Some(vec![
+                    &SemanticTokenModifier::DEFINITION,
+                    &SemanticTokenModifier::DECLARATION,
+                ]),
+            )
+            .unwrap_or_else(|err| log::error!("error creating semantic token: {:?}", err));
 
         Ok(())
     }
 
-    #[allow(clippy::unnecessary_wraps)]
-    fn expression(&mut self) -> Result<()> {
+    fn visit_name_type(&mut self, m: NodeMove) -> Result<(), SyntaxErrors> {
+        let node = self.any_ident(m)?;
+        self.builder
+            .push(
+                node,
+                &SemanticTokenType::TYPE,
+                Some(vec![
+                    &SemanticTokenModifier::DEFINITION,
+                    &SemanticTokenModifier::DECLARATION,
+                ]),
+            )
+            .unwrap_or_else(|err| log::error!("error creating semantic token: {:?}", err));
+
         Ok(())
+    }
+}
+
+mod operator {
+    use super::{Handler, NodeMove};
+    use ddlog_lsp_syntax::{language::dl::Visitor, node::SyntaxErrors};
+    use lsp::SemanticTokenType;
+
+    macro_rules! operator {
+        ($($name:tt),* $(,)?) => {
+            $(
+                #[inline]
+                #[allow(non_snake_case)]
+                pub(super) fn $name<'text, 'tree>(
+                    handler: &mut Handler<'text, 'tree>,
+                    m: NodeMove,
+                ) -> Result<(), SyntaxErrors> {
+                    handler.walker().token(ddlog_lsp_syntax::language::dl::token::$name, m)?;
+
+                    let node = handler.walker().node();
+                    handler
+                        .builder
+                        .push(node, &SemanticTokenType::OPERATOR, None)
+                        .unwrap_or_else(|err| log::error!("error creating semantic token: {:?}", err));
+
+                    Ok(())
+                }
+            )*
+        };
+    }
+
+    operator! {
+        EQUALS_SIGN,
     }
 }

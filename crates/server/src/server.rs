@@ -1,9 +1,9 @@
 use crate::{
     core::{self, IntoJsonRpcError},
     handler,
+    provider::semantic_tokens::{modifiers::DDLOG_TOKEN_MODIFIERS, tokens::DDLOG_TOKEN_TYPES},
 };
 use lsp::{
-    SemanticTokenType,
     SemanticTokensFullOptions,
     SemanticTokensLegend,
     SemanticTokensOptions,
@@ -33,36 +33,10 @@ pub fn capabilities() -> lsp::ServerCapabilities {
     let document_symbol_provider = Some(lsp::OneOf::Left(true));
 
     let semantic_tokens_provider = {
-        let token_types = vec![
-            SemanticTokenType::NAMESPACE,
-            SemanticTokenType::TYPE,
-            SemanticTokenType::CLASS,
-            SemanticTokenType::ENUM,
-            SemanticTokenType::INTERFACE,
-            SemanticTokenType::STRUCT,
-            SemanticTokenType::TYPE_PARAMETER,
-            SemanticTokenType::PARAMETER,
-            SemanticTokenType::VARIABLE,
-            SemanticTokenType::PROPERTY,
-            SemanticTokenType::ENUM_MEMBER,
-            SemanticTokenType::EVENT,
-            SemanticTokenType::FUNCTION,
-            SemanticTokenType::METHOD,
-            SemanticTokenType::MACRO,
-            SemanticTokenType::KEYWORD,
-            SemanticTokenType::MODIFIER,
-            SemanticTokenType::COMMENT,
-            SemanticTokenType::STRING,
-            SemanticTokenType::NUMBER,
-            SemanticTokenType::REGEXP,
-            SemanticTokenType::OPERATOR,
-        ];
-        let token_modifiers = Default::default();
-
         let options = SemanticTokensOptions {
             legend: SemanticTokensLegend {
-                token_types,
-                token_modifiers,
+                token_types: DDLOG_TOKEN_TYPES.to_vec(),
+                token_modifiers: DDLOG_TOKEN_MODIFIERS.to_vec(),
             },
             range: Some(true),
             full: Some(SemanticTokensFullOptions::Bool(true)),
@@ -83,8 +57,8 @@ pub fn capabilities() -> lsp::ServerCapabilities {
 
     lsp::ServerCapabilities {
         text_document_sync,
-        semantic_tokens_provider,
         document_symbol_provider,
+        semantic_tokens_provider,
         ..Default::default()
     }
 }

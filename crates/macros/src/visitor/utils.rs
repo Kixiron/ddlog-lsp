@@ -1,5 +1,7 @@
 use proc_macro2::{Ident, Span, TokenStream};
 use quote::quote;
+use std::iter;
+use syn::Type;
 
 pub fn alphabet(prefix: &'static str) -> impl Iterator<Item = String> + Clone {
     ('A' ..= 'Z').cycle().zip(0 ..).map(move |(c, i)| {
@@ -19,10 +21,10 @@ pub fn tuple_type(idents: impl Iterator<Item = Ident>) -> TokenStream {
     quote! { (#(#idents),*,) }
 }
 
-pub fn parsers_where(inputs: impl Iterator<Item = Ident>) -> impl Iterator<Item = TokenStream> {
-    inputs.map(|i| {
+pub fn parsers_where(inputs: impl Iterator<Item = Ident>, ret: Type) -> impl Iterator<Item = TokenStream> {
+    inputs.zip(iter::repeat_with(move || ret.clone())).map(|(i, ret)| {
         quote! {
-            #i: Fn(&mut Vis, NodeMove) -> Result<(), SyntaxErrors>
+            #i: Fn(&mut Vis, NodeMove) -> Result<#ret, SyntaxErrors>
         }
     })
 }

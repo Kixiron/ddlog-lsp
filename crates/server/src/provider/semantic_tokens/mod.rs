@@ -1,7 +1,7 @@
 mod dl;
 mod token_builder;
 
-pub use token_builder::SemanticTokensBuilder;
+pub use token_builder::{modifiers, tokens, SemanticTokensBuilder};
 
 use crate::core::Session;
 use anyhow::Result;

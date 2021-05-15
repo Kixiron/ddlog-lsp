@@ -160,7 +160,7 @@ pub fn impl_choice(input: TokenStream) -> TokenStream {
     let type_inputs_tuple = crate::visitor::utils::tuple_type(type_inputs_idents.clone());
 
     let type_generics = type_inputs_idents.clone();
-    let type_inputs_where = crate::visitor::utils::parsers_where(type_inputs_idents);
+    let type_inputs_where = crate::visitor::utils::parsers_where(type_inputs_idents, syn::parse_quote!(Ret));
 
     let alt_inner = {
         let cases = (0 .. depth).map(|n| {
@@ -168,7 +168,7 @@ pub fn impl_choice(input: TokenStream) -> TokenStream {
             quote! {
                 match restore(&self.#i)(visitor, m) {
                     Ok(result) => {
-                        return Ok(());
+                        return Ok(result);
                     }
                     Err(mut errs) => {
                         errors.append(&mut errs);
@@ -176,6 +176,7 @@ pub fn impl_choice(input: TokenStream) -> TokenStream {
                 }
             }
         });
+
         quote! {
             let mut errors = SyntaxErrors::new();
             #(#cases)*
@@ -184,14 +185,14 @@ pub fn impl_choice(input: TokenStream) -> TokenStream {
     };
 
     let result = quote! {
-        impl<'tree, Ctx, Vis, #(#type_generics),*> Choice<'tree, Ctx, Vis> for #type_inputs_tuple
+        impl<'tree, Ctx, Vis, Ret, #(#type_generics),*> Choice<'tree, Ctx, Vis, Ret> for #type_inputs_tuple
         where
             Ctx: Context<'tree> + 'tree,
             Vis: Visitor<'tree, Ctx> + ?Sized,
             #(#type_inputs_where),*
         {
             #[inline]
-            fn choice(&self, visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors> {
+            fn choice(&self, visitor: &mut Vis, m: NodeMove) -> Result<Ret, SyntaxErrors> {
                 #alt_inner
             }
         }
@@ -210,7 +211,7 @@ pub fn impl_seq(input: TokenStream) -> TokenStream {
     let type_inputs_tuple = crate::visitor::utils::tuple_type(type_inputs_idents.clone());
 
     let type_generics = type_inputs_idents.clone();
-    let type_inputs_where = crate::visitor::utils::parsers_where(type_inputs_idents);
+    let type_inputs_where = crate::visitor::utils::parsers_where(type_inputs_idents, syn::parse_quote!(()));
 
     let seq_inner = {
         let accessors = (0 .. depth).map(syn::Index::from);
