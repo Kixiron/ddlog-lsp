@@ -166,7 +166,7 @@ pub fn impl_choice(input: TokenStream) -> TokenStream {
         let cases = (0 .. depth).map(|n| {
             let i = syn::Index::from(n);
             quote! {
-                match restore(&self.#i)(visitor) {
+                match restore(&self.#i)(visitor, m) {
                     Ok(result) => {
                         return Ok(());
                     }
@@ -191,7 +191,7 @@ pub fn impl_choice(input: TokenStream) -> TokenStream {
             #(#type_inputs_where),*
         {
             #[inline]
-            fn choice(&self, visitor: &mut Vis) -> Result<(), SyntaxErrors> {
+            fn choice(&self, visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors> {
                 #alt_inner
             }
         }
@@ -215,7 +215,7 @@ pub fn impl_seq(input: TokenStream) -> TokenStream {
     let seq_inner = {
         let accessors = (0 .. depth).map(syn::Index::from);
         quote! {
-            #(self.#accessors(visitor)?);*;
+            #(self.#accessors(visitor, m)?);*;
             Ok(())
         }
     };
@@ -228,7 +228,7 @@ pub fn impl_seq(input: TokenStream) -> TokenStream {
             #(#type_inputs_where),*
         {
             #[inline]
-            fn seq(&self, visitor: &mut Vis) -> Result<(), SyntaxErrors> {
+            fn seq(&self, visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors> {
                 #seq_inner
             }
         }

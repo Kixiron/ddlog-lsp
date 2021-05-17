@@ -1,4 +1,7 @@
-use crate::node::{NodeError, NodeErrorData, SyntaxError};
+use crate::{
+    language::NodeMove,
+    node::{NodeError, NodeErrorData, SyntaxError},
+};
 use ddlog_lsp_languages::language::Language;
 
 #[allow(missing_docs)]
@@ -322,20 +325,23 @@ impl<'tree, C: Context<'tree>> NodeWalker<'tree, C> {
     }
 
     #[inline]
-    fn step(&mut self, that_kind_id: u16, _descend_into_error: bool) -> Result<(), SyntaxError> {
+    fn step(&mut self, that_kind_id: u16, m: NodeMove) -> Result<(), SyntaxError> {
         let prev = self.node();
 
         let language: tree_sitter::Language = self.language.into();
         let this = prev.clone();
         let this_id = this.id();
         let this_kind_id = this.kind_id();
+
         let this_kind = language.node_kind_for_id(this_kind_id).unwrap();
         log::info!("stepping from: {}@{}", this_kind, this_id);
 
         let expected = language.node_kind_for_id(that_kind_id).unwrap();
         log::info!("expected: {}", expected);
 
-        if self.goto_next() {
+        let success = if let NodeMove::Step = m { self.goto_next() } else { true };
+
+        if success {
             let next = self.node();
             let next_kind_id = next.kind_id();
             let found = next.kind();
@@ -377,16 +383,14 @@ impl<'tree, C: Context<'tree>> NodeWalker<'tree, C> {
 
     #[allow(missing_docs)]
     #[inline]
-    pub fn rule(&mut self, that_id: u16) -> Result<(), SyntaxError> {
-        let descend_into_error = true;
-        self.step(that_id, descend_into_error)
+    pub fn rule(&mut self, that_id: u16, m: NodeMove) -> Result<(), SyntaxError> {
+        self.step(that_id, m)
     }
 
     #[allow(missing_docs)]
     #[inline]
-    pub fn token(&mut self, that_id: u16) -> Result<(), SyntaxError> {
-        let descend_into_error = false;
-        self.step(that_id, descend_into_error)
+    pub fn token(&mut self, that_id: u16, m: NodeMove) -> Result<(), SyntaxError> {
+        self.step(that_id, m)
     }
 
     #[allow(missing_docs)]

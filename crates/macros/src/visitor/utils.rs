@@ -22,7 +22,7 @@ pub fn tuple_type(idents: impl Iterator<Item = Ident>) -> TokenStream {
 pub fn parsers_where(inputs: impl Iterator<Item = Ident>) -> impl Iterator<Item = TokenStream> {
     inputs.map(|i| {
         quote! {
-            #i: Fn(&mut Vis) -> Result<(), SyntaxErrors>
+            #i: Fn(&mut Vis, NodeMove) -> Result<(), SyntaxErrors>
         }
     })
 }
