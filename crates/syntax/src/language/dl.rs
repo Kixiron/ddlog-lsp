@@ -1155,7 +1155,7 @@ pub mod visit {
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
         visitor.walker().rule(kind::ROOT, m)?;
-        utils::repeat(annotated_item)(visitor, m)
+        utils::repeat(annotated_item)(visitor, NodeMove::Step)
     }
 
     pub fn annotated_item<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -1164,7 +1164,7 @@ pub mod visit {
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
         visitor.walker().rule(kind::ANNOTATED_ITEM, m)?;
-        utils::seq((utils::optional(attributes), item))(visitor, m)
+        utils::seq((utils::optional(attributes), item))(visitor, NodeMove::Step)
     }
 
     pub fn apply<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -1185,7 +1185,7 @@ pub mod visit {
             utils::optional(name_rel),
             utils::repeat(utils::seq((token::COMMA, name_rel))),
             token::RIGHT_PARENTHESIS,
-        ))(visitor, m)
+        ))(visitor, NodeMove::Step)
     }
 
     pub fn arg<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -1194,7 +1194,7 @@ pub mod visit {
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
         visitor.walker().rule(kind::ARG, m)?;
-        utils::seq((name_arg, token::COLON, utils::optional(token::MUT), type_atom))(visitor, m)
+        utils::seq((name_arg, token::COLON, utils::optional(token::MUT), type_atom))(visitor, NodeMove::Step)
     }
 
     pub fn arg_opt_type<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -1207,7 +1207,7 @@ pub mod visit {
             name_arg,
             utils::optional(utils::seq((token::COLON, utils::optional(token::MUT), type_atom))),
             type_atom,
-        ))(visitor, m)
+        ))(visitor, NodeMove::Step)
     }
 
     pub fn arg_trans<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -1216,7 +1216,7 @@ pub mod visit {
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
         visitor.walker().rule(kind::ARG_TRANS, m)?;
-        utils::seq((name_trans, token::COLON, type_trans))(visitor, m)
+        utils::seq((name_trans, token::COLON, type_trans))(visitor, NodeMove::Step)
     }
 
     pub fn atom<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -1225,7 +1225,7 @@ pub mod visit {
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
         visitor.walker().rule(kind::ATOM, m)?;
-        utils::choice((atom_rec, atom_pos, atom_elem))(visitor, m)
+        utils::choice((atom_rec, atom_pos, atom_elem))(visitor, NodeMove::Step)
     }
 
     pub fn atom_elem<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -1234,7 +1234,7 @@ pub mod visit {
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
         visitor.walker().rule(kind::ATOM_ELEM, m)?;
-        utils::seq((name_rel, token::LEFT_SQUARE_BRACKET, exp, token::RIGHT_SQUARE_BRACKET))(visitor, m)
+        utils::seq((name_rel, token::LEFT_SQUARE_BRACKET, exp, token::RIGHT_SQUARE_BRACKET))(visitor, NodeMove::Step)
     }
 
     pub fn atom_pos<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -1255,7 +1255,7 @@ pub mod visit {
                 ))),
                 token::RIGHT_PARENTHESIS,
             ))),
-        ))(visitor, m)
+        ))(visitor, NodeMove::Step)
     }
 
     pub fn atom_rec<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -1280,7 +1280,7 @@ pub mod visit {
                 exp,
             ))),
             token::RIGHT_PARENTHESIS,
-        ))(visitor, m)
+        ))(visitor, NodeMove::Step)
     }
 
     pub fn attribute<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -1289,7 +1289,7 @@ pub mod visit {
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
         visitor.walker().rule(kind::ATTRIBUTE, m)?;
-        utils::seq((name, utils::optional(utils::seq((token::EQUALS_SIGN, exp)))))(visitor, m)
+        utils::seq((name, utils::optional(utils::seq((token::EQUALS_SIGN, exp)))))(visitor, NodeMove::Step)
     }
 
     pub fn attributes<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -1303,7 +1303,7 @@ pub mod visit {
             attribute,
             utils::repeat(utils::seq((token::COMMA, attribute))),
             token::RIGHT_SQUARE_BRACKET,
-        )))(visitor, m)
+        )))(visitor, NodeMove::Step)
     }
 
     pub fn comment_block<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -1316,7 +1316,7 @@ pub mod visit {
             token::SOLIDUS_ASTERISK,
             utils::repeat(utils::choice((comment_block, comment_block_inner))),
             token::ASTERISK_SOLIDUS,
-        ))(visitor, m)
+        ))(visitor, NodeMove::Step)
     }
 
     pub fn comment_block_inner<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -1343,7 +1343,7 @@ pub mod visit {
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
         visitor.walker().rule(kind::CONS, m)?;
-        utils::choice((cons_rec, cons_pos))(visitor, m)
+        utils::choice((cons_rec, cons_pos))(visitor, NodeMove::Step)
     }
 
     pub fn cons_pos<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -1352,7 +1352,7 @@ pub mod visit {
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
         visitor.walker().rule(kind::CONS_POS, m)?;
-        utils::seq((utils::optional(attributes), name_cons))(visitor, m)
+        utils::seq((utils::optional(attributes), name_cons))(visitor, NodeMove::Step)
     }
 
     pub fn cons_rec<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -1371,7 +1371,7 @@ pub mod visit {
                 utils::optional(token::COMMA),
             ))),
             token::RIGHT_CURLY_BRACKET,
-        ))(visitor, m)
+        ))(visitor, NodeMove::Step)
     }
 
     pub fn escape_sequence<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -1449,7 +1449,7 @@ pub mod visit {
             exp_tuple,
             exp_type,
             exp_wild,
-        ))(visitor, m)
+        ))(visitor, NodeMove::Step)
     }
 
     pub fn exp_add<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -1458,7 +1458,7 @@ pub mod visit {
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
         visitor.walker().rule(kind::EXP_ADD, m)?;
-        utils::seq((exp, token::PLUS_SIGN, exp))(visitor, m)
+        utils::seq((exp, token::PLUS_SIGN, exp))(visitor, NodeMove::Step)
     }
 
     pub fn exp_assign<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -1467,7 +1467,7 @@ pub mod visit {
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
         visitor.walker().rule(kind::EXP_ASSIGN, m)?;
-        utils::seq((exp, token::EQUALS_SIGN, exp))(visitor, m)
+        utils::seq((exp, token::EQUALS_SIGN, exp))(visitor, NodeMove::Step)
     }
 
     pub fn exp_binding<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -1476,7 +1476,7 @@ pub mod visit {
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
         visitor.walker().rule(kind::EXP_BINDING, m)?;
-        utils::seq((name_var_term, token::COMMERCIAL_AT, exp))(visitor, m)
+        utils::seq((name_var_term, token::COMMERCIAL_AT, exp))(visitor, NodeMove::Step)
     }
 
     pub fn exp_bit_and<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -1485,7 +1485,7 @@ pub mod visit {
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
         visitor.walker().rule(kind::EXP_BIT_AND, m)?;
-        utils::seq((exp, token::AMPERSAND, exp))(visitor, m)
+        utils::seq((exp, token::AMPERSAND, exp))(visitor, NodeMove::Step)
     }
 
     pub fn exp_bit_neg<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -1494,7 +1494,7 @@ pub mod visit {
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
         visitor.walker().rule(kind::EXP_BIT_NEG, m)?;
-        utils::seq((token::TILDE, exp))(visitor, m)
+        utils::seq((token::TILDE, exp))(visitor, NodeMove::Step)
     }
 
     pub fn exp_bit_or<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -1503,7 +1503,7 @@ pub mod visit {
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
         visitor.walker().rule(kind::EXP_BIT_OR, m)?;
-        utils::seq((exp, token::VERTICAL_LINE, exp))(visitor, m)
+        utils::seq((exp, token::VERTICAL_LINE, exp))(visitor, NodeMove::Step)
     }
 
     pub fn exp_bit_slice<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -1512,7 +1512,7 @@ pub mod visit {
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
         visitor.walker().rule(kind::EXP_BIT_OR, m)?;
-        utils::seq((exp, token::LEFT_SQUARE_BRACKET, token::RIGHT_SQUARE_BRACKET))(visitor, m)
+        utils::seq((exp, token::LEFT_SQUARE_BRACKET, token::RIGHT_SQUARE_BRACKET))(visitor, NodeMove::Step)
     }
 
     pub fn exp_bit_xor<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -1521,7 +1521,7 @@ pub mod visit {
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
         visitor.walker().rule(kind::EXP_BIT_XOR, m)?;
-        utils::seq((exp, token::CIRCUMFLEX_ACCENT, exp))(visitor, m)
+        utils::seq((exp, token::CIRCUMFLEX_ACCENT, exp))(visitor, NodeMove::Step)
     }
 
     pub fn exp_block<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -1534,7 +1534,7 @@ pub mod visit {
             token::LEFT_CURLY_BRACKET,
             utils::optional(exp),
             token::RIGHT_CURLY_BRACKET,
-        ))(visitor, m)
+        ))(visitor, NodeMove::Step)
     }
 
     pub fn exp_break<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -1543,7 +1543,7 @@ pub mod visit {
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
         visitor.walker().rule(kind::EXP_BREAK, m)?;
-        token::BREAK(visitor, m)
+        token::BREAK(visitor, NodeMove::Step)
     }
 
     pub fn exp_cast<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -1552,7 +1552,7 @@ pub mod visit {
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
         visitor.walker().rule(kind::EXP_CAST, m)?;
-        utils::seq((exp, token::AS, type_atom))(visitor, m)
+        utils::seq((exp, token::AS, type_atom))(visitor, NodeMove::Step)
     }
 
     pub fn exp_cat<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -1561,7 +1561,7 @@ pub mod visit {
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
         visitor.walker().rule(kind::EXP_CAT, m)?;
-        utils::seq((exp, token::PLUS_SIGN_PLUS_SIGN, exp))(visitor, m)
+        utils::seq((exp, token::PLUS_SIGN_PLUS_SIGN, exp))(visitor, NodeMove::Step)
     }
 
     pub fn exp_cond<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -1570,7 +1570,7 @@ pub mod visit {
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
         visitor.walker().rule(kind::EXP_COND, m)?;
-        utils::seq((token::IF, exp, exp, utils::optional(utils::seq((token::ELSE, exp)))))(visitor, m)
+        utils::seq((token::IF, exp, exp, utils::optional(utils::seq((token::ELSE, exp)))))(visitor, NodeMove::Step)
     }
 
     pub fn exp_cons_pos<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -1590,7 +1590,7 @@ pub mod visit {
                 ))),
                 token::RIGHT_CURLY_BRACKET,
             ))),
-        ))(visitor, m)
+        ))(visitor, NodeMove::Step)
     }
 
     pub fn exp_cons_rec<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -1616,7 +1616,7 @@ pub mod visit {
                 ))),
             ))),
             token::RIGHT_CURLY_BRACKET,
-        ))(visitor, m)
+        ))(visitor, NodeMove::Step)
     }
 
     pub fn exp_continue<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -1625,7 +1625,7 @@ pub mod visit {
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
         visitor.walker().rule(kind::EXP_CONTINUE, m)?;
-        token::CONTINUE(visitor, m)
+        token::CONTINUE(visitor, NodeMove::Step)
     }
 
     pub fn exp_decl_var<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -1634,7 +1634,7 @@ pub mod visit {
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
         visitor.walker().rule(kind::EXP_DECL_VAR, m)?;
-        utils::seq((utils::optional(token::VAR), name_var_term))(visitor, m)
+        utils::seq((utils::optional(token::VAR), name_var_term))(visitor, NodeMove::Step)
     }
 
     pub fn exp_div<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -1643,7 +1643,7 @@ pub mod visit {
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
         visitor.walker().rule(kind::EXP_DIV, m)?;
-        utils::seq((exp, token::SOLIDUS, exp))(visitor, m)
+        utils::seq((exp, token::SOLIDUS, exp))(visitor, NodeMove::Step)
     }
 
     pub fn exp_eq<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -1652,7 +1652,7 @@ pub mod visit {
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
         visitor.walker().rule(kind::EXP_DIV, m)?;
-        utils::seq((exp, token::EQUALS_SIGN_EQUALS_SIGN, exp))(visitor, m)
+        utils::seq((exp, token::EQUALS_SIGN_EQUALS_SIGN, exp))(visitor, NodeMove::Step)
     }
 
     pub fn exp_field<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -1661,7 +1661,7 @@ pub mod visit {
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
         visitor.walker().rule(kind::EXP_FIELD, m)?;
-        utils::seq((exp, token::FULL_STOP, ident))(visitor, m)
+        utils::seq((exp, token::FULL_STOP, ident))(visitor, NodeMove::Step)
     }
 
     pub fn exp_for<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -1678,7 +1678,7 @@ pub mod visit {
             exp,
             token::RIGHT_PARENTHESIS,
             exp,
-        ))(visitor, m)
+        ))(visitor, NodeMove::Step)
     }
 
     pub fn exp_fun_call<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -1696,7 +1696,7 @@ pub mod visit {
                 utils::optional(token::COMMA),
             ))),
             token::RIGHT_PARENTHESIS,
-        ))(visitor, m)
+        ))(visitor, NodeMove::Step)
     }
 
     pub fn exp_fun_call_dot<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -1716,7 +1716,7 @@ pub mod visit {
                 utils::optional(token::COMMA),
             ))),
             token::RIGHT_PARENTHESIS,
-        ))(visitor, m)
+        ))(visitor, NodeMove::Step)
     }
 
     pub fn exp_gt<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -1725,7 +1725,7 @@ pub mod visit {
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
         visitor.walker().rule(kind::EXP_GT, m)?;
-        utils::seq((exp, token::GREATER_THAN_SIGN, exp))(visitor, m)
+        utils::seq((exp, token::GREATER_THAN_SIGN, exp))(visitor, NodeMove::Step)
     }
 
     pub fn exp_gteq<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -1734,7 +1734,7 @@ pub mod visit {
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
         visitor.walker().rule(kind::EXP_GTEQ, m)?;
-        utils::seq((exp, token::GREATER_THAN_SIGN_EQUALS_SIGN, exp))(visitor, m)
+        utils::seq((exp, token::GREATER_THAN_SIGN_EQUALS_SIGN, exp))(visitor, NodeMove::Step)
     }
 
     pub fn exp_lambda<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -1765,7 +1765,7 @@ pub mod visit {
                 utils::optional(utils::seq((token::COLON, type_atom))),
                 exp,
             )),
-        ))(visitor, m)
+        ))(visitor, NodeMove::Step)
     }
 
     pub fn exp_lit<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -1774,7 +1774,7 @@ pub mod visit {
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
         visitor.walker().rule(kind::EXP_LIT, m)?;
-        utils::choice((lit_bool, lit_num, lit_map, lit_string, lit_vec))(visitor, m)
+        utils::choice((lit_bool, lit_num, lit_map, lit_string, lit_vec))(visitor, NodeMove::Step)
     }
 
     pub fn exp_log_and<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -1783,7 +1783,7 @@ pub mod visit {
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
         visitor.walker().rule(kind::EXP_LOG_AND, m)?;
-        utils::seq((exp, token::AND, exp))(visitor, m)
+        utils::seq((exp, token::AND, exp))(visitor, NodeMove::Step)
     }
 
     pub fn exp_log_imp<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -1792,7 +1792,7 @@ pub mod visit {
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
         visitor.walker().rule(kind::EXP_LOG_IMP, m)?;
-        utils::seq((exp, token::EQUALS_SIGN_GREATER_THAN_SIGN, exp))(visitor, m)
+        utils::seq((exp, token::EQUALS_SIGN_GREATER_THAN_SIGN, exp))(visitor, NodeMove::Step)
     }
 
     pub fn exp_log_neg<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -1801,7 +1801,7 @@ pub mod visit {
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
         visitor.walker().rule(kind::EXP_LOG_NEG, m)?;
-        utils::seq((token::NOT, exp))(visitor, m)
+        utils::seq((token::NOT, exp))(visitor, NodeMove::Step)
     }
 
     pub fn exp_log_or<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -1810,7 +1810,7 @@ pub mod visit {
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
         visitor.walker().rule(kind::EXP_LOG_OR, m)?;
-        utils::seq((exp, token::OR, exp))(visitor, m)
+        utils::seq((exp, token::OR, exp))(visitor, NodeMove::Step)
     }
 
     pub fn exp_lt<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -1819,7 +1819,7 @@ pub mod visit {
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
         visitor.walker().rule(kind::EXP_LT, m)?;
-        utils::seq((exp, token::LESS_THAN_SIGN, exp))(visitor, m)
+        utils::seq((exp, token::LESS_THAN_SIGN, exp))(visitor, NodeMove::Step)
     }
 
     pub fn exp_lteq<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -1828,7 +1828,7 @@ pub mod visit {
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
         visitor.walker().rule(kind::EXP_LTEQ, m)?;
-        utils::seq((exp, token::LESS_THAN_SIGN_EQUALS_SIGN, exp))(visitor, m)
+        utils::seq((exp, token::LESS_THAN_SIGN_EQUALS_SIGN, exp))(visitor, NodeMove::Step)
     }
 
     pub fn exp_match<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -1852,7 +1852,7 @@ pub mod visit {
                 utils::optional(token::COMMA),
             ))),
             token::RIGHT_CURLY_BRACKET,
-        ))(visitor, m)
+        ))(visitor, NodeMove::Step)
     }
 
     pub fn exp_mul<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -1861,7 +1861,7 @@ pub mod visit {
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
         visitor.walker().rule(kind::EXP_MUL, m)?;
-        utils::seq((exp, token::ASTERISK, exp))(visitor, m)
+        utils::seq((exp, token::ASTERISK, exp))(visitor, NodeMove::Step)
     }
 
     pub fn exp_neg<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -1870,7 +1870,7 @@ pub mod visit {
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
         visitor.walker().rule(kind::EXP_NEG, m)?;
-        utils::seq((token::HYPHEN_MINUS, exp))(visitor, m)
+        utils::seq((token::HYPHEN_MINUS, exp))(visitor, NodeMove::Step)
     }
 
     pub fn exp_neq<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -1879,7 +1879,7 @@ pub mod visit {
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
         visitor.walker().rule(kind::EXP_NEQ, m)?;
-        utils::seq((exp, token::EXCLAMATION_MARK_EQUALS_SIGN, exp))(visitor, m)
+        utils::seq((exp, token::EXCLAMATION_MARK_EQUALS_SIGN, exp))(visitor, NodeMove::Step)
     }
 
     pub fn exp_proj<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -1888,7 +1888,7 @@ pub mod visit {
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
         visitor.walker().rule(kind::EXP_PROJ, m)?;
-        utils::seq((exp, token::FULL_STOP, exp_proj_digits))(visitor, m)
+        utils::seq((exp, token::FULL_STOP, exp_proj_digits))(visitor, NodeMove::Step)
     }
 
     pub fn exp_proj_digits<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -1906,7 +1906,7 @@ pub mod visit {
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
         visitor.walker().rule(kind::EXP_REF, m)?;
-        utils::seq((token::AMPERSAND, exp))(visitor, m)
+        utils::seq((token::AMPERSAND, exp))(visitor, NodeMove::Step)
     }
 
     pub fn exp_rem<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -1915,7 +1915,7 @@ pub mod visit {
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
         visitor.walker().rule(kind::EXP_REM, m)?;
-        utils::seq((exp, token::PERCENT_SIGN, exp))(visitor, m)
+        utils::seq((exp, token::PERCENT_SIGN, exp))(visitor, NodeMove::Step)
     }
 
     pub fn exp_return<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -1924,7 +1924,7 @@ pub mod visit {
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
         visitor.walker().rule(kind::EXP_RETURN, m)?;
-        utils::seq((token::RETURN, utils::optional(exp)))(visitor, m)
+        utils::seq((token::RETURN, utils::optional(exp)))(visitor, NodeMove::Step)
     }
 
     pub fn exp_seq<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -1933,7 +1933,7 @@ pub mod visit {
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
         visitor.walker().rule(kind::EXP_SEQ, m)?;
-        utils::seq((exp, token::SEMICOLON, utils::optional(exp)))(visitor, m)
+        utils::seq((exp, token::SEMICOLON, utils::optional(exp)))(visitor, NodeMove::Step)
     }
 
     pub fn exp_shl<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -1942,7 +1942,7 @@ pub mod visit {
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
         visitor.walker().rule(kind::EXP_SHL, m)?;
-        utils::seq((exp, token::LESS_THAN_SIGN_LESS_THAN_SIGN, exp))(visitor, m)
+        utils::seq((exp, token::LESS_THAN_SIGN_LESS_THAN_SIGN, exp))(visitor, NodeMove::Step)
     }
 
     pub fn exp_shr<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -1951,7 +1951,7 @@ pub mod visit {
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
         visitor.walker().rule(kind::EXP_SHR, m)?;
-        utils::seq((exp, token::GREATER_THAN_SIGN_GREATER_THAN_SIGN, exp))(visitor, m)
+        utils::seq((exp, token::GREATER_THAN_SIGN_GREATER_THAN_SIGN, exp))(visitor, NodeMove::Step)
     }
 
     pub fn exp_slice<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -1967,7 +1967,7 @@ pub mod visit {
             token::COLON,
             lit_num_dec,
             token::RIGHT_SQUARE_BRACKET,
-        ))(visitor, m)
+        ))(visitor, NodeMove::Step)
     }
 
     pub fn exp_sub<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -1976,7 +1976,7 @@ pub mod visit {
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
         visitor.walker().rule(kind::EXP_SUB, m)?;
-        utils::seq((exp, token::HYPHEN_MINUS, exp))(visitor, m)
+        utils::seq((exp, token::HYPHEN_MINUS, exp))(visitor, NodeMove::Step)
     }
 
     pub fn exp_try<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -1985,7 +1985,7 @@ pub mod visit {
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
         visitor.walker().rule(kind::EXP_TRY, m)?;
-        utils::seq((exp, token::QUESTION_MARK))(visitor, m)
+        utils::seq((exp, token::QUESTION_MARK))(visitor, NodeMove::Step)
     }
 
     pub fn exp_tuple<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -2002,7 +2002,7 @@ pub mod visit {
                 utils::optional(token::COMMA),
             ))),
             token::RIGHT_PARENTHESIS,
-        ))(visitor, m)
+        ))(visitor, NodeMove::Step)
     }
 
     pub fn exp_type<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -2011,7 +2011,7 @@ pub mod visit {
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
         visitor.walker().rule(kind::EXP_TYPE, m)?;
-        utils::seq((exp, token::COLON, type_atom))(visitor, m)
+        utils::seq((exp, token::COLON, type_atom))(visitor, NodeMove::Step)
     }
 
     pub fn exp_wild<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -2020,7 +2020,7 @@ pub mod visit {
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
         visitor.walker().rule(kind::EXP_WILD, m)?;
-        token::LOW_LINE(visitor, m)
+        token::LOW_LINE(visitor, NodeMove::Step)
     }
 
     pub fn field<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -2029,7 +2029,7 @@ pub mod visit {
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
         visitor.walker().rule(kind::FIELD, m)?;
-        utils::seq((utils::optional(attributes), name_field, token::COLON, type_atom))(visitor, m)
+        utils::seq((utils::optional(attributes), name_field, token::COLON, type_atom))(visitor, NodeMove::Step)
     }
 
     pub fn function<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -2038,7 +2038,7 @@ pub mod visit {
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
         visitor.walker().rule(kind::FUNCTION, m)?;
-        utils::choice((function_normal, function_extern))(visitor, m)
+        utils::choice((function_normal, function_extern))(visitor, NodeMove::Step)
     }
 
     pub fn function_extern<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -2055,7 +2055,7 @@ pub mod visit {
             utils::optional(utils::seq((arg, utils::repeat(utils::seq((token::COMMA, arg)))))),
             token::RIGHT_PARENTHESIS,
             utils::optional(utils::seq((token::COLON, type_atom))),
-        ))(visitor, m)
+        ))(visitor, NodeMove::Step)
     }
 
     pub fn function_normal<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -2077,7 +2077,7 @@ pub mod visit {
                 exp,
                 token::RIGHT_CURLY_BRACKET,
             )),
-        ))(visitor, m)
+        ))(visitor, NodeMove::Step)
     }
 
     pub fn ident<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -2086,7 +2086,7 @@ pub mod visit {
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
         visitor.walker().rule(kind::IDENT, m)?;
-        utils::choice((ident_lower, ident_upper))(visitor, m)
+        utils::choice((ident_lower, ident_upper))(visitor, NodeMove::Step)
     }
 
     pub fn ident_lower<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -2144,7 +2144,7 @@ pub mod visit {
             token::IMPORT,
             module_path,
             utils::optional(utils::seq((token::AS, module_alias))),
-        ))(visitor, m)
+        ))(visitor, NodeMove::Step)
     }
 
     pub fn index<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -2165,7 +2165,7 @@ pub mod visit {
             token::RIGHT_PARENTHESIS,
             token::ON,
             atom,
-        ))(visitor, m)
+        ))(visitor, NodeMove::Step)
     }
 
     pub fn interpolation<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -2174,7 +2174,7 @@ pub mod visit {
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
         visitor.walker().rule(kind::INTERPOLATION, m)?;
-        utils::seq((token::DOLLAR_SIGN_LEFT_CURLY_BRACKET, exp, token::RIGHT_CURLY_BRACKET))(visitor, m)
+        utils::seq((token::DOLLAR_SIGN_LEFT_CURLY_BRACKET, exp, token::RIGHT_CURLY_BRACKET))(visitor, NodeMove::Step)
     }
 
     pub fn item<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -2193,7 +2193,7 @@ pub mod visit {
             rule,
             transformer,
             typedef,
-        ))(visitor, m)
+        ))(visitor, NodeMove::Step)
     }
 
     pub fn key_primary<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -2209,7 +2209,7 @@ pub mod visit {
             name_var_term,
             token::RIGHT_PARENTHESIS,
             exp,
-        ))(visitor, m)
+        ))(visitor, NodeMove::Step)
     }
 
     pub fn lit_bool<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -2218,7 +2218,7 @@ pub mod visit {
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
         visitor.walker().rule(kind::LIT_BOOL, m)?;
-        utils::choice((token::FALSE, token::TRUE))(visitor, m)
+        utils::choice((token::FALSE, token::TRUE))(visitor, NodeMove::Step)
     }
 
     pub fn lit_map<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -2234,7 +2234,7 @@ pub mod visit {
             exp,
             utils::repeat(utils::seq((token::COMMA, exp, token::RIGHTWARDS_ARROW, exp))),
             token::RIGHT_SQUARE_BRACKET,
-        ))(visitor, m)
+        ))(visitor, NodeMove::Step)
     }
 
     pub fn lit_num<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -2259,7 +2259,7 @@ pub mod visit {
                     utils::seq((token::LIT_S_OCT, lit_num_oct)),
                 )),
             )),
-        ))(visitor, m)
+        ))(visitor, NodeMove::Step)
     }
 
     pub fn lit_num_bin<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -2318,7 +2318,7 @@ pub mod visit {
             string_quoted_escaped,
             string_raw,
             string_raw_interpolated,
-        )))(visitor, m)
+        )))(visitor, NodeMove::Step)
     }
 
     pub fn lit_vec<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -2332,7 +2332,7 @@ pub mod visit {
             exp,
             utils::repeat(utils::seq((token::COMMA, exp))),
             token::RIGHT_SQUARE_BRACKET,
-        ))(visitor, m)
+        ))(visitor, NodeMove::Step)
     }
 
     pub fn misc_pat0<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -2350,7 +2350,7 @@ pub mod visit {
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
         visitor.walker().rule(kind::MODULE_ALIAS, m)?;
-        ident(visitor, m)
+        ident(visitor, NodeMove::Step)
     }
 
     pub fn module_path<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -2359,7 +2359,7 @@ pub mod visit {
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
         visitor.walker().rule(kind::MODULE_PATH, m)?;
-        utils::seq((ident, utils::repeat(utils::seq((token::COLON_COLON, ident)))))(visitor, m)
+        utils::seq((ident, utils::repeat(utils::seq((token::COLON_COLON, ident)))))(visitor, NodeMove::Step)
     }
 
     pub fn name<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -2386,7 +2386,7 @@ pub mod visit {
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
         visitor.walker().rule(kind::NAME_CONS, m)?;
-        ident_upper_scoped(visitor, m)
+        ident_upper_scoped(visitor, NodeMove::Step)
     }
 
     pub fn name_field<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -2404,7 +2404,7 @@ pub mod visit {
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
         visitor.walker().rule(kind::NAME_FUNC, m)?;
-        ident_lower_scoped(visitor, m)
+        ident_lower_scoped(visitor, NodeMove::Step)
     }
 
     pub fn name_index<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -2413,7 +2413,7 @@ pub mod visit {
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
         visitor.walker().rule(kind::NAME_INDEX, m)?;
-        ident_scoped(visitor, m)
+        ident_scoped(visitor, NodeMove::Step)
     }
 
     pub fn name_rel<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -2422,7 +2422,7 @@ pub mod visit {
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
         visitor.walker().rule(kind::NAME_REL, m)?;
-        ident_upper_scoped(visitor, m)
+        ident_upper_scoped(visitor, NodeMove::Step)
     }
 
     pub fn name_trans<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -2431,7 +2431,7 @@ pub mod visit {
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
         visitor.walker().rule(kind::NAME_TRANS, m)?;
-        ident_scoped(visitor, m)
+        ident_scoped(visitor, NodeMove::Step)
     }
 
     pub fn name_type<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -2440,7 +2440,7 @@ pub mod visit {
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
         visitor.walker().rule(kind::NAME_TYPE, m)?;
-        utils::choice((ident_lower_scoped, ident_upper_scoped))(visitor, m)
+        utils::choice((ident_lower_scoped, ident_upper_scoped))(visitor, NodeMove::Step)
     }
 
     pub fn name_var_term<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -2449,7 +2449,7 @@ pub mod visit {
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
         visitor.walker().rule(kind::NAME_VAR_TERM, m)?;
-        ident_lower_scoped(visitor, m)
+        ident_lower_scoped(visitor, NodeMove::Step)
     }
 
     pub fn name_var_type<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -2467,7 +2467,7 @@ pub mod visit {
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
         visitor.walker().rule(kind::PAT, m)?;
-        utils::choice((pat_cons, pat_term_decl_var, pat_lit, pat_tuple, pat_type, pat_wild))(visitor, m)
+        utils::choice((pat_cons, pat_term_decl_var, pat_lit, pat_tuple, pat_type, pat_wild))(visitor, NodeMove::Step)
     }
 
     pub fn pat_cons<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -2476,7 +2476,7 @@ pub mod visit {
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
         visitor.walker().rule(kind::PAT_CONS, m)?;
-        utils::choice((pat_cons_rec, pat_cons_pos))(visitor, m)
+        utils::choice((pat_cons_rec, pat_cons_pos))(visitor, NodeMove::Step)
     }
 
     pub fn pat_cons_pos<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -2496,7 +2496,7 @@ pub mod visit {
                 ))),
                 token::RIGHT_CURLY_BRACKET,
             ))),
-        ))(visitor, m)
+        ))(visitor, NodeMove::Step)
     }
 
     pub fn pat_cons_rec<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -2522,7 +2522,7 @@ pub mod visit {
                 ))),
             ))),
             token::RIGHT_CURLY_BRACKET,
-        ))(visitor, m)
+        ))(visitor, NodeMove::Step)
     }
 
     pub fn pat_lit<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -2531,7 +2531,7 @@ pub mod visit {
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
         visitor.walker().rule(kind::PAT_LIT, m)?;
-        utils::choice((lit_bool, lit_num, lit_string))(visitor, m)
+        utils::choice((lit_bool, lit_num, lit_string))(visitor, NodeMove::Step)
     }
 
     pub fn pat_term_decl_var<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -2540,7 +2540,7 @@ pub mod visit {
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
         visitor.walker().rule(kind::PAT_TERM_DECL_VAR, m)?;
-        utils::seq((utils::optional(token::VAR), name_var_term))(visitor, m)
+        utils::seq((utils::optional(token::VAR), name_var_term))(visitor, NodeMove::Step)
     }
 
     pub fn pat_tuple<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -2553,7 +2553,7 @@ pub mod visit {
             token::LEFT_PARENTHESIS,
             utils::optional(utils::seq((pat, utils::repeat(utils::seq((token::COMMA, pat)))))),
             token::RIGHT_PARENTHESIS,
-        ))(visitor, m)
+        ))(visitor, NodeMove::Step)
     }
 
     pub fn pat_type<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -2562,7 +2562,7 @@ pub mod visit {
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
         visitor.walker().rule(kind::PAT_TYPE, m)?;
-        utils::seq((pat, token::COLON, type_atom))(visitor, m)
+        utils::seq((pat, token::COLON, type_atom))(visitor, NodeMove::Step)
     }
 
     pub fn pat_wild<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -2571,7 +2571,7 @@ pub mod visit {
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
         visitor.walker().rule(kind::PAT_WILD, m)?;
-        token::LOW_LINE(visitor, m)
+        token::LOW_LINE(visitor, NodeMove::Step)
     }
 
     pub fn rel<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -2580,7 +2580,7 @@ pub mod visit {
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
         visitor.walker().rule(kind::REL, m)?;
-        utils::choice((rel_args, rel_elem))(visitor, m)
+        utils::choice((rel_args, rel_elem))(visitor, NodeMove::Step)
     }
 
     pub fn rel_args<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -2601,7 +2601,7 @@ pub mod visit {
             ))),
             token::RIGHT_PARENTHESIS,
             utils::optional(key_primary),
-        ))(visitor, m)
+        ))(visitor, NodeMove::Step)
     }
 
     pub fn rel_elem<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -2618,7 +2618,7 @@ pub mod visit {
             type_atom,
             token::RIGHT_SQUARE_BRACKET,
             utils::optional(key_primary),
-        ))(visitor, m)
+        ))(visitor, NodeMove::Step)
     }
 
     pub fn rel_role<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -2627,7 +2627,7 @@ pub mod visit {
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
         visitor.walker().rule(kind::REL_ROLE, m)?;
-        utils::choice((token::INPUT, token::INTERNAL, token::OUTPUT))(visitor, m)
+        utils::choice((token::INPUT, token::INTERNAL, token::OUTPUT))(visitor, NodeMove::Step)
     }
 
     pub fn rel_semantics<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -2636,7 +2636,7 @@ pub mod visit {
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
         visitor.walker().rule(kind::REL_SEMANTICS, m)?;
-        utils::choice((token::RELATION, token::STREAM, token::MULTISET))(visitor, m)
+        utils::choice((token::RELATION, token::STREAM, token::MULTISET))(visitor, NodeMove::Step)
     }
 
     pub fn rhs<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -2645,7 +2645,7 @@ pub mod visit {
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
         visitor.walker().rule(kind::RHS, m)?;
-        utils::choice((rhs_inspect, atom, rhs_atom_neg, exp, rhs_flat_map, rhs_grouping))(visitor, m)
+        utils::choice((rhs_inspect, atom, rhs_atom_neg, exp, rhs_flat_map, rhs_grouping))(visitor, NodeMove::Step)
     }
 
     pub fn rhs_atom_neg<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -2654,7 +2654,7 @@ pub mod visit {
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
         visitor.walker().rule(kind::RHS_ATOM_NEG, m)?;
-        utils::seq((token::NOT, atom))(visitor, m)
+        utils::seq((token::NOT, atom))(visitor, NodeMove::Step)
     }
 
     pub fn rhs_flat_map<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -2671,7 +2671,7 @@ pub mod visit {
             token::LEFT_PARENTHESIS,
             exp,
             token::RIGHT_PARENTHESIS,
-        ))(visitor, m)
+        ))(visitor, NodeMove::Step)
     }
 
     pub fn rhs_grouping<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -2690,7 +2690,7 @@ pub mod visit {
             token::LEFT_PARENTHESIS,
             exp,
             token::RIGHT_PARENTHESIS,
-        ))(visitor, m)
+        ))(visitor, NodeMove::Step)
     }
 
     pub fn rhs_inspect<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -2699,7 +2699,7 @@ pub mod visit {
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
         visitor.walker().rule(kind::RHS_INSPECT, m)?;
-        utils::seq((token::INSPECT, exp))(visitor, m)
+        utils::seq((token::INSPECT, exp))(visitor, NodeMove::Step)
     }
 
     pub fn rule<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -2717,7 +2717,7 @@ pub mod visit {
                 utils::repeat(utils::seq((token::COMMA, rhs))),
             ))),
             rule_end,
-        ))(visitor, m)
+        ))(visitor, NodeMove::Step)
     }
 
     pub fn rule_end<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -2743,7 +2743,7 @@ pub mod visit {
             statement_if,
             statement_insert,
             statement_match,
-        ))(visitor, m)
+        ))(visitor, NodeMove::Step)
     }
 
     pub fn statement_assign<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -2752,7 +2752,7 @@ pub mod visit {
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
         visitor.walker().rule(kind::STATEMENT_ASSIGN, m)?;
-        utils::seq((exp, token::IN, statement))(visitor, m)
+        utils::seq((exp, token::IN, statement))(visitor, NodeMove::Step)
     }
 
     pub fn statement_block<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -2768,7 +2768,7 @@ pub mod visit {
                 utils::optional(utils::seq((token::SEMICOLON, utils::optional(statement)))),
             ))),
             token::RIGHT_CURLY_BRACKET,
-        ))(visitor, m)
+        ))(visitor, NodeMove::Step)
     }
 
     pub fn statement_empty<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -2777,7 +2777,7 @@ pub mod visit {
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
         visitor.walker().rule(kind::STATEMENT_EMPTY, m)?;
-        token::SKIP(visitor, m)
+        token::SKIP(visitor, NodeMove::Step)
     }
 
     pub fn statement_for<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -2793,7 +2793,7 @@ pub mod visit {
             utils::optional(utils::seq((token::IF, exp))),
             token::RIGHT_PARENTHESIS,
             statement,
-        ))(visitor, m)
+        ))(visitor, NodeMove::Step)
     }
 
     pub fn statement_if<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -2809,7 +2809,7 @@ pub mod visit {
             token::RIGHT_PARENTHESIS,
             statement,
             utils::optional(utils::seq((token::ELSE, statement))),
-        ))(visitor, m)
+        ))(visitor, NodeMove::Step)
     }
 
     pub fn statement_insert<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -2818,7 +2818,7 @@ pub mod visit {
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
         visitor.walker().rule(kind::STATEMENT_INSERT, m)?;
-        atom(visitor, m)
+        atom(visitor, NodeMove::Step)
     }
 
     pub fn statement_match<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -2842,7 +2842,7 @@ pub mod visit {
                 utils::optional(token::COMMA),
             ))),
             token::RIGHT_CURLY_BRACKET,
-        ))(visitor, m)
+        ))(visitor, NodeMove::Step)
     }
 
     // NOTE: might have to descend into subnodes
@@ -2908,7 +2908,7 @@ pub mod visit {
                 utils::repeat(utils::seq((token::COMMA, arg_trans))),
             ))),
             token::RIGHT_PARENTHESIS,
-        ))(visitor, m)
+        ))(visitor, NodeMove::Step)
     }
 
     pub fn r#type<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -2930,7 +2930,7 @@ pub mod visit {
             type_var,
             type_fun,
             type_tuple,
-        ))(visitor, m)
+        ))(visitor, NodeMove::Step)
     }
 
     pub fn type_atom<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -2951,7 +2951,7 @@ pub mod visit {
             type_var,
             type_fun,
             type_tuple,
-        ))(visitor, m)
+        ))(visitor, NodeMove::Step)
     }
 
     pub fn type_bigint<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -2960,7 +2960,7 @@ pub mod visit {
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
         visitor.walker().rule(kind::TYPE_BIGINT, m)?;
-        token::BIGINT(visitor, m)
+        token::BIGINT(visitor, NodeMove::Step)
     }
 
     pub fn type_bit<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -2969,7 +2969,7 @@ pub mod visit {
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
         visitor.walker().rule(kind::TYPE_BIT, m)?;
-        utils::seq((token::BIT, token::LESS_THAN_SIGN, lit_num_dec, token::GREATER_THAN_SIGN))(visitor, m)
+        utils::seq((token::BIT, token::LESS_THAN_SIGN, lit_num_dec, token::GREATER_THAN_SIGN))(visitor, NodeMove::Step)
     }
 
     pub fn type_bool<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -2978,7 +2978,7 @@ pub mod visit {
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
         visitor.walker().rule(kind::TYPE_BOOL, m)?;
-        token::BOOL(visitor, m)
+        token::BOOL(visitor, NodeMove::Step)
     }
 
     pub fn type_double<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -2987,7 +2987,7 @@ pub mod visit {
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
         visitor.walker().rule(kind::TYPE_DOUBLE, m)?;
-        token::DOUBLE(visitor, m)
+        token::DOUBLE(visitor, NodeMove::Step)
     }
 
     pub fn type_float<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -2996,7 +2996,7 @@ pub mod visit {
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
         visitor.walker().rule(kind::TYPE_FLOAT, m)?;
-        token::FLOAT(visitor, m)
+        token::FLOAT(visitor, NodeMove::Step)
     }
 
     pub fn type_fun<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -3027,7 +3027,7 @@ pub mod visit {
                 token::VERTICAL_LINE,
                 utils::optional(utils::seq((token::COLON, r#type))),
             )),
-        ))(visitor, m)
+        ))(visitor, NodeMove::Step)
     }
 
     pub fn type_signed<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -3041,7 +3041,7 @@ pub mod visit {
             token::LESS_THAN_SIGN,
             lit_num_dec,
             token::GREATER_THAN_SIGN,
-        ))(visitor, m)
+        ))(visitor, NodeMove::Step)
     }
 
     pub fn type_string<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -3050,7 +3050,7 @@ pub mod visit {
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
         visitor.walker().rule(kind::TYPE_STRING, m)?;
-        token::STRING(visitor, m)
+        token::STRING(visitor, NodeMove::Step)
     }
 
     pub fn type_trans<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -3059,7 +3059,7 @@ pub mod visit {
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
         visitor.walker().rule(kind::TYPE_TRANS, m)?;
-        utils::choice((type_trans_fun, type_trans_rel))(visitor, m)
+        utils::choice((type_trans_fun, type_trans_rel))(visitor, NodeMove::Step)
     }
 
     pub fn type_trans_fun<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -3075,7 +3075,7 @@ pub mod visit {
             token::RIGHT_PARENTHESIS,
             token::COLON,
             type_atom,
-        ))(visitor, m)
+        ))(visitor, NodeMove::Step)
     }
 
     pub fn type_trans_rel<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -3089,7 +3089,7 @@ pub mod visit {
             token::LEFT_SQUARE_BRACKET,
             type_atom,
             token::RIGHT_SQUARE_BRACKET,
-        ))(visitor, m)
+        ))(visitor, NodeMove::Step)
     }
 
     pub fn type_tuple<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -3106,7 +3106,7 @@ pub mod visit {
                 utils::optional(token::COMMA),
             ))),
             token::RIGHT_PARENTHESIS,
-        ))(visitor, m)
+        ))(visitor, NodeMove::Step)
     }
 
     pub fn type_union<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -3115,7 +3115,7 @@ pub mod visit {
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
         visitor.walker().rule(kind::TYPE_UNION, m)?;
-        utils::seq((utils::repeat(utils::seq((cons, token::VERTICAL_LINE))), cons))(visitor, m)
+        utils::seq((utils::repeat(utils::seq((cons, token::VERTICAL_LINE))), cons))(visitor, NodeMove::Step)
     }
 
     pub fn type_user<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -3132,7 +3132,7 @@ pub mod visit {
                 utils::repeat(utils::seq((token::COMMA, r#type))),
                 token::GREATER_THAN_SIGN,
             ))),
-        ))(visitor, m)
+        ))(visitor, NodeMove::Step)
     }
 
     pub fn type_var<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -3141,7 +3141,7 @@ pub mod visit {
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
         visitor.walker().rule(kind::TYPE_VAR, m)?;
-        utils::seq((token::APOSTROPHE, misc_pat0))(visitor, m)
+        utils::seq((token::APOSTROPHE, misc_pat0))(visitor, NodeMove::Step)
     }
 
     pub fn typedef<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -3150,7 +3150,7 @@ pub mod visit {
         Vis: Visitor<'tree, Ctx> + ?Sized,
     {
         visitor.walker().rule(kind::TYPEDEF, m)?;
-        utils::choice((typedef_normal, typedef_extern))(visitor, m)
+        utils::choice((typedef_normal, typedef_extern))(visitor, NodeMove::Step)
     }
 
     pub fn typedef_extern<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -3169,7 +3169,7 @@ pub mod visit {
                 utils::repeat(utils::seq((token::COMMA, name_var_type))),
                 token::GREATER_THAN_SIGN,
             ))),
-        ))(visitor, m)
+        ))(visitor, NodeMove::Step)
     }
 
     pub fn typedef_normal<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
@@ -3189,7 +3189,7 @@ pub mod visit {
             ))),
             token::EQUALS_SIGN,
             r#type,
-        ))(visitor, m)
+        ))(visitor, NodeMove::Step)
     }
 
     pub fn word<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
