@@ -198,7 +198,7 @@ jobs:
         uses: actions-rs/cargo@v1
         with:
           command: xtask
-          args: test --runtime=${{ matrix.runtime }}
+          args: test --runtime=${{ matrix.runtime }} -- --features ddlog-lsp-server/goldenfiles
 
   # verify that tests pass for wasm target
   cargo-test-wasm:
