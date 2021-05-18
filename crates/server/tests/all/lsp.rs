@@ -251,5 +251,110 @@ mod text_document {
     }
 
     #[cfg(feature = "goldenfiles")]
-    mod corpus {}
+    mod did_open {
+        use ddlog_lsp_macros::corpus_tests;
+
+        fn handler(_corpus: &str, path: &str) {
+            use ddlog_lsp_server::core::Language;
+            use futures::stream::StreamExt;
+            use serde_json::Value;
+            use std::convert::TryFrom;
+
+            async fn handler(path: &str) -> anyhow::Result<()> {
+                let uri = lsp::Url::from_file_path(path).unwrap();
+                let text = std::fs::read_to_string(path).unwrap();
+                let language = Language::try_from(std::path::Path::new(path))?;
+                let language_id = language.id();
+                let version = 1;
+
+                let (ref mut service, ref mut messages) = crate::testing::service::spawn()?;
+
+                // send "initialize" request
+                crate::assert_status!(service, Ok(()));
+                let request = &crate::testing::lsp::initialize::request();
+                let response = Some(crate::testing::lsp::initialize::response());
+                crate::assert_exchange!(service, request, Ok(response));
+
+                // send "initialized" notification
+                crate::assert_status!(service, Ok(()));
+                let notification = &crate::testing::lsp::initialized::notification();
+                let status = None::<Value>;
+                crate::assert_exchange!(service, notification, Ok(status));
+                // ignore the "window/logMessage" notification: "WebAssembly language server initialized!"
+                messages.next().await.unwrap();
+
+                // send "textDocument/didOpen" notification for `uri`
+                crate::assert_status!(service, Ok(()));
+                let notification =
+                    &crate::testing::lsp::text_document::did_open::notification(&uri, language_id, version, text);
+                let status = None::<Value>;
+                crate::assert_exchange!(service, notification, Ok(status));
+
+                // receive "textDocument/publishDiagnostics" notification for `uri`
+                let message = messages.next().await.unwrap();
+                let actual = serde_json::to_value(&message)?;
+                let expected = {
+                    let diagnostics = &[];
+                    crate::testing::lsp::text_document::publish_diagnostics::notification(&uri, diagnostics)
+                };
+                assert_eq!(actual, expected);
+
+                // send "shutdown" request
+                crate::assert_status!(service, Ok(()));
+                let request = &crate::testing::lsp::shutdown::request();
+                let response = Some(crate::testing::lsp::shutdown::response());
+                crate::assert_exchange!(service, request, Ok(response));
+
+                // send "exit" notification
+                crate::assert_status!(service, Ok(()));
+                let notification = &crate::testing::lsp::exit::notification();
+                let status = None::<Value>;
+                crate::assert_exchange!(service, notification, Ok(status));
+
+                Ok(())
+            }
+            let runtime = tokio::runtime::Builder::new_current_thread().build().unwrap();
+            runtime.block_on(handler(path)).unwrap();
+        }
+
+        corpus_tests! {
+            corpus: differential_datalog,
+            include: "vendor/differential-datalog/test/datalog_tests/*.dl",
+            exclude: [
+                // ignore failure files
+                "comment.fail.dl",
+                "constr.fail.dl",
+                "dupfield.fail.dl",
+                "function.fail.dl",
+                "pattern.fail.dl",
+                "rectype.fail.dl",
+                "rules.fail.dl",
+                "strings.fail.dl",
+                // ignore tests that currently fail
+                "dcm1.dl",
+                "fp_test.dl",
+                "group_test.dl",
+                "internment_test.dl",
+                "ip_discovery_agent.dl",
+                "ip_discovery_controller.dl",
+                "json_test.dl",
+                "map_test.dl",
+                "net_test.dl",
+                "ovn.dl",
+                "redist_opt.dl",
+                "redist.dl",
+                "set_test.dl",
+                "simple.dl",
+                "simple2.dl",
+                "span_string.dl",
+                "span_uuid.dl",
+                "std_test.dl",
+                "time_test.dl",
+                "url_test.dl",
+                "uuid_test.dl",
+                "vec_test.dl",
+            ],
+            handler: crate::lsp::text_document::did_open::handler,
+        }
+    }
 }
