@@ -330,10 +330,11 @@ mod text_document {
                 "rectype.fail.dl",
                 "rules.fail.dl",
                 "strings.fail.dl",
-                // ignore tests that currently fail
+                // tests that fail
+                "group_test.dl",
+                // tests that fail but which pass when parsed manually with CLI
                 "dcm1.dl",
                 "fp_test.dl",
-                "group_test.dl",
                 "internment_test.dl",
                 "ip_discovery_agent.dl",
                 "ip_discovery_controller.dl",
