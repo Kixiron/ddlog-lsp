@@ -161,7 +161,8 @@ mod text_document {
 
         // send "textDocument/didOpen" notification for `uri`
         crate::assert_status!(service, Ok(()));
-        let notification = &crate::testing::lsp::text_document::did_open::notification(&uri, language_id, version, text);
+        let notification =
+            &crate::testing::lsp::text_document::did_open::notification(&uri, language_id, version, text);
         let status = None::<Value>;
         crate::assert_exchange!(service, notification, Ok(status));
 
@@ -220,7 +221,8 @@ mod text_document {
 
         // send "textDocument/didOpen" notification for `uri`
         crate::assert_status!(service, Ok(()));
-        let notification = &crate::testing::lsp::text_document::did_open::notification(&uri, language_id, version, text);
+        let notification =
+            &crate::testing::lsp::text_document::did_open::notification(&uri, language_id, version, text);
         let status = None::<Value>;
         crate::assert_exchange!(service, notification, Ok(status));
 
@@ -247,4 +249,7 @@ mod text_document {
 
         Ok(())
     }
+
+    #[cfg(feature = "goldenfiles")]
+    mod corpus {}
 }
