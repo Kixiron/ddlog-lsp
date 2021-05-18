@@ -339,9 +339,12 @@ impl<'tree, C: Context<'tree>> NodeWalker<'tree, C> {
         let expected = language.node_kind_for_id(that_kind_id).unwrap();
         log::info!("expected: {}", expected);
 
-        let success = if let NodeMove::Step = m { self.goto_next() } else { true };
+        let node_move = match m {
+            NodeMove::Init => true,
+            NodeMove::Step => self.goto_next(),
+        };
 
-        if success {
+        if node_move {
             let next = self.node();
             let next_kind_id = next.kind_id();
             let found = next.kind();
