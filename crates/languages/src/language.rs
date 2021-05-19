@@ -6,7 +6,7 @@ use std::{convert::TryFrom, path::Path};
 #[cfg(not(target_arch = "wasm32"))]
 pub fn dat() -> tree_sitter::Language {
     #[allow(unsafe_code)]
-    let inner = unsafe { crate::tree_sitter_ddlog_dat() };
+    let inner = unsafe { crate::tree_sitter_dat() };
     inner.into()
 }
 
@@ -15,7 +15,7 @@ pub fn dat() -> tree_sitter::Language {
 pub fn dat() -> tree_sitter::Language {
     use wasm_bindgen::JsCast;
     use wasm_bindgen_futures::JsFuture;
-    let bytes: &[u8] = include_bytes!("../../../vendor/tree-sitter-ddlog/ddlog/dat/tree-sitter-ddlog_dat.wasm");
+    let bytes: &[u8] = include_bytes!("../../../vendor/tree-sitter-ddlog/ddlog/dat/tree-sitter-dat.wasm");
     let promise = web_tree_sitter_sys::Language::load_bytes(&bytes.into());
     let future = JsFuture::from(promise);
     let result = futures::executor::block_on(future).unwrap();
@@ -27,7 +27,7 @@ pub fn dat() -> tree_sitter::Language {
 #[cfg(not(target_arch = "wasm32"))]
 pub fn dl() -> tree_sitter::Language {
     #[allow(unsafe_code)]
-    let inner = unsafe { crate::tree_sitter_ddlog_dl() };
+    let inner = unsafe { crate::tree_sitter_dl() };
     inner.into()
 }
 
@@ -36,7 +36,7 @@ pub fn dl() -> tree_sitter::Language {
 pub fn dl() -> tree_sitter::Language {
     use wasm_bindgen::JsCast;
     use wasm_bindgen_futures::JsFuture;
-    let bytes: &[u8] = include_bytes!("../../../vendor/tree-sitter-ddlog/ddlog/dl/tree-sitter-ddlog_dl.wasm");
+    let bytes: &[u8] = include_bytes!("../../../vendor/tree-sitter-ddlog/ddlog/dl/tree-sitter-dl.wasm");
     let promise = web_tree_sitter_sys::Language::load_bytes(&bytes.into());
     let future = JsFuture::from(promise);
     let result = futures::executor::block_on(future).unwrap();
