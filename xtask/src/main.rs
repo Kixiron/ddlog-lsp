@@ -105,7 +105,6 @@ USAGE:
 
 FLAGS:
     -h, --help          Prints help information
-    --rebuild-parsers   Rebuild tree-sitter parsers
     --runtime=<arg>     Choice of runtime: agnostic, smol, tokio (default)
     -- '...'            Extra arguments to pass to the cargo command
 "#
@@ -114,10 +113,6 @@ FLAGS:
             if args.contains(["-h", "--help"]) {
                 println!("{}\n", help);
                 return Ok(());
-            }
-
-            if args.contains("--rebuild-parsers") {
-                crate::util::tree_sitter::rebuild_parsers()?;
             }
 
             let toolchain = crate::util::configure_runtime("build", args, &mut cargo_args)?;
@@ -288,7 +283,6 @@ USAGE:
 
 FLAGS:
     -h, --help          Prints help information
-    --rebuild-parsers   Rebuild tree-sitter parsers
     --runtime=<arg>     Choice of runtime: agnostic, smol, tokio (default)
     -- '...'            Extra arguments to pass to the cargo command
 "#
@@ -297,10 +291,6 @@ FLAGS:
             if args.contains(["-h", "--help"]) {
                 println!("{}\n", help);
                 return Ok(());
-            }
-
-            if args.contains("--rebuild-parsers") {
-                crate::util::tree_sitter::rebuild_parsers()?;
             }
 
             let toolchain = crate::util::configure_runtime("install", args, &mut cargo_args)?;
@@ -333,7 +323,6 @@ USAGE:
 
 FLAGS:
     -h, --help          Prints help information
-    --rebuild-parsers   Rebuild tree-sitter parsers
     --runtime=<arg>     Choice of runtime: agnostic, smol, tokio (default)
     -- '...'            Extra arguments to pass to the cargo command
 "#
@@ -342,10 +331,6 @@ FLAGS:
             if args.contains(["-h", "--help"]) {
                 println!("{}\n", help);
                 return Ok(());
-            }
-
-            if args.contains("--rebuild-parsers") {
-                crate::util::tree_sitter::rebuild_parsers()?;
             }
 
             crate::util::configure_runtime("tarpaulin", args, &mut cargo_args)?;
@@ -391,7 +376,6 @@ USAGE:
 
 FLAGS:
     -h, --help          Prints help information
-    --rebuild-parsers   Rebuild tree-sitter parsers
     --runtime=<arg>     Choice of runtime: agnostic, smol, tokio (default)
     -- '...'            Extra arguments to pass to the cargo command
 "#
@@ -400,10 +384,6 @@ FLAGS:
             if args.contains(["-h", "--help"]) {
                 println!("{}\n", help);
                 return Ok(());
-            }
-
-            if args.contains("--rebuild-parsers") {
-                crate::util::tree_sitter::rebuild_parsers()?;
             }
 
             let toolchain = crate::util::configure_runtime("test", args, &mut cargo_args)?;
@@ -588,82 +568,5 @@ mod util {
         }
 
         Ok(toolchain)
-    }
-
-    pub mod tree_sitter {
-        use crate::metadata;
-        use std::{
-            path::PathBuf,
-            process::{Command, Stdio},
-        };
-
-        // Rebuild tree-sitter parsers if necessary.
-        pub fn rebuild_parsers() -> crate::Fallible<()> {
-            // Configure the project root path.
-            let root_path = metadata::project_root();
-            let root_path = root_path.to_str().unwrap();
-
-            // Configure the tree-sitter directory path.
-            let tree_sitter_path = [root_path, "vendor", "tree-sitter-wasm"].iter().collect::<PathBuf>();
-            let tree_sitter_path = tree_sitter_path.to_str().unwrap();
-
-            // Configure the tree-sitter cli binary path.
-            let tree_sitter_cli_path = [tree_sitter_path, "node_modules", ".bin", "tree-sitter"]
-                .iter()
-                .collect::<PathBuf>();
-            let tree_sitter_cli_path = tree_sitter_cli_path.to_str().unwrap();
-
-            // Check if the tree-sitter cli binary is available.
-            let mut cmd;
-            if cfg!(target_os = "windows") {
-                cmd = Command::new("cmd");
-                cmd.args(&["/C", format!("{} --help", tree_sitter_cli_path).as_ref()]);
-            } else {
-                cmd = Command::new("sh");
-                cmd.args(&["-c", format!("{} --help", tree_sitter_cli_path).as_ref()]);
-            };
-            cmd.stdout(Stdio::null());
-            cmd.stderr(Stdio::null());
-
-            // Run `npm ci` first if `tree-sitter` binary is not available.
-            if !cmd.status()?.success() {
-                let mut cmd;
-                if cfg!(target_os = "windows") {
-                    cmd = Command::new("cmd");
-                    cmd.args(&["/C", "npm ci"]);
-                } else {
-                    cmd = Command::new("sh");
-                    cmd.args(&["-c", "npm ci"]);
-                }
-                cmd.current_dir(tree_sitter_path);
-                cmd.stdout(Stdio::null());
-                cmd.stderr(Stdio::null());
-                cmd.status()?;
-            }
-
-            // Iterate through the different grammar types.
-            for grammar in &["wast", "wat"] {
-                // Configure the grammar directory path.
-                let grammar_path = [tree_sitter_path, grammar].iter().collect::<PathBuf>();
-                let grammar_path = dunce::canonicalize(grammar_path)?;
-                let grammar_path = grammar_path.to_str().unwrap();
-
-                let commands = format!("cd {} && {} generate", grammar_path, tree_sitter_cli_path);
-                let mut cmd;
-                if cfg!(target_os = "windows") {
-                    cmd = Command::new("cmd");
-                    cmd.args(&["/C", commands.as_ref()]);
-                } else {
-                    cmd = Command::new("sh");
-                    cmd.args(&["-c", commands.as_ref()]);
-                }
-                let status = cmd.status()?;
-                if !status.success() {
-                    panic!("failed to regenerate parser: {}", grammar);
-                }
-            }
-
-            Ok(())
-        }
     }
 }
