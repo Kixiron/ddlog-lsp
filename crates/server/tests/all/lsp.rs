@@ -253,6 +253,7 @@ mod text_document {
     mod did_open {
         use ddlog_lsp_macros::corpus_tests;
 
+        #[allow(dead_code)]
         fn handler(_corpus: &str, path: &str) {
             use ddlog_lsp_server::core::Language;
             use futures::stream::StreamExt;
