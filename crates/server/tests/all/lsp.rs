@@ -250,7 +250,6 @@ mod text_document {
         Ok(())
     }
 
-    #[cfg(feature = "goldenfiles")]
     mod did_open {
         use ddlog_lsp_macros::corpus_tests;
 
