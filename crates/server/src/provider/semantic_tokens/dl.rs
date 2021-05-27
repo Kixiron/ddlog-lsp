@@ -23,11 +23,6 @@ use lsp_text::RopeExt;
 use ropey::Rope;
 use std::{result::Result as StdResult, sync::Arc};
 
-// Move to the next appropriate node in the syntax tree.
-struct Handler<'text, 'tree> {
-    builder: SemanticTokensBuilder<'text, 'tree>,
-    walker: BasicNodeWalker<'tree>,
-}
 
 pub(crate) async fn full(
     session: Arc<Session>,
@@ -115,6 +110,12 @@ pub(crate) async fn range(
     } else {
         Err(anyhow::anyhow!("Could not obtain tree node for given range"))
     }
+}
+
+// Move to the next appropriate node in the syntax tree.
+struct Handler<'text, 'tree> {
+    builder: SemanticTokensBuilder<'text, 'tree>,
+    walker: BasicNodeWalker<'tree>,
 }
 
 impl<'text, 'tree> Handler<'text, 'tree> {
