@@ -2,14 +2,18 @@
 
 use super::token_builder::SemanticTokensBuilder;
 use crate::{
-    core::{language::NodeMove, node::BasicNodeWalker, Language, Session},
+    core::{
+        language::{
+            dl::{kind, utils, visit::exp, Visitor},
+            NodeMove,
+        },
+        node::{context::basic::Context as BasicContext, BasicNodeWalker, SyntaxErrors},
+        Language,
+        Session,
+    },
     provider::semantic_tokens::modifiers,
 };
-use anyhow::{Context, Result};
-use ddlog_lsp_syntax::{
-    language::dl::{kind, utils, visit::exp, Visitor},
-    node::{context::basic::Context as BasicContext, SyntaxErrors},
-};
+use anyhow::Context;
 use lsp::{
     SemanticTokenModifier,
     SemanticTokenType,
