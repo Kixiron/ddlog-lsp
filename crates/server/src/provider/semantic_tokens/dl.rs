@@ -25,8 +25,7 @@ use lsp::{
 };
 use lsp_text::RopeExt;
 use ropey::Rope;
-use std::{result::Result as StdResult, sync::Arc};
-
+use std::sync::Arc;
 
 pub(crate) async fn full(
     session: Arc<Session>,
@@ -67,7 +66,7 @@ pub(crate) async fn range(
     session: Arc<Session>,
     params: SemanticTokensRangeParams,
     content: &Rope,
-) -> Result<Option<SemanticTokensRangeResult>> {
+) -> anyhow::Result<Option<SemanticTokensRangeResult>> {
     let legend = session.semantic_tokens_legend().await;
     let legend = legend.as_ref();
 
@@ -127,7 +126,7 @@ impl<'text, 'tree> Handler<'text, 'tree> {
         content: &'text Rope,
         legend: Option<&'tree SemanticTokensLegend>,
         node: tree_sitter::Node<'tree>,
-    ) -> Result<Self> {
+    ) -> anyhow::Result<Self> {
         let language = Language::DDlogDl;
         let builder = SemanticTokensBuilder::new(content, legend)?;
         let walker = BasicNodeWalker::new(language, node);
@@ -135,7 +134,7 @@ impl<'text, 'tree> Handler<'text, 'tree> {
         Ok(Self { builder, walker })
     }
 
-    fn any_ident(&mut self, m: NodeMove) -> StdResult<tree_sitter::Node<'tree>, SyntaxErrors> {
+    fn any_ident(&mut self, m: NodeMove) -> Result<tree_sitter::Node<'tree>, SyntaxErrors> {
         utils::choice((
             |handler: &mut Handler<'text, 'tree>, m: NodeMove| {
                 handler
