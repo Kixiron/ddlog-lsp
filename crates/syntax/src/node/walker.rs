@@ -52,20 +52,16 @@ pub mod context {
             }
 
             #[inline]
-            fn push(&mut self, _: Self::Level) {
-            }
+            fn push(&mut self, _: Self::Level) {}
 
             #[inline]
-            fn push_ancestor(&mut self, _: Node<'tree>, _: Vec<Node<'tree>>) {
-            }
+            fn push_ancestor(&mut self, _: Node<'tree>, _: Vec<Node<'tree>>) {}
 
             #[inline]
-            fn push_prefix(&mut self, _: Node<'tree>) {
-            }
+            fn push_prefix(&mut self, _: Node<'tree>) {}
 
             #[inline]
-            fn reverse(&mut self) {
-            }
+            fn reverse(&mut self) {}
         }
     }
 

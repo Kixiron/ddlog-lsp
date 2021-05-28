@@ -1,27 +1,20 @@
 //! Semantic tokens provider definitions for ".dl" files.
 
-use super::token_builder::SemanticTokensBuilder;
 use crate::{
     core::{
         language::{
-            dl::{kind, utils, visit::exp, Visitor},
+            dl::{kind, utils, visit, Visitor},
             NodeMove,
         },
-        node::{context::basic::Context as BasicContext, BasicNodeWalker, SyntaxErrors},
-        Language,
-        Session,
+        node::{context::trace::Context as TraceContext, SyntaxErrors, TraceNodeWalker},
+        Language, Session,
     },
-    provider::semantic_tokens::modifiers,
+    provider::semantic_tokens::token_builder::SemanticTokensBuilder,
 };
 use anyhow::Context;
 use lsp::{
-    SemanticTokenModifier,
-    SemanticTokenType,
-    SemanticTokensLegend,
-    SemanticTokensParams,
-    SemanticTokensRangeParams,
-    SemanticTokensRangeResult,
-    SemanticTokensResult,
+    SemanticTokenModifier, SemanticTokenType, SemanticTokensLegend, SemanticTokensParams, SemanticTokensRangeParams,
+    SemanticTokensRangeResult, SemanticTokensResult,
 };
 use lsp_text::RopeExt;
 use ropey::Rope;
@@ -80,30 +73,43 @@ pub(crate) async fn range(
 
         tree.root_node().descendant_for_point_range(start, end)
     };
+    log::info!("semantic tokens initial node: {:#?}", node);
 
     if let Some(node) = node {
         let mut handler = Handler::new(content, legend, node)?;
+        let mut mov = NodeMove::Init;
 
         while !handler.walker.done {
-            match handler.walker.kind() {
-                kind::ATTRIBUTE => handler.visit_attribute(NodeMove::Init),
-                kind::ATTRIBUTES => handler.visit_attributes(NodeMove::Init),
-                kind::ANNOTATED_ITEM => handler.visit_annotated_item(NodeMove::Init),
-                kind::ITEM => handler.visit_item(NodeMove::Init),
-                kind::FUNCTION => handler.visit_function(NodeMove::Init),
-                kind::TYPEDEF => handler.visit_typedef(NodeMove::Init),
-                kind::TYPEDEF_EXTERN => handler.visit_typedef_extern(NodeMove::Init),
-                kind::TYPEDEF_NORMAL => handler.visit_typedef_normal(NodeMove::Init),
+            log::info!(
+                "semantic tokens node: {}, {:#?}",
+                handler.walker().kind(),
+                handler.walker().node(),
+            );
 
-                _ => {
-                    if !handler.walker.goto_next() {
-                        break;
-                    }
+            let result = match handler.walker.kind() {
+                kind::ROOT => handler.visit_ROOT(mov),
+                kind::ANNOTATED_ITEM => handler.visit_annotated_item(mov),
+                kind::ATTRIBUTES => handler.visit_attributes(mov),
+                kind::ATTRIBUTE => handler.visit_attribute(mov),
+                kind::ITEM => handler.visit_item(mov),
+                kind::FUNCTION => handler.visit_function(mov),
+                kind::TYPEDEF => handler.visit_typedef(mov),
+                kind::TYPEDEF_EXTERN => handler.visit_typedef_extern(mov),
+                kind::TYPEDEF_NORMAL => handler.visit_typedef_normal(mov),
+                kind::APPLY => handler.visit_apply(mov),
 
-                    Ok(())
-                },
+                _ => Ok(()),
+            };
+
+            if let Err(err) = result {
+                log::error!("encountered error during syntax highlighting: {:?}", err);
+
+                if !handler.walker.goto_next() {
+                    break;
+                }
             }
-            .unwrap_or_else(|err| log::error!("encountered error during syntax highlighting: {:?}", err));
+
+            mov = NodeMove::Step;
         }
 
         let tokens = handler.builder.build();
@@ -118,7 +124,7 @@ pub(crate) async fn range(
 // Move to the next appropriate node in the syntax tree.
 struct Handler<'text, 'tree> {
     builder: SemanticTokensBuilder<'text, 'tree>,
-    walker: BasicNodeWalker<'tree>,
+    walker: TraceNodeWalker<'tree>,
 }
 
 impl<'text, 'tree> Handler<'text, 'tree> {
@@ -129,12 +135,12 @@ impl<'text, 'tree> Handler<'text, 'tree> {
     ) -> anyhow::Result<Self> {
         let language = Language::DDlogDl;
         let builder = SemanticTokensBuilder::new(content, legend)?;
-        let walker = BasicNodeWalker::new(language, node);
+        let walker = TraceNodeWalker::new(language, node);
 
         Ok(Self { builder, walker })
     }
 
-    fn any_ident(&mut self, m: NodeMove) -> Result<tree_sitter::Node<'tree>, SyntaxErrors> {
+    fn any_ident(&mut self, mov: NodeMove) -> Result<tree_sitter::Node<'tree>, SyntaxErrors> {
         utils::choice((
             |handler: &mut Handler<'text, 'tree>, m: NodeMove| {
                 handler
@@ -157,12 +163,49 @@ impl<'text, 'tree> Handler<'text, 'tree> {
             |handler: &mut Handler<'text, 'tree>, m: NodeMove| {
                 handler.walker().rule(kind::IDENT_SCOPED, m).map_err(SyntaxErrors::from)
             },
-        ))(self, m)
+            |handler: &mut Handler<'text, 'tree>, m: NodeMove| {
+                handler.walker().rule(kind::NAME, m).map_err(SyntaxErrors::from)
+            },
+            |handler: &mut Handler<'text, 'tree>, m: NodeMove| {
+                handler.walker().rule(kind::NAME_ARG, m).map_err(SyntaxErrors::from)
+            },
+            |handler: &mut Handler<'text, 'tree>, m: NodeMove| {
+                handler.walker().rule(kind::NAME_FIELD, m).map_err(SyntaxErrors::from)
+            },
+        ))(self, mov)
+    }
+
+    fn visit_any_ident(&mut self, mov: NodeMove) -> Result<(), SyntaxErrors> {
+        let node = self.any_ident(mov)?;
+        self.builder
+            .push(node, &SemanticTokenType::VARIABLE, None)
+            .unwrap_or_else(|err| log::error!("error creating semantic token: {:?}", err));
+
+        Ok(())
     }
 }
 
-impl<'text, 'tree> Visitor<'tree, BasicContext<'tree>> for Handler<'text, 'tree> {
-    fn walker(&mut self) -> &mut BasicNodeWalker<'tree> {
+macro_rules! default_ident {
+    ($($ident:ident => $kind:ident),* $(,)?) => {
+        $(
+            fn $ident(&mut self, mov: NodeMove) -> Result<(), SyntaxErrors> {
+                let node = self.walker().rule(
+                    ::ddlog_lsp_syntax::language::dl::kind::IDENT_LOWER,
+                    mov,
+                )?;
+
+                self.builder
+                    .push(node, &SemanticTokenType::VARIABLE, None)
+                    .unwrap_or_else(|err| log::error!("error creating semantic token: {:?}", err));
+
+                Ok(())
+            }
+        )*
+    };
+}
+
+impl<'text, 'tree> Visitor<'tree, TraceContext<'tree>> for Handler<'text, 'tree> {
+    fn walker(&mut self) -> &mut TraceNodeWalker<'tree> {
         &mut self.walker
     }
 
@@ -174,20 +217,11 @@ impl<'text, 'tree> Visitor<'tree, BasicContext<'tree>> for Handler<'text, 'tree>
         self.walker().reset(node)
     }
 
-    fn visit_attribute(&mut self, m: NodeMove) -> Result<(), SyntaxErrors> {
-        let name = self.walker().rule(kind::NAME, m)?;
-        self.builder
-            .push(
-                name,
-                &SemanticTokenType::VARIABLE,
-                Some(vec![&SemanticTokenModifier::MODIFICATION, &modifiers::ATTRIBUTE]),
-            )
-            .unwrap_or_else(|err| log::error!("error creating semantic token: {:?}", err));
-        utils::optional(utils::seq((operator::EQUALS_SIGN, exp)))(self, NodeMove::Step)
-    }
-
-    fn visit_name_func(&mut self, m: NodeMove) -> Result<(), SyntaxErrors> {
-        let node = self.any_ident(m)?;
+    fn visit_name_func(&mut self, mov: NodeMove) -> Result<(), SyntaxErrors> {
+        dbg!();
+        self.walker().rule(kind::NAME_FUNC, mov)?;
+        dbg!();
+        let node = self.any_ident(NodeMove::Step)?;
         self.builder
             .push(
                 node,
@@ -202,8 +236,11 @@ impl<'text, 'tree> Visitor<'tree, BasicContext<'tree>> for Handler<'text, 'tree>
         Ok(())
     }
 
-    fn visit_name_type(&mut self, m: NodeMove) -> Result<(), SyntaxErrors> {
-        let node = self.any_ident(m)?;
+    fn visit_name_type(&mut self, mov: NodeMove) -> Result<(), SyntaxErrors> {
+        dbg!();
+        self.walker().rule(kind::NAME_TYPE, mov)?;
+        dbg!();
+        let node = self.any_ident(NodeMove::Step)?;
         self.builder
             .push(
                 node,
@@ -216,6 +253,110 @@ impl<'text, 'tree> Visitor<'tree, BasicContext<'tree>> for Handler<'text, 'tree>
             .unwrap_or_else(|err| log::error!("error creating semantic token: {:?}", err));
 
         Ok(())
+    }
+
+    fn visit_attributes(&mut self, mov: NodeMove) -> Result<(), SyntaxErrors> {
+        dbg!();
+        self.walker().rule(kind::ATTRIBUTES, mov)?;
+        dbg!();
+        utils::repeat1(utils::seq((
+            visit::token::NUMBER_SIGN_LEFT_SQUARE_BRACKET,
+            Self::visit_attribute,
+            utils::repeat(utils::seq((visit::token::COMMA, Self::visit_attribute))),
+            visit::token::RIGHT_SQUARE_BRACKET,
+        )))(self, NodeMove::Step)
+    }
+
+    fn visit_attribute(&mut self, mov: NodeMove) -> Result<(), SyntaxErrors> {
+        dbg!();
+        self.walker().rule(kind::ATTRIBUTE, mov)?;
+        dbg!();
+        utils::seq((
+            Self::visit_any_ident,
+            utils::optional(utils::seq((visit::token::EQUALS_SIGN, Self::visit_exp))),
+        ))(self, NodeMove::Step)
+    }
+
+    fn visit_typedef_extern(&mut self, mov: NodeMove) -> Result<(), SyntaxErrors> {
+        dbg!();
+        self.walker().rule(kind::TYPEDEF_EXTERN, mov)?;
+        dbg!();
+        utils::seq((
+            keyword::EXTERN,
+            keyword::TYPE,
+            Self::visit_name_type,
+            utils::optional(utils::seq((
+                operator::LESS_THAN_SIGN,
+                Self::visit_name_var_type,
+                utils::repeat(utils::seq((visit::token::COMMA, Self::visit_name_var_type))),
+                operator::GREATER_THAN_SIGN,
+            ))),
+        ))(self, NodeMove::Step)
+    }
+
+    fn visit_function_extern(&mut self, mov: NodeMove) -> Result<(), SyntaxErrors> {
+        dbg!();
+        self.walker().rule(kind::FUNCTION_EXTERN, mov)?;
+        dbg!();
+        utils::seq((
+            keyword::EXTERN,
+            keyword::FUNCTION,
+            Self::visit_name_func,
+            visit::token::LEFT_PARENTHESIS,
+            utils::optional(utils::seq((
+                Self::visit_arg,
+                utils::repeat(utils::seq((visit::token::COMMA, Self::visit_arg))),
+            ))),
+            visit::token::RIGHT_PARENTHESIS,
+            utils::optional(utils::seq((visit::token::COLON, Self::visit_type_atom))),
+        ))(self, NodeMove::Step)
+    }
+
+    default_ident! {
+        visit_ident_lower_scoped => IDENT_LOWER_SCOPED,
+        visit_ident_upper_scoped => IDENT_UPPER_SCOPED,
+        visit_ident_scoped       => IDENT_SCOPED,
+        visit_ident_lower        => IDENT_LOWER,
+        visit_ident_upper        => IDENT_UPPER,
+        visit_name               => NAME,
+        visit_name_arg           => NAME_ARG,
+        visit_name_field         => NAME_FIELD,
+    }
+}
+
+mod keyword {
+    use super::{Handler, NodeMove};
+    use ddlog_lsp_syntax::{language::dl::Visitor, node::SyntaxErrors};
+    use lsp::SemanticTokenType;
+
+    macro_rules! keyword {
+        ($($name:tt),* $(,)?) => {
+            $(
+                #[inline]
+                #[allow(non_snake_case)]
+                pub(super) fn $name<'text, 'tree>(
+                    handler: &mut Handler<'text, 'tree>,
+                    mov: NodeMove,
+                ) -> Result<(), SyntaxErrors> {
+                    let node = handler.walker().token(
+                        ::ddlog_lsp_syntax::language::dl::token::$name,
+                        mov,
+                    )?;
+
+                    handler.builder
+                        .push(node, &SemanticTokenType::KEYWORD, None)
+                        .unwrap_or_else(|err| log::error!("error creating semantic token: {:?}", err));
+
+                    Ok(())
+                }
+            )*
+        };
+    }
+
+    keyword! {
+        EXTERN,
+        TYPE,
+        FUNCTION,
     }
 }
 
@@ -231,9 +372,9 @@ mod operator {
                 #[allow(non_snake_case)]
                 pub(super) fn $name<'text, 'tree>(
                     handler: &mut Handler<'text, 'tree>,
-                    m: NodeMove,
+                    mov: NodeMove,
                 ) -> Result<(), SyntaxErrors> {
-                    handler.walker().token(ddlog_lsp_syntax::language::dl::token::$name, m)?;
+                    handler.walker().token(::ddlog_lsp_syntax::language::dl::token::$name, mov)?;
 
                     let node = handler.walker().node();
                     handler
@@ -249,5 +390,7 @@ mod operator {
 
     operator! {
         EQUALS_SIGN,
+        LESS_THAN_SIGN,
+        GREATER_THAN_SIGN,
     }
 }

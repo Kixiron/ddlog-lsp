@@ -1,13 +1,7 @@
 use anyhow::{Context, Result};
 use lsp::{
-    SemanticToken,
-    SemanticTokenModifier,
-    SemanticTokenType,
-    SemanticTokens,
-    SemanticTokensDelta,
-    SemanticTokensEdit,
-    SemanticTokensFullDeltaResult,
-    SemanticTokensLegend,
+    SemanticToken, SemanticTokenModifier, SemanticTokenType, SemanticTokens, SemanticTokensDelta, SemanticTokensEdit,
+    SemanticTokensFullDeltaResult, SemanticTokensLegend,
 };
 use lsp_text::RopeExt;
 use ropey::Rope;
@@ -156,7 +150,7 @@ impl<'text, 'tree> SemanticTokensBuilder<'text, 'tree> {
                 let edit = {
                     let start = u32::try_from(start_idx)?;
                     let delete_count = u32::try_from(prev_data.len() - end_idx - start_idx)?;
-                    let data = Some(self.data[start_idx .. self.data.len() - end_idx].to_vec());
+                    let data = Some(self.data[start_idx..self.data.len() - end_idx].to_vec());
 
                     SemanticTokensEdit {
                         start,
@@ -175,7 +169,7 @@ impl<'text, 'tree> SemanticTokensBuilder<'text, 'tree> {
                 let edit = {
                     let start = u32::try_from(start_idx)?;
                     let delete_count = 0;
-                    let data = Some(self.data[start_idx ..].to_vec());
+                    let data = Some(self.data[start_idx..].to_vec());
 
                     SemanticTokensEdit {
                         start,
