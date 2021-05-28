@@ -1344,6 +1344,7 @@ pub mod visit {
     use crate::node::Context;
 
     #[allow(non_snake_case)]
+    #[inline]
     pub fn ROOT<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -1353,6 +1354,7 @@ pub mod visit {
         utils::repeat(Vis::visit_annotated_item)(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn annotated_item<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -1362,6 +1364,7 @@ pub mod visit {
         utils::seq((utils::optional(Vis::visit_attributes), Vis::visit_item))(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn apply<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -1386,6 +1389,7 @@ pub mod visit {
         ))(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn arg<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -1400,6 +1404,7 @@ pub mod visit {
         ))(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn arg_opt_type<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -1417,6 +1422,7 @@ pub mod visit {
         ))(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn arg_trans<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -1426,6 +1432,7 @@ pub mod visit {
         utils::seq((Vis::visit_name_trans, token::COLON, Vis::visit_type_trans))(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn atom<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -1435,6 +1442,7 @@ pub mod visit {
         utils::choice((Vis::visit_atom_rec, Vis::visit_atom_pos, Vis::visit_atom_elem))(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn atom_elem<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -1449,6 +1457,7 @@ pub mod visit {
         ))(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn atom_pos<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -1470,6 +1479,7 @@ pub mod visit {
         ))(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn atom_rec<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -1495,6 +1505,7 @@ pub mod visit {
         ))(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn attribute<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -1507,6 +1518,7 @@ pub mod visit {
         ))(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn attributes<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -1521,6 +1533,7 @@ pub mod visit {
         )))(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn comment_block<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -1537,6 +1550,7 @@ pub mod visit {
         ))(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn comment_block_inner<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -1546,6 +1560,7 @@ pub mod visit {
         Ok(())
     }
 
+    #[inline]
     pub fn comment_line<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -1555,6 +1570,7 @@ pub mod visit {
         Ok(())
     }
 
+    #[inline]
     pub fn cons<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -1564,6 +1580,7 @@ pub mod visit {
         utils::choice((Vis::visit_cons_rec, Vis::visit_cons_pos))(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn cons_pos<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -1573,6 +1590,7 @@ pub mod visit {
         utils::seq((utils::optional(Vis::visit_attributes), Vis::visit_name_cons))(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn cons_rec<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -1592,6 +1610,7 @@ pub mod visit {
         ))(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn escape_sequence<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -1601,6 +1620,7 @@ pub mod visit {
         Ok(())
     }
 
+    #[inline]
     pub fn escape_sequence_interpolated<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -1610,6 +1630,7 @@ pub mod visit {
         Ok(())
     }
 
+    #[inline]
     pub fn exp<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -1670,6 +1691,7 @@ pub mod visit {
         ))(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn exp_add<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -1679,6 +1701,7 @@ pub mod visit {
         utils::seq((Vis::visit_exp, token::PLUS_SIGN, Vis::visit_exp))(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn exp_assign<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -1688,6 +1711,7 @@ pub mod visit {
         utils::seq((Vis::visit_exp, token::EQUALS_SIGN, Vis::visit_exp))(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn exp_binding<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -1697,6 +1721,7 @@ pub mod visit {
         utils::seq((Vis::visit_name_var_term, token::COMMERCIAL_AT, Vis::visit_exp))(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn exp_bit_and<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -1706,6 +1731,7 @@ pub mod visit {
         utils::seq((Vis::visit_exp, token::AMPERSAND, Vis::visit_exp))(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn exp_bit_neg<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -1715,6 +1741,7 @@ pub mod visit {
         utils::seq((token::TILDE, Vis::visit_exp))(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn exp_bit_or<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -1724,6 +1751,7 @@ pub mod visit {
         utils::seq((Vis::visit_exp, token::VERTICAL_LINE, Vis::visit_exp))(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn exp_bit_slice<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -1733,6 +1761,7 @@ pub mod visit {
         utils::seq((Vis::visit_exp, token::LEFT_SQUARE_BRACKET, token::RIGHT_SQUARE_BRACKET))(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn exp_bit_xor<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -1742,6 +1771,7 @@ pub mod visit {
         utils::seq((Vis::visit_exp, token::CIRCUMFLEX_ACCENT, Vis::visit_exp))(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn exp_block<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -1755,6 +1785,7 @@ pub mod visit {
         ))(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn exp_break<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -1764,6 +1795,7 @@ pub mod visit {
         token::BREAK(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn exp_cast<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -1773,6 +1805,7 @@ pub mod visit {
         utils::seq((Vis::visit_exp, token::AS, Vis::visit_type_atom))(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn exp_cat<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -1782,6 +1815,7 @@ pub mod visit {
         utils::seq((Vis::visit_exp, token::PLUS_SIGN_PLUS_SIGN, Vis::visit_exp))(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn exp_cond<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -1796,6 +1830,7 @@ pub mod visit {
         ))(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn exp_cons_pos<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -1819,6 +1854,7 @@ pub mod visit {
         ))(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn exp_cons_rec<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -1845,6 +1881,7 @@ pub mod visit {
         ))(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn exp_continue<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -1863,6 +1900,7 @@ pub mod visit {
         utils::seq((utils::optional(token::VAR), Vis::visit_name_var_term))(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn exp_div<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -1872,6 +1910,7 @@ pub mod visit {
         utils::seq((Vis::visit_exp, token::SOLIDUS, Vis::visit_exp))(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn exp_eq<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -1881,6 +1920,7 @@ pub mod visit {
         utils::seq((Vis::visit_exp, token::EQUALS_SIGN_EQUALS_SIGN, Vis::visit_exp))(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn exp_field<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -1890,6 +1930,7 @@ pub mod visit {
         utils::seq((Vis::visit_exp, token::FULL_STOP, Vis::visit_ident))(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn exp_for<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -1907,6 +1948,7 @@ pub mod visit {
         ))(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn exp_fun_call<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -1925,6 +1967,7 @@ pub mod visit {
         ))(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn exp_fun_call_dot<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -1945,6 +1988,7 @@ pub mod visit {
         ))(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn exp_gt<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -1954,6 +1998,7 @@ pub mod visit {
         utils::seq((Vis::visit_exp, token::GREATER_THAN_SIGN, Vis::visit_exp))(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn exp_gteq<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -1963,6 +2008,7 @@ pub mod visit {
         utils::seq((Vis::visit_exp, token::GREATER_THAN_SIGN_EQUALS_SIGN, Vis::visit_exp))(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn exp_lambda<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -1994,6 +2040,7 @@ pub mod visit {
         ))(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn exp_lit<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -2009,6 +2056,7 @@ pub mod visit {
         ))(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn exp_log_and<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -2018,6 +2066,7 @@ pub mod visit {
         utils::seq((Vis::visit_exp, token::AND, Vis::visit_exp))(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn exp_log_imp<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -2027,6 +2076,7 @@ pub mod visit {
         utils::seq((Vis::visit_exp, token::EQUALS_SIGN_GREATER_THAN_SIGN, Vis::visit_exp))(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn exp_log_neg<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -2036,6 +2086,7 @@ pub mod visit {
         utils::seq((token::NOT, Vis::visit_exp))(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn exp_log_or<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -2045,6 +2096,7 @@ pub mod visit {
         utils::seq((Vis::visit_exp, token::OR, Vis::visit_exp))(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn exp_lt<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -2054,6 +2106,7 @@ pub mod visit {
         utils::seq((Vis::visit_exp, token::LESS_THAN_SIGN, Vis::visit_exp))(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn exp_lteq<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -2063,6 +2116,7 @@ pub mod visit {
         utils::seq((Vis::visit_exp, token::LESS_THAN_SIGN_EQUALS_SIGN, Vis::visit_exp))(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn exp_match<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -2087,6 +2141,7 @@ pub mod visit {
         ))(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn exp_mul<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -2096,6 +2151,7 @@ pub mod visit {
         utils::seq((Vis::visit_exp, token::ASTERISK, Vis::visit_exp))(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn exp_neg<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -2105,6 +2161,7 @@ pub mod visit {
         utils::seq((token::HYPHEN_MINUS, Vis::visit_exp))(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn exp_neq<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -2114,6 +2171,7 @@ pub mod visit {
         utils::seq((Vis::visit_exp, token::EXCLAMATION_MARK_EQUALS_SIGN, Vis::visit_exp))(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn exp_proj<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -2123,6 +2181,7 @@ pub mod visit {
         utils::seq((Vis::visit_exp, token::FULL_STOP, Vis::visit_exp_proj_digits))(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn exp_proj_digits<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -2132,6 +2191,7 @@ pub mod visit {
         Ok(())
     }
 
+    #[inline]
     pub fn exp_ref<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -2141,6 +2201,7 @@ pub mod visit {
         utils::seq((token::AMPERSAND, Vis::visit_exp))(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn exp_rem<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -2150,6 +2211,7 @@ pub mod visit {
         utils::seq((Vis::visit_exp, token::PERCENT_SIGN, Vis::visit_exp))(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn exp_return<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -2159,6 +2221,7 @@ pub mod visit {
         utils::seq((token::RETURN, utils::optional(Vis::visit_exp)))(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn exp_seq<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -2168,6 +2231,7 @@ pub mod visit {
         utils::seq((Vis::visit_exp, token::SEMICOLON, utils::optional(Vis::visit_exp)))(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn exp_shl<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -2177,6 +2241,7 @@ pub mod visit {
         utils::seq((Vis::visit_exp, token::LESS_THAN_SIGN_LESS_THAN_SIGN, Vis::visit_exp))(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn exp_shr<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -2190,6 +2255,7 @@ pub mod visit {
         ))(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn exp_slice<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -2206,6 +2272,7 @@ pub mod visit {
         ))(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn exp_sub<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -2215,6 +2282,7 @@ pub mod visit {
         utils::seq((Vis::visit_exp, token::HYPHEN_MINUS, Vis::visit_exp))(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn exp_try<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -2224,6 +2292,7 @@ pub mod visit {
         utils::seq((Vis::visit_exp, token::QUESTION_MARK))(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn exp_tuple<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -2241,6 +2310,7 @@ pub mod visit {
         ))(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn exp_type<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -2250,6 +2320,7 @@ pub mod visit {
         utils::seq((exp, token::COLON, Vis::visit_type_atom))(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn exp_wild<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -2259,6 +2330,7 @@ pub mod visit {
         token::LOW_LINE(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn field<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -2273,6 +2345,7 @@ pub mod visit {
         ))(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn function<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -2282,6 +2355,7 @@ pub mod visit {
         utils::choice((Vis::visit_function_normal, Vis::visit_function_extern))(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn function_extern<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -2302,6 +2376,7 @@ pub mod visit {
         ))(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn function_normal<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -2327,6 +2402,7 @@ pub mod visit {
         ))(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn ident<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -2336,6 +2412,7 @@ pub mod visit {
         utils::choice((Vis::visit_ident_lower, Vis::visit_ident_upper))(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn ident_lower<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -2345,6 +2422,7 @@ pub mod visit {
         Ok(())
     }
 
+    #[inline]
     pub fn ident_lower_scoped<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -2354,6 +2432,7 @@ pub mod visit {
         Ok(())
     }
 
+    #[inline]
     pub fn ident_scoped<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -2363,6 +2442,7 @@ pub mod visit {
         Ok(())
     }
 
+    #[inline]
     pub fn ident_upper<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -2372,6 +2452,7 @@ pub mod visit {
         Ok(())
     }
 
+    #[inline]
     pub fn ident_upper_scoped<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -2381,6 +2462,7 @@ pub mod visit {
         Ok(())
     }
 
+    #[inline]
     pub fn import<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -2394,6 +2476,7 @@ pub mod visit {
         ))(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn index<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -2415,6 +2498,7 @@ pub mod visit {
         ))(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn interpolation<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -2428,6 +2512,7 @@ pub mod visit {
         ))(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn item<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -2447,6 +2532,7 @@ pub mod visit {
         ))(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn key_primary<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -2463,6 +2549,7 @@ pub mod visit {
         ))(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn lit_bool<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -2472,6 +2559,7 @@ pub mod visit {
         utils::choice((token::FALSE, token::TRUE))(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn lit_map<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -2493,6 +2581,7 @@ pub mod visit {
         ))(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn lit_num<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -2518,6 +2607,7 @@ pub mod visit {
         ))(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn lit_num_bin<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -2527,6 +2617,7 @@ pub mod visit {
         Ok(())
     }
 
+    #[inline]
     pub fn lit_num_dec<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -2536,6 +2627,7 @@ pub mod visit {
         Ok(())
     }
 
+    #[inline]
     pub fn lit_num_float<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -2545,6 +2637,7 @@ pub mod visit {
         Ok(())
     }
 
+    #[inline]
     pub fn lit_num_hex<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -2554,6 +2647,7 @@ pub mod visit {
         Ok(())
     }
 
+    #[inline]
     pub fn lit_num_oct<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -2563,6 +2657,7 @@ pub mod visit {
         Ok(())
     }
 
+    #[inline]
     pub fn lit_string<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -2577,6 +2672,7 @@ pub mod visit {
         )))(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn lit_vec<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -2591,6 +2687,7 @@ pub mod visit {
         ))(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn misc_pat0<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -2600,6 +2697,7 @@ pub mod visit {
         Ok(())
     }
 
+    #[inline]
     pub fn module_alias<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -2609,6 +2707,7 @@ pub mod visit {
         visitor.visit_ident(NodeMove::Step)
     }
 
+    #[inline]
     pub fn module_path<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -2621,6 +2720,7 @@ pub mod visit {
         ))(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn name<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -2630,6 +2730,7 @@ pub mod visit {
         Ok(())
     }
 
+    #[inline]
     pub fn name_arg<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -2639,6 +2740,7 @@ pub mod visit {
         Ok(())
     }
 
+    #[inline]
     pub fn name_cons<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -2648,6 +2750,7 @@ pub mod visit {
         visitor.visit_ident_upper_scoped(NodeMove::Step)
     }
 
+    #[inline]
     pub fn name_field<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -2657,6 +2760,7 @@ pub mod visit {
         Ok(())
     }
 
+    #[inline]
     pub fn name_func<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -2666,6 +2770,7 @@ pub mod visit {
         ident_lower_scoped(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn name_index<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -2675,6 +2780,7 @@ pub mod visit {
         visitor.visit_ident_scoped(NodeMove::Step)
     }
 
+    #[inline]
     pub fn name_rel<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -2684,6 +2790,7 @@ pub mod visit {
         visitor.visit_ident_upper_scoped(NodeMove::Step)
     }
 
+    #[inline]
     pub fn name_trans<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -2693,6 +2800,7 @@ pub mod visit {
         visitor.visit_ident_scoped(NodeMove::Step)
     }
 
+    #[inline]
     pub fn name_type<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -2702,6 +2810,7 @@ pub mod visit {
         utils::choice((Vis::visit_ident_lower_scoped, Vis::visit_ident_upper_scoped))(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn name_var_term<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -2711,6 +2820,7 @@ pub mod visit {
         visitor.visit_ident_lower_scoped(NodeMove::Step)
     }
 
+    #[inline]
     pub fn name_var_type<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -2720,6 +2830,7 @@ pub mod visit {
         Ok(())
     }
 
+    #[inline]
     pub fn pat<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -2736,6 +2847,7 @@ pub mod visit {
         ))(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn pat_cons<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -2745,6 +2857,7 @@ pub mod visit {
         utils::choice((Vis::visit_pat_cons_rec, Vis::visit_pat_cons_pos))(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn pat_cons_pos<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -2765,6 +2878,7 @@ pub mod visit {
         ))(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn pat_cons_rec<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -2791,6 +2905,7 @@ pub mod visit {
         ))(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn pat_lit<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -2800,6 +2915,7 @@ pub mod visit {
         utils::choice((Vis::visit_lit_bool, Vis::visit_lit_num, Vis::visit_lit_string))(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn pat_term_decl_var<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -2809,6 +2925,7 @@ pub mod visit {
         utils::seq((utils::optional(token::VAR), Vis::visit_name_var_term))(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn pat_tuple<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -2825,6 +2942,7 @@ pub mod visit {
         ))(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn pat_type<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -2834,6 +2952,7 @@ pub mod visit {
         utils::seq((Vis::visit_pat, token::COLON, Vis::visit_type_atom))(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn pat_wild<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -2843,6 +2962,7 @@ pub mod visit {
         token::LOW_LINE(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn rel<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -2852,6 +2972,7 @@ pub mod visit {
         utils::choice((Vis::visit_rel_args, Vis::visit_rel_elem))(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn rel_args<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -2873,6 +2994,7 @@ pub mod visit {
         ))(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn rel_elem<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -2890,6 +3012,7 @@ pub mod visit {
         ))(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn rel_role<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -2899,6 +3022,7 @@ pub mod visit {
         utils::choice((token::INPUT, token::INTERNAL, token::OUTPUT))(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn rel_semantics<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -2908,6 +3032,7 @@ pub mod visit {
         utils::choice((token::RELATION, token::STREAM, token::MULTISET))(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn rhs<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -2925,6 +3050,7 @@ pub mod visit {
         ))(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn rhs_atom_neg<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -2934,6 +3060,7 @@ pub mod visit {
         utils::seq((token::NOT, Vis::visit_atom))(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn rhs_flat_map<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -2951,6 +3078,7 @@ pub mod visit {
         ))(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn rhs_grouping<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -2970,6 +3098,7 @@ pub mod visit {
         ))(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn rhs_inspect<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -2979,6 +3108,7 @@ pub mod visit {
         utils::seq((token::INSPECT, Vis::visit_exp))(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn rule<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -2997,6 +3127,7 @@ pub mod visit {
         ))(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn rule_end<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -3006,6 +3137,7 @@ pub mod visit {
         Ok(())
     }
 
+    #[inline]
     pub fn statement<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -3023,6 +3155,7 @@ pub mod visit {
         ))(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn statement_assign<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -3032,6 +3165,7 @@ pub mod visit {
         utils::seq((Vis::visit_exp, token::IN, Vis::visit_statement))(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn statement_block<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -3048,6 +3182,7 @@ pub mod visit {
         ))(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn statement_empty<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -3057,6 +3192,7 @@ pub mod visit {
         token::SKIP(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn statement_for<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -3073,6 +3209,7 @@ pub mod visit {
         ))(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn statement_if<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -3089,6 +3226,7 @@ pub mod visit {
         ))(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn statement_insert<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -3098,6 +3236,7 @@ pub mod visit {
         visitor.visit_atom(NodeMove::Step)
     }
 
+    #[inline]
     pub fn statement_match<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -3123,6 +3262,7 @@ pub mod visit {
     }
 
     // NOTE: might have to descend into subnodes
+    #[inline]
     pub fn string_quoted<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -3133,6 +3273,7 @@ pub mod visit {
     }
 
     // NOTE: might have to descend into subnodes
+    #[inline]
     pub fn string_quoted_escaped<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -3143,6 +3284,7 @@ pub mod visit {
     }
 
     // NOTE: might have to descend into subnodes
+    #[inline]
     pub fn string_raw<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -3153,6 +3295,7 @@ pub mod visit {
     }
 
     // NOTE: might have to descend into subnodes
+    #[inline]
     pub fn string_raw_interpolated<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -3162,6 +3305,7 @@ pub mod visit {
         Ok(())
     }
 
+    #[inline]
     pub fn transformer<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -3188,6 +3332,7 @@ pub mod visit {
         ))(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn r#type<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -3210,6 +3355,7 @@ pub mod visit {
         ))(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn type_atom<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -3231,6 +3377,7 @@ pub mod visit {
         ))(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn type_bigint<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -3240,6 +3387,7 @@ pub mod visit {
         token::BIGINT(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn type_bit<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -3254,6 +3402,7 @@ pub mod visit {
         ))(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn type_bool<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -3263,6 +3412,7 @@ pub mod visit {
         token::BOOL(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn type_double<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -3272,6 +3422,7 @@ pub mod visit {
         token::DOUBLE(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn type_float<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -3281,6 +3432,7 @@ pub mod visit {
         token::FLOAT(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn type_fun<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -3312,6 +3464,7 @@ pub mod visit {
         ))(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn type_signed<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -3326,6 +3479,7 @@ pub mod visit {
         ))(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn type_string<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -3335,6 +3489,7 @@ pub mod visit {
         token::STRING(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn type_trans<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -3345,6 +3500,7 @@ pub mod visit {
         utils::choice((Vis::visit_type_trans_fun, type_trans_rel))(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn type_trans_fun<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -3364,6 +3520,7 @@ pub mod visit {
         ))(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn type_trans_rel<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -3378,6 +3535,7 @@ pub mod visit {
         ))(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn type_tuple<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -3395,6 +3553,7 @@ pub mod visit {
         ))(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn type_union<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -3407,6 +3566,7 @@ pub mod visit {
         ))(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn type_user<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -3424,6 +3584,7 @@ pub mod visit {
         ))(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn type_var<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -3433,6 +3594,7 @@ pub mod visit {
         utils::seq((token::APOSTROPHE, Vis::visit_misc_pat0))(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn typedef<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -3442,6 +3604,7 @@ pub mod visit {
         utils::choice((Vis::visit_typedef_normal, Vis::visit_typedef_extern))(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn typedef_extern<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -3461,6 +3624,7 @@ pub mod visit {
         ))(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn typedef_normal<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
@@ -3481,6 +3645,7 @@ pub mod visit {
         ))(visitor, NodeMove::Step)
     }
 
+    #[inline]
     pub fn word<'tree, Ctx, Vis>(visitor: &mut Vis, m: NodeMove) -> Result<(), SyntaxErrors>
     where
         Ctx: Context<'tree> + 'tree,
