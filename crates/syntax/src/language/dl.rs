@@ -838,6 +838,10 @@ where
         visit::rhs_grouping(self, m)
     }
 
+    fn visit_rhs_inspect(&mut self, m: NodeMove) -> Result<(), SyntaxErrors> {
+        visit::rhs_inspect(self, m)
+    }
+
     fn visit_rule(&mut self, m: NodeMove) -> Result<(), SyntaxErrors> {
         visit::rule(self, m)
     }
@@ -944,6 +948,10 @@ where
 
     fn visit_type_trans_fun(&mut self, m: NodeMove) -> Result<(), SyntaxErrors> {
         visit::type_trans_fun(self, m)
+    }
+
+    fn visit_type_trans_rel(&mut self, m: NodeMove) -> Result<(), SyntaxErrors> {
+        visit::type_trans_rel(self, m)
     }
 
     fn visit_type_tuple(&mut self, m: NodeMove) -> Result<(), SyntaxErrors> {

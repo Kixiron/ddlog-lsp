@@ -359,12 +359,20 @@ where
         visit::commit(self, m)
     }
 
+    fn visit_cons(&mut self, m: NodeMove) -> Result<(), SyntaxErrors> {
+        visit::cons(self, m)
+    }
+
     fn visit_cons_arg(&mut self, m: NodeMove) -> Result<(), SyntaxErrors> {
         visit::cons_arg(self, m)
     }
 
     fn visit_cons_args(&mut self, m: NodeMove) -> Result<(), SyntaxErrors> {
         visit::cons_args(self, m)
+    }
+
+    fn visit_cons_pos(&mut self, m: NodeMove) -> Result<(), SyntaxErrors> {
+        visit::cons_pos(self, m)
     }
 
     fn visit_cons_rec(&mut self, m: NodeMove) -> Result<(), SyntaxErrors> {
@@ -601,6 +609,10 @@ where
 
     fn visit_exp_wild(&mut self, m: NodeMove) -> Result<(), SyntaxErrors> {
         visit::exp_wild(self, m)
+    }
+
+    fn visit_field(&mut self, m: NodeMove) -> Result<(), SyntaxErrors> {
+        visit::field(self, m)
     }
 
     fn visit_ident(&mut self, m: NodeMove) -> Result<(), SyntaxErrors> {
@@ -863,6 +875,10 @@ where
         visit::type_trans_fun(self, m)
     }
 
+    fn visit_type_trans_rel(&mut self, m: NodeMove) -> Result<(), SyntaxErrors> {
+        visit::type_trans_rel(self, m)
+    }
+
     fn visit_type_tuple(&mut self, m: NodeMove) -> Result<(), SyntaxErrors> {
         visit::type_tuple(self, m)
     }
@@ -877,6 +893,10 @@ where
 
     fn visit_type_var(&mut self, m: NodeMove) -> Result<(), SyntaxErrors> {
         visit::type_var(self, m)
+    }
+
+    fn visit_type_var_ident(&mut self, m: NodeMove) -> Result<(), SyntaxErrors> {
+        visit::type_var_ident(self, m)
     }
 
     fn visit_update(&mut self, m: NodeMove) -> Result<(), SyntaxErrors> {
