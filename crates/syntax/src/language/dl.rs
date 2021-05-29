@@ -1275,7 +1275,7 @@ pub mod utils {
                             errors.append(&mut errs);
                             return Err(errors);
                         }
-                    }
+                    },
                 }
             }
 

@@ -7,14 +7,20 @@ use crate::{
             NodeMove,
         },
         node::{context::trace::Context as TraceContext, SyntaxErrors, TraceNodeWalker},
-        Language, Session,
+        Language,
+        Session,
     },
     provider::semantic_tokens::token_builder::SemanticTokensBuilder,
 };
 use anyhow::Context;
 use lsp::{
-    SemanticTokenModifier, SemanticTokenType, SemanticTokensLegend, SemanticTokensParams, SemanticTokensRangeParams,
-    SemanticTokensRangeResult, SemanticTokensResult,
+    SemanticTokenModifier,
+    SemanticTokenType,
+    SemanticTokensLegend,
+    SemanticTokensParams,
+    SemanticTokensRangeParams,
+    SemanticTokensRangeResult,
+    SemanticTokensResult,
 };
 use lsp_text::RopeExt;
 use ropey::Rope;
@@ -205,6 +211,17 @@ macro_rules! default_ident {
 }
 
 impl<'text, 'tree> Visitor<'tree, TraceContext<'tree>> for Handler<'text, 'tree> {
+    default_ident! {
+        visit_ident_lower_scoped => IDENT_LOWER_SCOPED,
+        visit_ident_upper_scoped => IDENT_UPPER_SCOPED,
+        visit_ident_scoped       => IDENT_SCOPED,
+        visit_ident_lower        => IDENT_LOWER,
+        visit_ident_upper        => IDENT_UPPER,
+        visit_name               => NAME,
+        visit_name_arg           => NAME_ARG,
+        visit_name_field         => NAME_FIELD,
+    }
+
     fn walker(&mut self) -> &mut TraceNodeWalker<'tree> {
         &mut self.walker
     }
@@ -310,17 +327,6 @@ impl<'text, 'tree> Visitor<'tree, TraceContext<'tree>> for Handler<'text, 'tree>
             visit::token::RIGHT_PARENTHESIS,
             utils::optional(utils::seq((visit::token::COLON, Self::visit_type_atom))),
         ))(self, NodeMove::Step)
-    }
-
-    default_ident! {
-        visit_ident_lower_scoped => IDENT_LOWER_SCOPED,
-        visit_ident_upper_scoped => IDENT_UPPER_SCOPED,
-        visit_ident_scoped       => IDENT_SCOPED,
-        visit_ident_lower        => IDENT_LOWER,
-        visit_ident_upper        => IDENT_UPPER,
-        visit_name               => NAME,
-        visit_name_arg           => NAME_ARG,
-        visit_name_field         => NAME_FIELD,
     }
 }
 
