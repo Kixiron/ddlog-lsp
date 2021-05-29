@@ -492,7 +492,7 @@ where
             kind::WORD => self.visit_word(NodeMove::Init),
             kind => {
                 let language = ddlog_lsp_languages::language::dl();
-                let kind = language.node_kind_for_id(kind).unwrap_or(kind.to_string().into());
+                let kind = language.node_kind_for_id(kind).unwrap_or_else(|| kind.to_string().into());
                 unreachable!("kind should be unreachable: {}", kind);
             },
         }

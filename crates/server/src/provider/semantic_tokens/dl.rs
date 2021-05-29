@@ -367,6 +367,9 @@ mod keyword {
 }
 
 mod operator {
+    // FIXME
+    #![allow(unused)]
+
     use super::{Handler, NodeMove};
     use ddlog_lsp_syntax::{language::dl::Visitor, node::SyntaxErrors};
     use lsp::SemanticTokenType;
