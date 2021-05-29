@@ -468,7 +468,9 @@ where
             // kind::TYPE_VAR_IDENT => self.visit_type_var_ident(NodeMove::Init),
             kind => {
                 let language = ddlog_lsp_languages::language::dat();
-                let kind = language.node_kind_for_id(kind).unwrap_or_else(|| kind.to_string().into());
+                let kind = language
+                    .node_kind_for_id(kind)
+                    .unwrap_or_else(|| kind.to_string().into());
                 unreachable!("kind should be unreachable: {}", kind);
             },
         }
