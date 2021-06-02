@@ -166,7 +166,7 @@ impl<'tree, C: Context<'tree>> NodeWalker<'tree, C> {
     /// Move the cursor to the first child node.
     #[inline]
     pub fn goto_first_child(&mut self) -> bool {
-        log::info!("goto_first_child >>");
+        // log::info!("goto_first_child >>");
 
         let ancestor = self.cursor.node();
         let moved = self.cursor.goto_first_child();
@@ -175,14 +175,14 @@ impl<'tree, C: Context<'tree>> NodeWalker<'tree, C> {
             self.context.push_ancestor(ancestor, prefixed);
         }
 
-        log::info!("goto_first_child << {}", moved);
+        // log::info!("goto_first_child << {}", moved);
         moved
     }
 
     /// Move the cursor to the next sibling node.
     #[inline]
     pub fn goto_next_sibling(&mut self) -> bool {
-        log::info!("goto_next_sibling >>");
+        // log::info!("goto_next_sibling >>");
 
         let prefix = self.cursor.node();
         let moved = self.cursor.goto_next_sibling();
@@ -190,7 +190,7 @@ impl<'tree, C: Context<'tree>> NodeWalker<'tree, C> {
             self.context.push_prefix(prefix);
         }
 
-        log::info!("goto_next_sibling << {}", moved);
+        // log::info!("goto_next_sibling << {}", moved);
         moved
     }
 
@@ -235,7 +235,7 @@ impl<'tree, C: Context<'tree>> NodeWalker<'tree, C> {
     /// Move the cursor to the next ancestor sibling node.
     #[inline]
     pub fn goto_next_ancestor_sibling(&mut self) -> bool {
-        log::info!("goto_next_ancestor_sibling >>");
+        // log::info!("goto_next_ancestor_sibling >>");
 
         let mut moved;
         let mut finished = true;
@@ -256,21 +256,21 @@ impl<'tree, C: Context<'tree>> NodeWalker<'tree, C> {
 
         self.done = finished;
 
-        log::info!("goto_next_ancestor_sibling << {}", moved);
+        // log::info!("goto_next_ancestor_sibling << {}", moved);
         moved
     }
 
     /// Move the cursor to the parent node.
     #[inline]
     pub fn goto_parent(&mut self) -> bool {
-        log::info!("goto_parent >>");
+        // log::info!("goto_parent >>");
 
         let moved = self.cursor.goto_parent();
         if moved {
             self.context.pop();
         }
 
-        log::info!("goto_parent << {}", moved);
+        // log::info!("goto_parent << {}", moved);
         moved
     }
 
@@ -372,14 +372,14 @@ impl<'tree, C: Context<'tree>> NodeWalker<'tree, C> {
 
         let language: tree_sitter::Language = self.language.into();
         let this = prev.clone();
-        let this_id = this.id();
+        let _this_id = this.id();
         let this_kind_id = this.kind_id();
 
-        let this_kind = language.node_kind_for_id(this_kind_id).unwrap();
-        log::info!("stepping from: {}@{}", this_kind, this_id);
+        let _this_kind = language.node_kind_for_id(this_kind_id).unwrap();
+        // log::info!("stepping from: {}@{}", this_kind, this_id);
 
-        let expected = language.node_kind_for_id(that_kind_id).unwrap();
-        log::info!("expected: {}", expected);
+        let _expected = language.node_kind_for_id(that_kind_id).unwrap();
+        // log::info!("expected: {}", expected);
 
         let node_move = match m {
             NodeMove::Init => true,
@@ -389,8 +389,8 @@ impl<'tree, C: Context<'tree>> NodeWalker<'tree, C> {
         if node_move {
             let next = self.node();
             let next_kind_id = next.kind_id();
-            let found = next.kind();
-            log::info!("found: {}\n", found);
+            let _found = next.kind();
+            // log::info!("found: {}\n", found);
 
             if next.is_missing() {
                 self.reset(prev);
@@ -450,12 +450,12 @@ impl<'tree, C: Context<'tree>> NodeWalker<'tree, C> {
     /// Returns `true` if the current node is of the given kind
     #[inline]
     pub fn is(&self, kind: u16) -> bool {
-        let language: tree_sitter::Language = self.language.into();
-        log::info!(
-            "expected {}, got {}",
-            language.node_kind_for_id(kind).unwrap(),
-            self.kind(),
-        );
+        let _language: tree_sitter::Language = self.language.into();
+        // log::info!(
+        //     "expected {}, got {}",
+        //     language.node_kind_for_id(kind).unwrap(),
+        //     self.kind(),
+        // );
 
         self.kind() == kind
     }
