@@ -137,7 +137,7 @@ pub enum StepValue<'tree> {
 
 #[allow(missing_docs)]
 pub struct NodeWalker<'tree, C> {
-    language: Language,
+    pub language: Language,
     pub context: C,
     cursor: tree_sitter::TreeCursor<'tree>,
     pub done: bool,
