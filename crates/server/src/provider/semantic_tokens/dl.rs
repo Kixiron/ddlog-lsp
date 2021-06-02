@@ -83,39 +83,10 @@ pub(crate) async fn range(
 
     if let Some(node) = node {
         let mut handler = Handler::new(content, legend, node)?;
-        let mut mov = NodeMove::Init;
 
-        while !handler.walker.done {
-            log::info!(
-                "semantic tokens node: {}, {:#?}",
-                handler.walker().kind(),
-                handler.walker().node(),
-            );
-
-            let result = match handler.walker.kind() {
-                kind::ROOT => handler.visit_ROOT(mov),
-                kind::ANNOTATED_ITEM => handler.visit_annotated_item(mov),
-                kind::ATTRIBUTES => handler.visit_attributes(mov),
-                kind::ATTRIBUTE => handler.visit_attribute(mov),
-                kind::ITEM => handler.visit_item(mov),
-                kind::FUNCTION => handler.visit_function(mov),
-                kind::TYPEDEF => handler.visit_typedef(mov),
-                kind::TYPEDEF_EXTERN => handler.visit_typedef_extern(mov),
-                kind::TYPEDEF_NORMAL => handler.visit_typedef_normal(mov),
-                kind::APPLY => handler.visit_apply(mov),
-
-                _ => Ok(()),
-            };
-
-            if let Err(err) = result {
-                log::error!("encountered error during syntax highlighting: {:?}", err);
-
-                if !handler.walker.goto_next() {
-                    break;
-                }
-            }
-
-            mov = NodeMove::Step;
+        let result = handler.visit();
+        if let Err(err) = result {
+            log::error!("encountered error during syntax highlighting: {:?}", err);
         }
 
         let tokens = handler.builder.build();
