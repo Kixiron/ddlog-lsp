@@ -325,678 +325,678 @@ where
         let language: tree_sitter::Language = self.walker().language.into();
         loop {
             let kind = self.node().kind_id();
-            // let kind_name = language.node_kind_for_id(kind).unwrap();
-            // log::info!("visiting {:#?}", kind_name);
+            let kind_name = language.node_kind_for_id(kind).unwrap();
+            log::info!("visiting {:#?}", kind_name);
             match kind {
                 kind::ROOT => {
                     self.visit_ROOT(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::ANNOTATED_ITEM => {
                     self.visit_annotated_item(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::APPLY => {
                     self.visit_apply(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::ARG => {
                     self.visit_arg(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::ARG_OPT_TYPE => {
                     self.visit_arg_opt_type(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::ARG_TRANS => {
                     self.visit_arg_trans(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::ATOM => {
                     self.visit_atom(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::ATOM_ELEM => {
                     self.visit_atom_elem(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::ATOM_POS => {
                     self.visit_atom_pos(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::ATOM_REC => {
                     self.visit_atom_rec(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::ATTRIBUTE => {
                     self.visit_attribute(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::ATTRIBUTES => {
                     self.visit_attributes(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::COMMENT_BLOCK => {
                     self.visit_comment_block(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::COMMENT_BLOCK_INNER => {
                     self.visit_comment_block_inner(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::COMMENT_LINE => {
                     self.visit_comment_line(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::CONS => {
                     self.visit_cons(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::CONS_POS => {
                     self.visit_cons_pos(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::CONS_REC => {
                     self.visit_cons_rec(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::ESCAPE_SEQUENCE => {
                     self.visit_escape_sequence(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::ESCAPE_SEQUENCE_INTERPOLATED => {
                     self.visit_escape_sequence_interpolated(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::EXP => {
                     self.visit_exp(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::EXP_ADD => {
                     self.visit_exp_add(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::EXP_ASSIGN => {
                     self.visit_exp_assign(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::EXP_BINDING => {
                     self.visit_exp_binding(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::EXP_BIT_AND => {
                     self.visit_exp_bit_and(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::EXP_BIT_NEG => {
                     self.visit_exp_bit_neg(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::EXP_BIT_OR => {
                     self.visit_exp_bit_or(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::EXP_BIT_SLICE => {
                     self.visit_exp_bit_slice(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::EXP_BIT_XOR => {
                     self.visit_exp_bit_xor(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::EXP_BLOCK => {
                     self.visit_exp_block(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::EXP_BREAK => {
                     self.visit_exp_break(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::EXP_CAST => {
                     self.visit_exp_cast(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::EXP_CAT => {
                     self.visit_exp_cat(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::EXP_COND => {
                     self.visit_exp_cond(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::EXP_CONS_POS => {
                     self.visit_exp_cons_pos(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::EXP_CONS_REC => {
                     self.visit_exp_cons_rec(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::EXP_CONTINUE => {
                     self.visit_exp_continue(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::EXP_DECL_VAR => {
                     self.visit_exp_decl_var(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::EXP_DIV => {
                     self.visit_exp_div(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::EXP_EQ => {
                     self.visit_exp_eq(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::EXP_FIELD => {
                     self.visit_exp_field(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::EXP_FOR => {
                     self.visit_exp_for(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::EXP_FUN_CALL => {
                     self.visit_exp_fun_call(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::EXP_FUN_CALL_DOT => {
                     self.visit_exp_fun_call_dot(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::EXP_GT => {
                     self.visit_exp_gt(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::EXP_GTEQ => {
                     self.visit_exp_gteq(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::EXP_LAMBDA => {
                     self.visit_exp_lambda(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::EXP_LIT => {
                     self.visit_exp_lit(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::EXP_LOG_AND => {
                     self.visit_exp_log_and(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::EXP_LOG_IMP => {
                     self.visit_exp_log_imp(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::EXP_LOG_NEG => {
                     self.visit_exp_log_neg(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::EXP_LOG_OR => {
                     self.visit_exp_log_or(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::EXP_LT => {
                     self.visit_exp_lt(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::EXP_LTEQ => {
                     self.visit_exp_lteq(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::EXP_MATCH => {
                     self.visit_exp_match(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::EXP_MUL => {
                     self.visit_exp_mul(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::EXP_NEG => {
                     self.visit_exp_neg(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::EXP_NEQ => {
                     self.visit_exp_neq(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::EXP_PROJ => {
                     self.visit_exp_proj(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::EXP_PROJ_DIGITS => {
                     self.visit_exp_proj_digits(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::EXP_REF => {
                     self.visit_exp_ref(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::EXP_REM => {
                     self.visit_exp_rem(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::EXP_RETURN => {
                     self.visit_exp_return(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::EXP_SEQ => {
                     self.visit_exp_seq(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::EXP_SHL => {
                     self.visit_exp_shl(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::EXP_SHR => {
                     self.visit_exp_shr(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::EXP_SLICE => {
                     self.visit_exp_slice(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::EXP_SUB => {
                     self.visit_exp_sub(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::EXP_TRY => {
                     self.visit_exp_try(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::EXP_TUPLE => {
                     self.visit_exp_tuple(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::EXP_TYPE => {
                     self.visit_exp_type(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::EXP_WILD => {
                     self.visit_exp_wild(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::FIELD => {
                     self.visit_field(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::FUNCTION => {
                     self.visit_function(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::FUNCTION_EXTERN => {
                     self.visit_function_extern(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::FUNCTION_NORMAL => {
                     self.visit_function_normal(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::IDENT => {
                     self.visit_ident(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::IDENT_LOWER => {
                     self.visit_ident_lower(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::IDENT_LOWER_SCOPED => {
                     self.visit_ident_lower_scoped(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::IDENT_SCOPED => {
                     self.visit_ident_scoped(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::IDENT_UPPER => {
                     self.visit_ident_upper(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::IDENT_UPPER_SCOPED => {
                     self.visit_ident_upper_scoped(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::IMPORT => {
                     self.visit_import(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::INDEX => {
                     self.visit_index(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::INTERPOLATION => {
                     self.visit_interpolation(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::ITEM => {
                     self.visit_item(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::KEY_PRIMARY => {
                     self.visit_key_primary(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::LIT_BOOL => {
                     self.visit_lit_bool(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::LIT_MAP => {
                     self.visit_lit_map(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::LIT_NUM => {
                     self.visit_lit_num(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::LIT_NUM_BIN => {
                     self.visit_lit_num_bin(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::LIT_NUM_DEC => {
                     self.visit_lit_num_dec(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::LIT_NUM_FLOAT => {
                     self.visit_lit_num_float(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::LIT_NUM_HEX => {
                     self.visit_lit_num_hex(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::LIT_NUM_OCT => {
                     self.visit_lit_num_oct(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::LIT_STRING => {
                     self.visit_lit_string(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::LIT_VEC => {
                     self.visit_lit_vec(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::MISC_PAT0 => {
                     self.visit_misc_pat0(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::MODULE_ALIAS => {
                     self.visit_module_alias(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::MODULE_PATH => {
                     self.visit_module_path(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::NAME => {
                     self.visit_name(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::NAME_ARG => {
                     self.visit_name_arg(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::NAME_CONS => {
                     self.visit_name_cons(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::NAME_FIELD => {
                     self.visit_name_field(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::NAME_FUNC => {
                     self.visit_name_func(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::NAME_INDEX => {
                     self.visit_name_index(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::NAME_REL => {
                     self.visit_name_rel(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::NAME_TRANS => {
                     self.visit_name_trans(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::NAME_TYPE => {
                     self.visit_name_type(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::NAME_VAR_TERM => {
                     self.visit_name_var_term(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::NAME_VAR_TYPE => {
                     self.visit_name_var_type(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::PAT => {
                     self.visit_pat(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::PAT_CONS => {
                     self.visit_pat_cons(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::PAT_CONS_POS => {
                     self.visit_pat_cons_pos(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::PAT_CONS_REC => {
                     self.visit_pat_cons_rec(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::PAT_LIT => {
                     self.visit_pat_lit(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::PAT_TERM_DECL_VAR => {
                     self.visit_pat_term_decl_var(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::PAT_TUPLE => {
                     self.visit_pat_tuple(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::PAT_TYPE => {
                     self.visit_pat_type(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::PAT_WILD => {
                     self.visit_pat_wild(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::REL => {
                     self.visit_rel(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::REL_ARGS => {
                     self.visit_rel_args(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::REL_ELEM => {
                     self.visit_rel_elem(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::REL_ROLE => {
                     self.visit_rel_role(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::REL_SEMANTICS => {
                     self.visit_rel_semantics(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::RHS => {
                     self.visit_rhs(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::RHS_ATOM_NEG => {
                     self.visit_rhs_atom_neg(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::RHS_FLAT_MAP => {
                     self.visit_rhs_flat_map(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::RHS_GROUPING => {
                     self.visit_rhs_grouping(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::RHS_INSPECT => {
                     self.visit_rhs_inspect(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::RULE => {
                     self.visit_rule(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::RULE_END => {
                     self.visit_rule_end(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::STATEMENT => {
                     self.visit_statement(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::STATEMENT_ASSIGN => {
                     self.visit_statement_assign(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::STATEMENT_BLOCK => {
                     self.visit_statement_block(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::STATEMENT_EMPTY => {
                     self.visit_statement_empty(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::STATEMENT_FOR => {
                     self.visit_statement_for(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::STATEMENT_IF => {
                     self.visit_statement_if(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::STATEMENT_INSERT => {
                     self.visit_statement_insert(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::STATEMENT_MATCH => {
                     self.visit_statement_match(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::STRING_QUOTED => {
                     self.visit_string_quoted(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::STRING_QUOTED_ESCAPED => {
                     self.visit_string_quoted_escaped(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::STRING_RAW => {
                     self.visit_string_raw(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::STRING_RAW_INTERPOLATED => {
                     self.visit_string_raw_interpolated(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::TRANSFORMER => {
                     self.visit_transformer(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::TYPE => {
                     self.visit_type(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::TYPE_ATOM => {
                     self.visit_type_atom(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::TYPE_BIGINT => {
                     self.visit_type_bigint(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::TYPE_BIT => {
                     self.visit_type_bit(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::TYPE_BOOL => {
                     self.visit_type_bool(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::TYPE_DOUBLE => {
                     self.visit_type_double(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::TYPE_FLOAT => {
                     self.visit_type_float(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::TYPE_FUN => {
                     self.visit_type_fun(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::TYPE_SIGNED => {
                     self.visit_type_signed(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::TYPE_STRING => {
                     self.visit_type_string(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::TYPE_TRANS => {
                     self.visit_type_trans(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::TYPE_TRANS_FUN => {
                     self.visit_type_trans_fun(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::TYPE_TRANS_REL => {
                     self.visit_type_trans_rel(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::TYPE_TUPLE => {
                     self.visit_type_tuple(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::TYPE_UNION => {
                     self.visit_type_union(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::TYPE_USER => {
                     self.visit_type_user(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::TYPE_VAR => {
                     self.visit_type_var(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::TYPEDEF => {
                     self.visit_typedef(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::TYPEDEF_EXTERN => {
                     self.visit_typedef_extern(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::TYPEDEF_NORMAL => {
                     self.visit_typedef_normal(NodeMove::Init)?;
                     break;
-                },
+                }
                 kind::WORD => {
                     self.visit_word(NodeMove::Init)?;
                     break;
-                },
+                }
                 _ => {
                     if !self.walker().goto_next() {
                         break;
                     }
-                },
+                }
             }
         }
         Ok(())
@@ -1779,7 +1779,7 @@ pub mod utils {
                             errors.append(&mut errs);
                             return Err(errors);
                         }
-                    },
+                    }
                 }
             }
 
@@ -4157,6 +4157,36 @@ pub mod visit {
     {
         visitor.walker().rule(kind::WORD, m)?;
         Ok(())
+    }
+
+    pub fn any_ident<'tree, Ctx, Vis>(
+        visitor: &mut Vis,
+        mov: NodeMove,
+    ) -> Result<tree_sitter::Node<'tree>, SyntaxErrors>
+    where
+        Ctx: Context<'tree> + 'tree,
+        Vis: Visitor<'tree, Ctx> + ?Sized,
+    {
+        utils::choice((
+            |handler: &mut Vis, m| {
+                handler
+                    .walker()
+                    .rule(kind::IDENT_LOWER_SCOPED, m)
+                    .map_err(SyntaxErrors::from)
+            },
+            |handler: &mut Vis, m| {
+                handler
+                    .walker()
+                    .rule(kind::IDENT_UPPER_SCOPED, m)
+                    .map_err(SyntaxErrors::from)
+            },
+            |handler: &mut Vis, m| handler.walker().rule(kind::IDENT_LOWER, m).map_err(SyntaxErrors::from),
+            |handler: &mut Vis, m| handler.walker().rule(kind::IDENT_UPPER, m).map_err(SyntaxErrors::from),
+            |handler: &mut Vis, m| handler.walker().rule(kind::IDENT_SCOPED, m).map_err(SyntaxErrors::from),
+            |handler: &mut Vis, m| handler.walker().rule(kind::NAME, m).map_err(SyntaxErrors::from),
+            |handler: &mut Vis, m| handler.walker().rule(kind::NAME_ARG, m).map_err(SyntaxErrors::from),
+            |handler: &mut Vis, m| handler.walker().rule(kind::NAME_FIELD, m).map_err(SyntaxErrors::from),
+        ))(visitor, mov)
     }
 
     pub mod token {

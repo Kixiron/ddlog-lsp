@@ -52,20 +52,16 @@ pub mod context {
             }
 
             #[inline]
-            fn push(&mut self, _: Self::Level) {
-            }
+            fn push(&mut self, _: Self::Level) {}
 
             #[inline]
-            fn push_ancestor(&mut self, _: Node<'tree>, _: Vec<Node<'tree>>) {
-            }
+            fn push_ancestor(&mut self, _: Node<'tree>, _: Vec<Node<'tree>>) {}
 
             #[inline]
-            fn push_prefix(&mut self, _: Node<'tree>) {
-            }
+            fn push_prefix(&mut self, _: Node<'tree>) {}
 
             #[inline]
-            fn reverse(&mut self) {
-            }
+            fn reverse(&mut self) {}
         }
     }
 
@@ -431,14 +427,34 @@ impl<'tree, C: Context<'tree>> NodeWalker<'tree, C> {
 
     #[allow(missing_docs)]
     #[inline]
+    #[track_caller]
     pub fn rule(&mut self, that_id: u16, m: NodeMove) -> Result<tree_sitter::Node<'tree>, SyntaxError> {
-        self.step(that_id, m)
+        let x = self.step(that_id, m);
+        let location = std::panic::Location::caller();
+        println!(
+            "[{}:{}:{}] {:?}",
+            location.file(),
+            location.line(),
+            location.column(),
+            x,
+        );
+        x
     }
 
     #[allow(missing_docs)]
     #[inline]
+    #[track_caller]
     pub fn token(&mut self, that_id: u16, m: NodeMove) -> Result<tree_sitter::Node<'tree>, SyntaxError> {
-        self.step(that_id, m)
+        let x = self.step(that_id, m);
+        let location = std::panic::Location::caller();
+        println!(
+            "[{}:{}:{}] {:?}",
+            location.file(),
+            location.line(),
+            location.column(),
+            x,
+        );
+        x
     }
 
     #[allow(missing_docs)]
